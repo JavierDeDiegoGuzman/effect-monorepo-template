@@ -1,0 +1,15 @@
+{
+  "name": "effect-monorepo-template",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.17.1",
+  "scripts": {
+    "dev": "pnpm --parallel --filter @app/server --filter @app/webapp dev",
+    "build": "pnpm -r build",
+    "check": "pnpm -r check"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.0",
+    "typescript": "^5.9.3"
+  }
+}
