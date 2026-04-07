@@ -4,12 +4,13 @@ import { Layer } from "effect"
 import { HttpRouter } from "effect/unstable/http"
 import { HttpApiBuilder, HttpApiScalar } from "effect/unstable/httpapi"
 import { createServer } from "node:http"
+import { SystemApiHandlers } from "./handlers/System"
 import { TodosApiHandlers } from "./handlers/Todos"
 
 const ApiRoutes = HttpApiBuilder.layer(Api, {
   openapiPath: "/openapi.json"
 }).pipe(
-  Layer.provide(TodosApiHandlers)
+  Layer.provide([TodosApiHandlers, SystemApiHandlers])
 )
 
 const DocsRoute = HttpApiScalar.layer(Api, {
@@ -23,6 +24,8 @@ const CorsLayer = HttpRouter.cors({
 
 const AllRoutes = Layer.mergeAll(ApiRoutes, DocsRoute, CorsLayer)
 
+const port = Number(process.env.PORT ?? "3001")
+
 export const HttpServerLayer = HttpRouter.serve(AllRoutes).pipe(
-  Layer.provide(NodeHttpServer.layer(createServer, { port: 3000 }))
+  Layer.provide(NodeHttpServer.layer(createServer, { port }))
 )

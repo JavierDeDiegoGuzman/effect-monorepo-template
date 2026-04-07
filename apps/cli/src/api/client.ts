@@ -3,9 +3,9 @@ import { Layer, ServiceMap, flow } from "effect"
 import { FetchHttpClient, HttpClient, HttpClientRequest } from "effect/unstable/http"
 import { HttpApiClient } from "effect/unstable/httpapi"
 
-const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:3001"
+const apiUrl = process.env.API_URL ?? "http://localhost:3000"
 
-export class ApiClient extends ServiceMap.Service<ApiClient, HttpApiClient.ForApi<typeof Api>>()("app/ApiClient") {
+export class ApiClient extends ServiceMap.Service<ApiClient, HttpApiClient.ForApi<typeof Api>>()("app/cli/ApiClient") {
   static readonly layer = Layer.effect(
     ApiClient,
     HttpApiClient.make(Api, {

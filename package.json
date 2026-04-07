@@ -5,6 +5,9 @@
   "packageManager": "pnpm@10.17.1",
   "scripts": {
     "dev": "pnpm --parallel --filter @app/server --filter @app/webapp dev",
+    "cli": "pnpm --filter @app/cli dev --",
+    "observability:up": "docker compose up -d jaeger otel-collector",
+    "observability:down": "docker compose down",
     "build": "pnpm -r build",
     "check": "pnpm -r check"
   },
