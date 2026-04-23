@@ -1,6 +1,18 @@
 import { CreateTodoInput, Todo, UpdateTodoInput } from "@app/shared"
 import { useAtomSet, useAtomSuspense } from "@effect/atom-react"
+import { Loader2 } from "lucide-react"
 import * as React from "react"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
+import { cn } from "@/lib/utils"
 import { createTodoAtom, todosAtom, updateTodoAtom } from "../atoms/todos"
 
 export function TodoApp() {
@@ -34,126 +46,52 @@ export function TodoApp() {
   }
 
   return (
-    <main style={styles.page}>
-      <section style={styles.panel}>
-        <p style={styles.eyebrow}>Effect v4 beta</p>
-        <h1 style={styles.title}>Todo List</h1>
-        <p style={styles.subtitle}>API compartida en `shared`, server en `apps/server` y React conectado con atoms.</p>
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_hsl(var(--primary)/0.18),_transparent_32%),linear-gradient(180deg,_hsl(222_47%_11%),_hsl(224_71%_4%))] px-4 py-10 text-foreground sm:px-6">
+      <Card className="mx-auto max-w-2xl border-border/60 bg-card/85 shadow-2xl backdrop-blur">
+        <CardHeader className="space-y-3">
+          <p className="text-xs font-medium uppercase tracking-[0.24em] text-primary">Effect v4 beta</p>
+          <CardTitle className="text-4xl">Todo List</CardTitle>
+          <CardDescription className="max-w-xl text-sm leading-6 sm:text-base">
+            API compartida en <code className="rounded bg-muted px-1.5 py-0.5 text-xs">shared</code>, server en{" "}
+            <code className="rounded bg-muted px-1.5 py-0.5 text-xs">apps/server</code> y React conectado con atoms.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <form onSubmit={onSubmit} className="grid gap-3 sm:grid-cols-[1fr_auto]">
+            <Input
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              placeholder="Write the next task"
+            />
+            <Button type="submit" disabled={pending} className="sm:min-w-28">
+              {pending ? <Loader2 className="size-4 animate-spin" /> : null}
+              Add
+            </Button>
+          </form>
 
-        <form onSubmit={onSubmit} style={styles.form}>
-          <input
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-            placeholder="Write the next task"
-            style={styles.input}
-          />
-          <button type="submit" disabled={pending} style={styles.button}>
-            Add
-          </button>
-        </form>
-
-        <ul style={styles.list}>
-          {todos.map((todo) => (
-            <li key={todo.id} style={styles.item}>
-              <label style={styles.label}>
-                <input
-                  type="checkbox"
-                  checked={todo.completed}
-                  onChange={() => onToggle(todo)}
-                />
-                <span style={{ ...styles.todoText, ...(todo.completed ? styles.todoDone : undefined) }}>
-                  {todo.title}
-                </span>
-              </label>
-            </li>
-          ))}
-        </ul>
-      </section>
+          <ul className="grid gap-3">
+            {todos.map((todo) => (
+              <li key={todo.id}>
+                <button
+                  type="button"
+                  onClick={() => onToggle(todo)}
+                  className="flex w-full items-center gap-3 rounded-xl border border-border/70 bg-muted/35 px-4 py-3 text-left transition-colors hover:bg-muted/55"
+                >
+                  <Checkbox checked={todo.completed} className="pointer-events-none" />
+                  <span
+                    className={cn(
+                      "text-sm sm:text-base",
+                      todo.completed && "text-muted-foreground line-through"
+                    )}
+                  >
+                    {todo.title}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
     </main>
   )
-}
-
-const styles: Record<string, React.CSSProperties> = {
-  page: {
-    minHeight: "100vh",
-    margin: 0,
-    padding: "24px",
-    background: "linear-gradient(180deg, #0f172a 0%, #111827 100%)",
-    color: "#e5e7eb",
-    fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif"
-  },
-  panel: {
-    maxWidth: "720px",
-    margin: "0 auto",
-    padding: "32px",
-    borderRadius: "24px",
-    background: "rgba(15, 23, 42, 0.82)",
-    border: "1px solid rgba(148, 163, 184, 0.2)",
-    boxShadow: "0 24px 80px rgba(0, 0, 0, 0.35)"
-  },
-  eyebrow: {
-    margin: 0,
-    color: "#38bdf8",
-    textTransform: "uppercase",
-    letterSpacing: "0.16em",
-    fontSize: "12px"
-  },
-  title: {
-    margin: "12px 0 8px",
-    fontSize: "40px",
-    lineHeight: 1
-  },
-  subtitle: {
-    margin: "0 0 24px",
-    color: "#94a3b8",
-    lineHeight: 1.5
-  },
-  form: {
-    display: "grid",
-    gridTemplateColumns: "1fr auto",
-    gap: "12px"
-  },
-  input: {
-    borderRadius: "14px",
-    border: "1px solid #334155",
-    background: "#020617",
-    color: "#e5e7eb",
-    padding: "14px 16px",
-    fontSize: "16px"
-  },
-  button: {
-    border: 0,
-    borderRadius: "14px",
-    background: "#22c55e",
-    color: "#052e16",
-    padding: "14px 18px",
-    fontSize: "16px",
-    fontWeight: 700,
-    cursor: "pointer"
-  },
-  list: {
-    listStyle: "none",
-    padding: 0,
-    margin: "20px 0 0",
-    display: "grid",
-    gap: "12px"
-  },
-  item: {
-    padding: "14px 16px",
-    borderRadius: "16px",
-    background: "rgba(15, 23, 42, 0.75)",
-    border: "1px solid rgba(100, 116, 139, 0.3)"
-  },
-  label: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px"
-  },
-  todoText: {
-    fontSize: "16px"
-  },
-  todoDone: {
-    textDecoration: "line-through",
-    color: "#64748b"
-  }
 }

@@ -3,6 +3,7 @@ import * as React from "react"
 import { Suspense } from "react"
 import { createRoot } from "react-dom/client"
 import { ErrorBoundary } from "react-error-boundary"
+import "./styles/globals.css"
 import { TodoApp } from "./components/TodoApp"
 
 function Root() {
