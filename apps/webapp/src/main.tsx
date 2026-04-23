@@ -9,7 +9,9 @@ import { TodoApp } from "./components/TodoApp"
 function Root() {
   return (
     <RegistryProvider>
-      <ErrorBoundary fallback={<div style={fallbackStyle}>Could not load todos.</div>}>
+      <ErrorBoundary
+        fallback={<div style={fallbackStyle}>Could not load todos.</div>}
+      >
         <Suspense fallback={<div style={fallbackStyle}>Loading todos...</div>}>
           <TodoApp />
         </Suspense>
@@ -24,7 +26,7 @@ const fallbackStyle: React.CSSProperties = {
   placeItems: "center",
   background: "#020617",
   color: "#e2e8f0",
-  fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif"
+  fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
 }
 
 const container = document.getElementById("root")
@@ -36,5 +38,5 @@ if (container === null) {
 createRoot(container).render(
   <React.StrictMode>
     <Root />
-  </React.StrictMode>
+  </React.StrictMode>,
 )

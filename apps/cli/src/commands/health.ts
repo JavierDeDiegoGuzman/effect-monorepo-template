@@ -7,10 +7,10 @@ export const health = Command.make(
   "health",
   {
     json: Flag.boolean("json").pipe(
-      Flag.withDescription("Print machine-readable output")
-    )
+      Flag.withDescription("Print machine-readable output"),
+    ),
   },
-  Effect.fn(function*({ json }) {
+  Effect.fn(function* ({ json }) {
     const client = yield* ApiClient
     yield* client.health()
 
@@ -20,7 +20,5 @@ export const health = Command.make(
     }
 
     yield* Console.log("Server is healthy")
-  })
-).pipe(
-  Command.withDescription("Check server health")
-)
+  }),
+).pipe(Command.withDescription("Check server health"))

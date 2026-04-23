@@ -5,7 +5,7 @@ import { HttpApiBuilder } from "effect/unstable/httpapi"
 export const SystemApiHandlers = HttpApiBuilder.group(
   Api,
   "system",
-  Effect.fn(function*(handlers) {
+  Effect.fn(function* (handlers) {
     return handlers.handle("health", () => Effect.void)
-  })
+  }),
 )
