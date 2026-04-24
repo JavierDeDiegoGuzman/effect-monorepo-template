@@ -1,4 +1,6 @@
 export type AppRoute =
+  | { readonly name: "login" }
+  | { readonly name: "register" }
   | { readonly name: "dashboard" }
   | { readonly name: "todos" }
   | { readonly name: "projects" }
@@ -9,6 +11,14 @@ export const routeFromPath = (path: string): AppRoute => {
 
   if (parts.length === 0) {
     return { name: "dashboard" }
+  }
+
+  if (parts[0] === "login") {
+    return { name: "login" }
+  }
+
+  if (parts[0] === "register") {
+    return { name: "register" }
   }
 
   if (parts[0] === "todos") {
@@ -31,6 +41,10 @@ export const routeFromPath = (path: string): AppRoute => {
 
 export const pathForRoute = (route: AppRoute): string => {
   switch (route.name) {
+    case "login":
+      return "/login"
+    case "register":
+      return "/register"
     case "dashboard":
       return "/"
     case "todos":

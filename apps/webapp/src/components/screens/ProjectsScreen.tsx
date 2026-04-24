@@ -57,7 +57,7 @@ export function ProjectsScreen() {
         <Screen.Header>
           <Screen.Title>Projects</Screen.Title>
           <Screen.Description>
-            A screen dedicated to managing projects and navigating to their detail views.
+            A collection screen for the projects that belong to your current workspace.
           </Screen.Description>
         </Screen.Header>
 
@@ -66,7 +66,7 @@ export function ProjectsScreen() {
             <Screen.SectionHeader>
               <Screen.SectionTitle>Add project</Screen.SectionTitle>
               <Screen.SectionDescription>
-                Create a new project to organize related tasks.
+                Create a new project inside the current workspace.
               </Screen.SectionDescription>
             </Screen.SectionHeader>
             <ProjectCreateForm
@@ -91,7 +91,7 @@ export function ProjectsScreen() {
             <Screen.SectionHeader>
               <Screen.SectionTitle>All projects</Screen.SectionTitle>
               <Screen.SectionDescription>
-                Manage the collection here and jump into each project detail.
+                Manage the workspace project collection here and jump into each project detail.
               </Screen.SectionDescription>
             </Screen.SectionHeader>
             {AsyncResult.matchWithError(archiveProjectState, {

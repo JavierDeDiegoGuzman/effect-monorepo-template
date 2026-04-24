@@ -43,7 +43,7 @@ export function ProjectScreen({ projectId }: { readonly projectId: number }) {
             <Screen.Header>
               <Screen.Title>Project not found</Screen.Title>
               <Screen.Description>
-                The requested project does not exist in the current in-memory store.
+                The requested project does not exist in the current workspace.
               </Screen.Description>
             </Screen.Header>
             <Screen.Body>
@@ -102,7 +102,7 @@ export function ProjectScreen({ projectId }: { readonly projectId: number }) {
                   <Screen.SectionHeader>
                     <Screen.SectionTitle>Add todo</Screen.SectionTitle>
                     <Screen.SectionDescription>
-                      This page is dedicated to the project and its tasks.
+                      This page is dedicated to one workspace project and its tasks.
                     </Screen.SectionDescription>
                   </Screen.SectionHeader>
                   <TodoCreateForm
@@ -131,7 +131,7 @@ export function ProjectScreen({ projectId }: { readonly projectId: number }) {
                   <Screen.SectionHeader>
                     <Screen.SectionTitle>Project todos</Screen.SectionTitle>
                     <Screen.SectionDescription>
-                      A full task view for this project, not an embedded panel.
+                      A full task view for this project within the current workspace.
                     </Screen.SectionDescription>
                   </Screen.SectionHeader>
                   {AsyncResult.matchWithError(updateTodoState, {

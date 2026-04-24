@@ -1,12 +1,31 @@
-import { Api } from "@app/shared"
-import { flow, Layer, ServiceMap } from "effect"
+import { Api, Authorization } from "@app/shared"
+import { Effect, flow, Layer, ServiceMap } from "effect"
 import {
   FetchHttpClient,
   HttpClient,
   HttpClientRequest,
 } from "effect/unstable/http"
-import { HttpApiClient } from "effect/unstable/httpapi"
+import { HttpApiClient, HttpApiMiddleware } from "effect/unstable/httpapi"
+import { clearAuthToken, isProbablyJwt, readAuthToken } from "../lib/auth-storage"
 import { apiClientConfig } from "./config"
+
+const AuthorizationClient = HttpApiMiddleware.layerClient(
+  Authorization,
+  Effect.fn(function* ({ next, request }) {
+    const token = readAuthToken()
+
+    if (token === null) {
+      return yield* next(request)
+    }
+
+    if (!isProbablyJwt(token)) {
+      clearAuthToken()
+      return yield* next(request)
+    }
+
+    return yield* next(HttpClientRequest.bearerToken(request, token))
+  }),
+)
 
 export class ApiClient extends ServiceMap.Service<
   ApiClient,
@@ -22,5 +41,5 @@ export class ApiClient extends ServiceMap.Service<
           ),
         ),
     }),
-  ).pipe(Layer.provide(FetchHttpClient.layer))
+  ).pipe(Layer.provide(AuthorizationClient), Layer.provide(FetchHttpClient.layer))
 }

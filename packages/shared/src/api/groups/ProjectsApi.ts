@@ -7,6 +7,7 @@ import {
 } from "effect/unstable/httpapi"
 import { CreateProjectInput, Project, UpdateProjectInput } from "../../domain/Project"
 import { ProjectNotFound } from "../../domain/ProjectErrors"
+import { Authorization } from "../middleware/Authorization"
 
 export class ProjectsApi extends HttpApiGroup.make("projects")
   .add(
@@ -52,6 +53,7 @@ export class ProjectsApi extends HttpApiGroup.make("projects")
       ),
     }),
   )
+  .middleware(Authorization)
   .annotateMerge(
     OpenApi.annotations({
       title: "Projects",

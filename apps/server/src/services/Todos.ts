@@ -11,11 +11,21 @@ import { Projects } from "./Projects"
 export class Todos extends ServiceMap.Service<
   Todos,
   {
-    readonly list: Effect.Effect<Array<Todo>>
-    readonly listByProject: (projectId: number) => Effect.Effect<Array<Todo>>
-    readonly getById: (id: number) => Effect.Effect<Todo, TodoNotFound>
-    readonly create: (input: CreateTodoInput) => Effect.Effect<Todo, ProjectNotFound>
-    readonly update: (
+    readonly listByWorkspace: (workspaceId: number) => Effect.Effect<Array<Todo>>
+    readonly listByProjectInWorkspace: (
+      workspaceId: number,
+      projectId: number,
+    ) => Effect.Effect<Array<Todo>>
+    readonly getByIdInWorkspace: (
+      workspaceId: number,
+      id: number,
+    ) => Effect.Effect<Todo, TodoNotFound>
+    readonly createInWorkspace: (
+      workspaceId: number,
+      input: CreateTodoInput,
+    ) => Effect.Effect<Todo, ProjectNotFound>
+    readonly updateInWorkspace: (
+      workspaceId: number,
       id: number,
       input: UpdateTodoInput,
     ) => Effect.Effect<Todo, TodoNotFound>
@@ -31,6 +41,7 @@ export class Todos extends ServiceMap.Service<
           1,
           new Todo({
             id: 1,
+            workspaceId: 1,
             title: "Learn Effect HttpApi",
             completed: true,
             projectId: 1,
@@ -40,6 +51,7 @@ export class Todos extends ServiceMap.Service<
           2,
           new Todo({
             id: 2,
+            workspaceId: 2,
             title: "Build the webapp",
             completed: false,
             projectId: 2,
@@ -47,77 +59,78 @@ export class Todos extends ServiceMap.Service<
         ],
       ])
 
-      const list = Effect.fn("Todos.list")(function* () {
-        return Array.from(store.values())
-      })()
-
-      const listByProject = Effect.fn("Todos.listByProject")(function* (
-        projectId: number,
+      const listByWorkspace = Effect.fn("Todos.listByWorkspace")(function* (
+        workspaceId: number,
       ) {
-        yield* Effect.annotateCurrentSpan({
-          "project.id": projectId,
-        })
-
-        return Array.from(store.values()).filter((todo) => todo.projectId === projectId)
+        return Array.from(store.values()).filter((todo) => todo.workspaceId === workspaceId)
       })
 
-      const getById = Effect.fn("Todos.getById")(function* (id: number) {
+      const listByProjectInWorkspace = Effect.fn("Todos.listByProjectInWorkspace")(function* (
+        workspaceId: number,
+        projectId: number,
+      ) {
+        return Array.from(store.values()).filter(
+          (todo) => todo.workspaceId === workspaceId && todo.projectId === projectId,
+        )
+      })
+
+      const getByIdInWorkspace = Effect.fn("Todos.getByIdInWorkspace")(function* (
+        workspaceId: number,
+        id: number,
+      ) {
         yield* Effect.annotateCurrentSpan({
+          "workspace.id": workspaceId,
           "todo.id": id,
         })
 
         const todo = store.get(id)
-        if (todo === undefined) {
+        if (todo === undefined || todo.workspaceId !== workspaceId) {
           return yield* new TodoNotFound({ id })
         }
         return todo
       })
 
-      const create = Effect.fn("Todos.create")(function* (
+      const createInWorkspace = Effect.fn("Todos.createInWorkspace")(function* (
+        workspaceId: number,
         input: CreateTodoInput,
       ) {
         if (input.projectId !== null) {
-          yield* projects.getById(input.projectId)
+          yield* projects.getByIdInWorkspace(workspaceId, input.projectId)
         }
-
-        yield* Effect.annotateCurrentSpan({
-          "todo.title.length": input.title.length,
-          "todo.project.id": input.projectId ?? "none",
-        })
 
         const id = yield* Ref.getAndUpdate(nextId, (current) => current + 1)
         const todo = new Todo({
           id,
-          title: input.title,
+          workspaceId,
+          title: input.title.trim(),
           completed: false,
           projectId: input.projectId,
         })
         store.set(id, todo)
-
-        yield* Effect.annotateCurrentSpan({
-          "todo.id": todo.id,
-          "todo.completed": todo.completed,
-        })
-
         return todo
       })
 
-      const update = Effect.fn("Todos.update")(function* (
+      const updateInWorkspace = Effect.fn("Todos.updateInWorkspace")(function* (
+        workspaceId: number,
         id: number,
         input: UpdateTodoInput,
       ) {
-        yield* Effect.annotateCurrentSpan({
-          "todo.id": id,
-          "todo.completed": input.completed,
+        const todo = yield* getByIdInWorkspace(workspaceId, id)
+        const updated = new Todo({
+          ...todo,
+          completed: input.completed,
         })
-
-        const todo = yield* getById(id)
-        const updated = new Todo({ ...todo, completed: input.completed })
         store.set(id, updated)
         return updated
       })
 
-      return Todos.of({ list, listByProject, getById, create, update })
+      return Todos.of({
+        listByWorkspace,
+        listByProjectInWorkspace,
+        getByIdInWorkspace,
+        createInWorkspace,
+        updateInWorkspace,
+      })
     }),
   )
 }

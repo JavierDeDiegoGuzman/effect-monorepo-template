@@ -67,7 +67,7 @@ export function TodosScreen() {
             <Screen.Header>
               <Screen.Title>Todos</Screen.Title>
               <Screen.Description>
-                A screen focused on managing the full todo collection.
+                A collection screen for the todos that belong to your current workspace.
               </Screen.Description>
             </Screen.Header>
 
@@ -76,7 +76,7 @@ export function TodosScreen() {
                 <Screen.SectionHeader>
                   <Screen.SectionTitle>Add todo</Screen.SectionTitle>
                   <Screen.SectionDescription>
-                    Create a task and optionally assign it to a project.
+                    Create a task in the current workspace and optionally assign it to a project.
                   </Screen.SectionDescription>
                 </Screen.SectionHeader>
                 <TodoCreateForm
@@ -102,7 +102,7 @@ export function TodosScreen() {
                 <Screen.SectionHeader>
                   <Screen.SectionTitle>All todos</Screen.SectionTitle>
                   <Screen.SectionDescription>
-                    Each task can stand on its own or belong to a project.
+                    Each task belongs to the current workspace and can optionally belong to a project.
                   </Screen.SectionDescription>
                 </Screen.SectionHeader>
                 {AsyncResult.matchWithError(updateTodoState, {

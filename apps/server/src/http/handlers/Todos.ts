@@ -1,7 +1,6 @@
-import { Api, type ProjectNotFound, type TodoNotFound } from "@app/shared"
-import { Effect, Layer } from "effect"
+import { Api, CurrentWorkspace, type ProjectNotFound, type TodoNotFound } from "@app/shared"
+import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
-import { Projects } from "../../services/Projects"
 import { Todos } from "../../services/Todos"
 
 export const TodosApiHandlers = HttpApiBuilder.group(
@@ -12,7 +11,10 @@ export const TodosApiHandlers = HttpApiBuilder.group(
 
     return handlers
       .handle("list", () =>
-        todos.list.pipe(
+        Effect.gen(function* () {
+          const workspace = yield* CurrentWorkspace
+          return yield* todos.listByWorkspace(workspace.id)
+        }).pipe(
           Effect.annotateSpans({
             "http.route": "/todos",
             "http.method": "GET",
@@ -20,7 +22,10 @@ export const TodosApiHandlers = HttpApiBuilder.group(
         ),
       )
       .handle("listByProject", ({ params }) =>
-        todos.listByProject(params.projectId).pipe(
+        Effect.gen(function* () {
+          const workspace = yield* CurrentWorkspace
+          return yield* todos.listByProjectInWorkspace(workspace.id, params.projectId)
+        }).pipe(
           Effect.annotateSpans({
             "http.route": "/projects/:projectId/todos",
             "http.method": "GET",
@@ -29,7 +34,10 @@ export const TodosApiHandlers = HttpApiBuilder.group(
         ),
       )
       .handle("getById", ({ params }) =>
-        todos.getById(params.id).pipe(
+        Effect.gen(function* () {
+          const workspace = yield* CurrentWorkspace
+          return yield* todos.getByIdInWorkspace(workspace.id, params.id)
+        }).pipe(
           Effect.annotateSpans({
             "http.route": "/todos/:id",
             "http.method": "GET",
@@ -41,7 +49,10 @@ export const TodosApiHandlers = HttpApiBuilder.group(
         ),
       )
       .handle("create", ({ payload }) =>
-        todos.create(payload).pipe(
+        Effect.gen(function* () {
+          const workspace = yield* CurrentWorkspace
+          return yield* todos.createInWorkspace(workspace.id, payload)
+        }).pipe(
           Effect.annotateSpans({
             "http.route": "/todos",
             "http.method": "POST",
@@ -54,7 +65,10 @@ export const TodosApiHandlers = HttpApiBuilder.group(
         ),
       )
       .handle("update", ({ params, payload }) =>
-        todos.update(params.id, payload).pipe(
+        Effect.gen(function* () {
+          const workspace = yield* CurrentWorkspace
+          return yield* todos.updateInWorkspace(workspace.id, params.id, payload)
+        }).pipe(
           Effect.annotateSpans({
             "http.route": "/todos/:id",
             "http.method": "PATCH",
@@ -67,4 +81,4 @@ export const TodosApiHandlers = HttpApiBuilder.group(
         ),
       )
   }),
-).pipe(Layer.provide(Todos.layer.pipe(Layer.provideMerge(Projects.layer))))
+)

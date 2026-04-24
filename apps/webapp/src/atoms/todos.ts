@@ -3,6 +3,7 @@ import { Effect } from "effect"
 import * as Layer from "effect/Layer"
 import * as Atom from "effect/unstable/reactivity/Atom"
 import { ApiClient } from "../api/client"
+import { isProbablyJwt, readAuthToken } from "../lib/auth-storage"
 import { ObservabilityLayer } from "../observability"
 
 const apiRuntime = Atom.runtime(
@@ -11,13 +12,20 @@ const apiRuntime = Atom.runtime(
 
 export const todosQuery = apiRuntime
   .atom(
-    ApiClient.use((client) => client.todos.list()).pipe(
+    Effect.sync(readAuthToken).pipe(
+      Effect.flatMap((token) => {
+        if (token === null || !isProbablyJwt(token)) {
+          return Effect.succeed([])
+        }
+
+        return ApiClient.use((client) => client.todos.list())
+      }),
       Effect.withSpan("todos.list", {
         kind: "client",
       }),
     ),
   )
-  .pipe(Atom.keepAlive, Atom.withReactivity(["todos"]))
+  .pipe(Atom.keepAlive, Atom.withReactivity(["todos", "auth"]))
 
 export const createTodoAction = apiRuntime.fn(
   (input: CreateTodoInput) =>

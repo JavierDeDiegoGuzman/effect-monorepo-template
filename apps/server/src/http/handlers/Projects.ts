@@ -1,5 +1,5 @@
-import { Api, type ProjectNotFound } from "@app/shared"
-import { Effect, Layer } from "effect"
+import { Api, CurrentWorkspace, type ProjectNotFound } from "@app/shared"
+import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
 import { Projects } from "../../services/Projects"
 
@@ -11,7 +11,10 @@ export const ProjectsApiHandlers = HttpApiBuilder.group(
 
     return handlers
       .handle("list", () =>
-        projects.list.pipe(
+        Effect.gen(function* () {
+          const workspace = yield* CurrentWorkspace
+          return yield* projects.listByWorkspace(workspace.id)
+        }).pipe(
           Effect.annotateSpans({
             "http.route": "/projects",
             "http.method": "GET",
@@ -19,7 +22,10 @@ export const ProjectsApiHandlers = HttpApiBuilder.group(
         ),
       )
       .handle("getById", ({ params }) =>
-        projects.getById(params.id).pipe(
+        Effect.gen(function* () {
+          const workspace = yield* CurrentWorkspace
+          return yield* projects.getByIdInWorkspace(workspace.id, params.id)
+        }).pipe(
           Effect.annotateSpans({
             "http.route": "/projects/:id",
             "http.method": "GET",
@@ -31,7 +37,10 @@ export const ProjectsApiHandlers = HttpApiBuilder.group(
         ),
       )
       .handle("create", ({ payload }) =>
-        projects.create(payload).pipe(
+        Effect.gen(function* () {
+          const workspace = yield* CurrentWorkspace
+          return yield* projects.createInWorkspace(workspace.id, payload)
+        }).pipe(
           Effect.annotateSpans({
             "http.route": "/projects",
             "http.method": "POST",
@@ -41,7 +50,10 @@ export const ProjectsApiHandlers = HttpApiBuilder.group(
         ),
       )
       .handle("update", ({ params, payload }) =>
-        projects.update(params.id, payload).pipe(
+        Effect.gen(function* () {
+          const workspace = yield* CurrentWorkspace
+          return yield* projects.updateInWorkspace(workspace.id, params.id, payload)
+        }).pipe(
           Effect.annotateSpans({
             "http.route": "/projects/:id",
             "http.method": "PATCH",
@@ -55,7 +67,10 @@ export const ProjectsApiHandlers = HttpApiBuilder.group(
         ),
       )
       .handle("archive", ({ params }) =>
-        projects.archive(params.id).pipe(
+        Effect.gen(function* () {
+          const workspace = yield* CurrentWorkspace
+          return yield* projects.archiveInWorkspace(workspace.id, params.id)
+        }).pipe(
           Effect.annotateSpans({
             "http.route": "/projects/:id/archive",
             "http.method": "POST",
@@ -68,4 +83,4 @@ export const ProjectsApiHandlers = HttpApiBuilder.group(
         ),
       )
   }),
-).pipe(Layer.provide(Projects.layer))
+)

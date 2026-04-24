@@ -1,12 +1,29 @@
-import { Api } from "@app/shared"
-import { Effect, flow, Layer, ServiceMap } from "effect"
+import { Api, Authorization } from "@app/shared"
+import { Effect, flow, Layer, Option, ServiceMap } from "effect"
 import {
   FetchHttpClient,
   HttpClient,
   HttpClientRequest,
 } from "effect/unstable/http"
-import { HttpApiClient } from "effect/unstable/httpapi"
+import { HttpApiClient, HttpApiMiddleware } from "effect/unstable/httpapi"
 import { getApiClientConfig } from "./config"
+
+const AuthorizationClient = Layer.unwrap(
+  Effect.gen(function* () {
+    const { authToken } = yield* getApiClientConfig
+
+    return HttpApiMiddleware.layerClient(
+      Authorization,
+      Effect.fn(function* ({ next, request }) {
+        if (Option.isNone(authToken)) {
+          return yield* next(request)
+        }
+
+        return yield* next(HttpClientRequest.bearerToken(request, authToken.value))
+      }),
+    )
+  }),
+)
 
 export class ApiClient extends ServiceMap.Service<
   ApiClient,
@@ -14,7 +31,7 @@ export class ApiClient extends ServiceMap.Service<
 >()("app/cli/ApiClient") {
   static readonly layer = Layer.effect(
     ApiClient,
-    Effect.gen(function*() {
+    Effect.gen(function* () {
       const { apiUrl } = yield* getApiClientConfig
 
       return yield* HttpApiClient.make(Api, {
@@ -24,5 +41,5 @@ export class ApiClient extends ServiceMap.Service<
           ),
       })
     }),
-  ).pipe(Layer.provide(FetchHttpClient.layer))
+  ).pipe(Layer.provide(AuthorizationClient), Layer.provide(FetchHttpClient.layer))
 }

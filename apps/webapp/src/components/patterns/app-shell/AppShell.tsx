@@ -1,11 +1,16 @@
+import type { CurrentSession } from "@app/shared"
+import { useAtom } from "@effect/atom-react"
 import * as React from "react"
 import { Link } from "wouter"
+import { logoutAction } from "@/atoms/auth"
+import { SessionSummary } from "@/components/domain/auth/SessionSummary"
 import { Button } from "@/components/ui/button"
 import { pathForRoute, type AppRoute } from "@/lib/router"
 import { cn } from "@/lib/utils"
 
 type AppShellProps = {
   readonly route: AppRoute
+  readonly session: CurrentSession | null
   readonly children: React.ReactNode
 }
 
@@ -23,40 +28,57 @@ const isActive = (current: AppRoute, target: AppRoute) => {
   return current.name === "project" && target.name === "projects"
 }
 
-export function AppShell({ route, children }: AppShellProps) {
+export function AppShell({ route, session, children }: AppShellProps) {
+  const [, logout] = useAtom(logoutAction, { mode: "promise" })
+  const isAuthRoute = route.name === "login" || route.name === "register"
+
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_hsl(var(--primary)/0.18),_transparent_32%),linear-gradient(180deg,_hsl(222_47%_11%),_hsl(224_71%_4%))] text-foreground">
       <header className="sticky top-0 z-20 border-b border-border/60 bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-          <Link href={pathForRoute({ name: "dashboard" })} className="text-lg font-semibold tracking-tight sm:text-xl">
-            Effect template
-          </Link>
+        <div className="mx-auto flex max-w-6xl min-h-16 items-center justify-between gap-4 px-4 py-4 sm:px-6">
+          {session === null || isAuthRoute ? (
+            <div />
+          ) : (
+            <nav aria-label="Primary" className="flex shrink-0 items-center gap-2">
+              {navItems.map((item) => {
+                const active = isActive(route, item.route)
 
-          <nav aria-label="Primary" className="flex items-center gap-2">
-            {navItems.map((item) => {
-              const active = isActive(route, item.route)
-
-              return (
-                <Button
-                  key={item.label}
-                  asChild
-                  variant="outline"
-                  className={cn(
-                    "min-w-24 justify-center",
-                    active &&
-                      "border-primary/70 bg-primary/15 text-primary hover:bg-primary/20",
-                  )}
-                >
-                  <Link
-                    href={pathForRoute(item.route)}
-                    aria-current={active ? "page" : undefined}
+                return (
+                  <Button
+                    key={item.label}
+                    asChild
+                    variant={active ? "default" : "outline"}
+                    className={cn(
+                      "min-w-24 justify-center shadow-sm",
+                      active && "border-primary bg-primary text-primary-foreground hover:bg-primary/90",
+                    )}
                   >
-                    {item.label}
-                  </Link>
-                </Button>
-              )
-            })}
-          </nav>
+                    <Link
+                      href={pathForRoute(item.route)}
+                      aria-current={active ? "page" : undefined}
+                    >
+                      {item.label}
+                    </Link>
+                  </Button>
+                )
+              })}
+            </nav>
+          )}
+
+          {session === null || isAuthRoute ? null : (
+            <div className="flex shrink-0 items-center gap-3">
+              <SessionSummary session={session} />
+
+              <Button
+                variant="outline"
+                onClick={() => {
+                  void logout()
+                }}
+              >
+                Log out
+              </Button>
+            </div>
+          )}
         </div>
       </header>
 

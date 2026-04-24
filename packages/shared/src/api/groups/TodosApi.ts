@@ -8,6 +8,7 @@ import {
 import { ProjectNotFound } from "../../domain/ProjectErrors"
 import { CreateTodoInput, Todo, UpdateTodoInput } from "../../domain/Todo"
 import { TodoNotFound } from "../../domain/TodoErrors"
+import { Authorization } from "../middleware/Authorization"
 
 export class TodosApi extends HttpApiGroup.make("todos")
   .add(
@@ -53,6 +54,7 @@ export class TodosApi extends HttpApiGroup.make("todos")
       ),
     }),
   )
+  .middleware(Authorization)
   .annotateMerge(
     OpenApi.annotations({
       title: "Todos",
