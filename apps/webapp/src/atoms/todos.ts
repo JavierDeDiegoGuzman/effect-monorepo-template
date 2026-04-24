@@ -9,7 +9,7 @@ const apiRuntime = Atom.runtime(
   Layer.mergeAll(ApiClient.layer, ObservabilityLayer),
 )
 
-export const todosAtom = apiRuntime
+export const todosQuery = apiRuntime
   .atom(
     ApiClient.use((client) => client.todos.list()).pipe(
       Effect.withSpan("todos.list", {
@@ -19,11 +19,12 @@ export const todosAtom = apiRuntime
   )
   .pipe(Atom.keepAlive, Atom.withReactivity(["todos"]))
 
-export const createTodoAtom = apiRuntime.fn(
+export const createTodoAction = apiRuntime.fn(
   (input: CreateTodoInput) =>
     ApiClient.use((client) => client.todos.create({ payload: input })).pipe(
       Effect.annotateSpans({
         "todo.title.length": input.title.length,
+        "todo.project.id": input.projectId ?? "none",
       }),
       Effect.withSpan("todos.create", {
         kind: "client",
@@ -32,7 +33,7 @@ export const createTodoAtom = apiRuntime.fn(
   { reactivityKeys: ["todos"] },
 )
 
-export const updateTodoAtom = apiRuntime.fn(
+export const updateTodoAction = apiRuntime.fn(
   ({ id, input }: { readonly id: number; readonly input: UpdateTodoInput }) =>
     ApiClient.use((client) =>
       client.todos.update({ params: { id }, payload: input }),

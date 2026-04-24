@@ -1,20 +1,21 @@
 import { RegistryProvider } from "@effect/atom-react"
 import * as React from "react"
-import { Suspense } from "react"
 import { createRoot } from "react-dom/client"
 import { ErrorBoundary } from "react-error-boundary"
+import { Router } from "wouter"
+import { useHashLocation } from "wouter/use-hash-location"
 import "./styles/globals.css"
-import { TodoApp } from "./components/TodoApp"
+import { AppRouter } from "./components/AppRouter"
 
 function Root() {
   return (
     <RegistryProvider>
       <ErrorBoundary
-        fallback={<div style={fallbackStyle}>Could not load todos.</div>}
+        fallback={<div style={fallbackStyle}>Could not load the app.</div>}
       >
-        <Suspense fallback={<div style={fallbackStyle}>Loading todos...</div>}>
-          <TodoApp />
-        </Suspense>
+        <Router hook={useHashLocation}>
+          <AppRouter />
+        </Router>
       </ErrorBoundary>
     </RegistryProvider>
   )
