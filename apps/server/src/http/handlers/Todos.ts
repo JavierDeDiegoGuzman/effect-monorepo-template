@@ -1,6 +1,7 @@
-import { Api, type TodoNotFound } from "@app/shared"
+import { Api, type ProjectNotFound, type TodoNotFound } from "@app/shared"
 import { Effect, Layer } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
+import { Projects } from "../../services/Projects"
 import { Todos } from "../../services/Todos"
 
 export const TodosApiHandlers = HttpApiBuilder.group(
@@ -15,6 +16,15 @@ export const TodosApiHandlers = HttpApiBuilder.group(
           Effect.annotateSpans({
             "http.route": "/todos",
             "http.method": "GET",
+          }),
+        ),
+      )
+      .handle("listByProject", ({ params }) =>
+        todos.listByProject(params.projectId).pipe(
+          Effect.annotateSpans({
+            "http.route": "/projects/:projectId/todos",
+            "http.method": "GET",
+            "project.id": params.projectId,
           }),
         ),
       )
@@ -36,7 +46,11 @@ export const TodosApiHandlers = HttpApiBuilder.group(
             "http.route": "/todos",
             "http.method": "POST",
             "todo.title.length": payload.title.length,
+            "todo.project.id": payload.projectId ?? "none",
           }),
+          Effect.catchTag("ProjectNotFound", (error: ProjectNotFound) =>
+            Effect.fail(error),
+          ),
         ),
       )
       .handle("update", ({ params, payload }) =>
@@ -53,4 +67,4 @@ export const TodosApiHandlers = HttpApiBuilder.group(
         ),
       )
   }),
-).pipe(Layer.provide(Todos.layer))
+).pipe(Layer.provide(Todos.layer.pipe(Layer.provideMerge(Projects.layer))))

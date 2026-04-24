@@ -4,12 +4,15 @@ import { NodeHttpServer } from "@effect/platform-node"
 import { Layer } from "effect"
 import { HttpRouter } from "effect/unstable/http"
 import { HttpApiBuilder, HttpApiScalar } from "effect/unstable/httpapi"
+import { ProjectsApiHandlers } from "./handlers/Projects"
 import { SystemApiHandlers } from "./handlers/System"
 import { TodosApiHandlers } from "./handlers/Todos"
 
 const ApiRoutes = HttpApiBuilder.layer(Api, {
   openapiPath: "/openapi.json",
-}).pipe(Layer.provide([TodosApiHandlers, SystemApiHandlers]))
+}).pipe(
+  Layer.provide([ProjectsApiHandlers, TodosApiHandlers, SystemApiHandlers]),
+)
 
 const DocsRoute = HttpApiScalar.layer(Api, {
   path: "/docs",

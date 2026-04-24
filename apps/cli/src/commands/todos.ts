@@ -8,7 +8,9 @@ const formatTodo = (todo: {
   readonly id: number
   readonly title: string
   readonly completed: boolean
-}) => `${todo.completed ? "[x]" : "[ ]"} ${todo.id} ${todo.title}`
+  readonly projectId: number | null
+}) =>
+  `${todo.completed ? "[x]" : "[ ]"} ${todo.id} ${todo.title}${todo.projectId === null ? "" : ` (project ${todo.projectId})`}`
 
 export const todos = Command.make("todos").pipe(
   Command.withDescription("Inspect and modify todos"),
@@ -17,13 +19,20 @@ export const todos = Command.make("todos").pipe(
 export const listTodos = Command.make(
   "list",
   {
+    projectId: Flag.integer("project-id").pipe(
+      Flag.withDescription("Filter by project identifier"),
+      Flag.withDefault(-1),
+    ),
     json: Flag.boolean("json").pipe(
       Flag.withDescription("Print machine-readable output"),
     ),
   },
-  Effect.fn(function* ({ json }) {
+  Effect.fn(function* ({ projectId, json }) {
     const client = yield* ApiClient
-    const items = yield* client.todos.list()
+    const items =
+      projectId === -1
+        ? yield* client.todos.list()
+        : yield* client.todos.listByProject({ params: { projectId } })
 
     if (json) {
       yield* writeJson(items)
@@ -70,14 +79,21 @@ export const createTodo = Command.make(
     title: Argument.string("title").pipe(
       Argument.withDescription("Todo title"),
     ),
+    projectId: Flag.integer("project-id").pipe(
+      Flag.withDescription("Attach the todo to a project"),
+      Flag.withDefault(-1),
+    ),
     json: Flag.boolean("json").pipe(
       Flag.withDescription("Print machine-readable output"),
     ),
   },
-  Effect.fn(function* ({ title, json }) {
+  Effect.fn(function* ({ title, projectId, json }) {
     const client = yield* ApiClient
     const todo = yield* client.todos.create({
-      payload: new CreateTodoInput({ title }),
+      payload: new CreateTodoInput({
+        title,
+        projectId: projectId === -1 ? null : projectId,
+      }),
     })
 
     if (json) {

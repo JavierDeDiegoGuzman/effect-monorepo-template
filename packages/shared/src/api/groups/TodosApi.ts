@@ -5,12 +5,19 @@ import {
   HttpApiSchema,
   OpenApi,
 } from "effect/unstable/httpapi"
+import { ProjectNotFound } from "../../domain/ProjectErrors"
 import { CreateTodoInput, Todo, UpdateTodoInput } from "../../domain/Todo"
 import { TodoNotFound } from "../../domain/TodoErrors"
 
 export class TodosApi extends HttpApiGroup.make("todos")
   .add(
     HttpApiEndpoint.get("list", "/todos", {
+      success: Schema.Array(Todo),
+    }),
+    HttpApiEndpoint.get("listByProject", "/projects/:projectId/todos", {
+      params: {
+        projectId: Schema.NumberFromString,
+      },
       success: Schema.Array(Todo),
     }),
     HttpApiEndpoint.get("getById", "/todos/:id", {
@@ -27,6 +34,11 @@ export class TodosApi extends HttpApiGroup.make("todos")
     HttpApiEndpoint.post("create", "/todos", {
       payload: CreateTodoInput,
       success: Todo,
+      error: ProjectNotFound.pipe(
+        HttpApiSchema.asNoContent({
+          decode: () => new ProjectNotFound({ id: -1 }),
+        }),
+      ),
     }),
     HttpApiEndpoint.patch("update", "/todos/:id", {
       params: {

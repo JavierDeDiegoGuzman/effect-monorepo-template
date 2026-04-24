@@ -4,6 +4,14 @@ import { Command } from "effect/unstable/cli"
 import { ApiClient } from "./api/client"
 import { health } from "./commands/health"
 import {
+  archiveProject,
+  createProject,
+  getProject,
+  listProjects,
+  projects,
+  updateProject,
+} from "./commands/projects"
+import {
   createTodo,
   getTodo,
   listTodos,
@@ -12,7 +20,7 @@ import {
 } from "./commands/todos"
 
 const root = Command.make("todo").pipe(
-  Command.withDescription("Debug and test the todo HTTP API"),
+  Command.withDescription("Debug and test the template HTTP API"),
 )
 
 root.pipe(
@@ -20,6 +28,15 @@ root.pipe(
     health,
     todos.pipe(
       Command.withSubcommands([listTodos, getTodo, createTodo, updateTodo]),
+    ),
+    projects.pipe(
+      Command.withSubcommands([
+        listProjects,
+        getProject,
+        createProject,
+        updateProject,
+        archiveProject,
+      ]),
     ),
   ]),
   Command.run({
