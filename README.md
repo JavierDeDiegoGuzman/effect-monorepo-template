@@ -75,6 +75,27 @@ Install dependencies:
 pnpm install
 ```
 
+Set the required environment variables:
+
+```bash
+export PORT=3001
+export API_URL=http://localhost:3001
+export VITE_API_URL=http://localhost:3001
+export OTEL_EXPORTER_OTLP_ENDPOINT=off
+export VITE_OTEL_EXPORTER_OTLP_ENDPOINT=off
+```
+
+If you want tracing enabled locally, use these instead:
+
+```bash
+export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+export OTEL_SERVICE_NAME=todo-server
+export OTEL_SERVICE_VERSION=0.1.0
+export VITE_OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+export VITE_OTEL_SERVICE_NAME=todo-webapp
+export VITE_OTEL_SERVICE_VERSION=0.1.0
+```
+
 Start the server and webapp:
 
 ```bash
@@ -103,6 +124,24 @@ pnpm cli -- todos list --json
 ```
 
 The CLI uses the same shared API definition as the webapp.
+
+It requires `API_URL` to be set, for example:
+
+```bash
+API_URL=http://localhost:3001 pnpm cli -- health
+```
+
+## Configuration
+
+Configuration is now local to each app/service:
+
+- `apps/server/src/http/config.ts` owns `PORT`
+- `apps/server/src/observability.config.ts` owns server OTLP config
+- `apps/cli/src/api/config.ts` owns `API_URL`
+- `apps/webapp/src/api/config.ts` owns `VITE_API_URL`
+- `apps/webapp/src/observability.config.ts` owns browser OTLP config
+
+Startup now fails early when required config is missing or invalid.
 
 ## Observability
 
