@@ -1,0 +1,42 @@
+---
+name: webapp-screen-architecture
+description: Design and refactor webapp screens, app shell behavior, and page structure using consistent screen recipes such as dashboard, collection, and detail pages.
+---
+
+# Webapp Screen Architecture
+
+Use this skill when working on route screens, page headers, dashboard structure, app shell layout, or deciding how to split UI responsibilities across pages.
+
+Read [references/screen-architecture.md](references/screen-architecture.md) before making changes.
+
+## Goals
+
+- Keep screens focused on one primary responsibility
+- Preserve consistent shell geometry and spacing across routes
+- Use clear screen recipes instead of ad hoc page structures
+- Keep screens thin by composing patterns and feature components
+- Make dashboard, collection, and detail screens easy to recognize
+
+## Supported screen types
+
+- dashboard screens
+- collection screens
+- detail screens
+
+## Process
+
+1. Identify the screen type before implementing the UI.
+2. Preserve app-shell ownership of global spacing, width, and navigation alignment.
+3. Give each screen one primary job.
+4. Use reusable page header and section patterns instead of duplicating layout markup.
+5. Keep forms, lists, and detail blocks in feature components when possible.
+6. If the screen has more than one major job, consider splitting it across routes.
+7. Run the webapp checks after the refactor.
+
+## Output expectations
+
+When you change screen architecture:
+- mention the screen type affected
+- mention any shell/layout changes
+- mention any extracted screen patterns or sections
+- mention if responsibilities were split across screens
