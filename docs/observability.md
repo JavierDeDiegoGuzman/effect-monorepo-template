@@ -22,10 +22,13 @@ Stop the stack:
 pnpm observability:down
 ```
 
-## Default endpoints
+## Endpoint configuration
 
-- Server OTLP base URL: `http://localhost:4318`
-- Browser OTLP base URL: `http://localhost:4318`
+Tracing is explicit now.
+
+- set `OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318` for the server
+- set `VITE_OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318` for the webapp
+- set either value to `off` to disable tracing intentionally
 
 The collector is configured with CORS for `http://localhost:5173` so the Vite app can export traces directly.
 
@@ -39,13 +42,21 @@ http://localhost:16686
 
 ### Server
 
+Required when tracing is enabled:
+
 - `OTEL_EXPORTER_OTLP_ENDPOINT`
 - `OTEL_SERVICE_NAME`
 - `OTEL_SERVICE_VERSION`
 
+Optional:
+
+- `NODE_ENV` defaults to `development`
+
 Set `OTEL_EXPORTER_OTLP_ENDPOINT=off` to disable tracing.
 
 ### Webapp
+
+Required when tracing is enabled:
 
 - `VITE_OTEL_EXPORTER_OTLP_ENDPOINT`
 - `VITE_OTEL_SERVICE_NAME`
@@ -138,7 +149,7 @@ curl -s "http://localhost:16686/api/services"
 
 Check that:
 
-- `VITE_OTEL_EXPORTER_OTLP_ENDPOINT` points to `http://localhost:4318` or is unset
+- `VITE_OTEL_EXPORTER_OTLP_ENDPOINT` points to `http://localhost:4318`
 - the collector is running
 - the browser app was reloaded after config changes
 
@@ -146,6 +157,6 @@ Check that:
 
 Check that:
 
-- `OTEL_EXPORTER_OTLP_ENDPOINT` points to `http://localhost:4318` or is unset
+- `OTEL_EXPORTER_OTLP_ENDPOINT` points to `http://localhost:4318`
 - the server was restarted after config changes
 - the server actually handled some requests

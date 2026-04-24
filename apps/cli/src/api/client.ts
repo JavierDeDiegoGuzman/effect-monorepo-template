@@ -1,13 +1,12 @@
 import { Api } from "@app/shared"
-import { flow, Layer, ServiceMap } from "effect"
+import { Effect, flow, Layer, ServiceMap } from "effect"
 import {
   FetchHttpClient,
   HttpClient,
   HttpClientRequest,
 } from "effect/unstable/http"
 import { HttpApiClient } from "effect/unstable/httpapi"
-
-const apiUrl = process.env.API_URL ?? "http://localhost:3000"
+import { getApiClientConfig } from "./config"
 
 export class ApiClient extends ServiceMap.Service<
   ApiClient,
@@ -15,11 +14,15 @@ export class ApiClient extends ServiceMap.Service<
 >()("app/cli/ApiClient") {
   static readonly layer = Layer.effect(
     ApiClient,
-    HttpApiClient.make(Api, {
-      transformClient: (client) =>
-        client.pipe(
-          HttpClient.mapRequest(flow(HttpClientRequest.prependUrl(apiUrl))),
-        ),
+    Effect.gen(function*() {
+      const { apiUrl } = yield* getApiClientConfig
+
+      return yield* HttpApiClient.make(Api, {
+        transformClient: (client) =>
+          client.pipe(
+            HttpClient.mapRequest(flow(HttpClientRequest.prependUrl(apiUrl))),
+          ),
+      })
     }),
   ).pipe(Layer.provide(FetchHttpClient.layer))
 }

@@ -1,22 +1,18 @@
 import * as Layer from "effect/Layer"
 import { FetchHttpClient } from "effect/unstable/http"
 import { Otlp } from "effect/unstable/observability"
-
-const baseUrl =
-  import.meta.env.VITE_OTEL_EXPORTER_OTLP_ENDPOINT ?? "http://localhost:4318"
-const serviceName = import.meta.env.VITE_OTEL_SERVICE_NAME ?? "todo-webapp"
-const serviceVersion = import.meta.env.VITE_OTEL_SERVICE_VERSION ?? "0.1.0"
+import { observabilityConfig } from "./observability.config"
 
 export const ObservabilityLayer =
-  baseUrl === "off"
+  !observabilityConfig.enabled
     ? Layer.empty
     : Otlp.layerJson({
-        baseUrl,
+        baseUrl: observabilityConfig.endpoint,
         resource: {
-          serviceName,
-          serviceVersion,
+          serviceName: observabilityConfig.serviceName,
+          serviceVersion: observabilityConfig.serviceVersion,
           attributes: {
-            "deployment.environment": import.meta.env.MODE,
+            "deployment.environment": observabilityConfig.environment,
           },
         },
       }).pipe(Layer.provide(FetchHttpClient.layer))

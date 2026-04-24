@@ -6,8 +6,7 @@ import {
   HttpClientRequest,
 } from "effect/unstable/http"
 import { HttpApiClient } from "effect/unstable/httpapi"
-
-const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:3001"
+import { apiClientConfig } from "./config"
 
 export class ApiClient extends ServiceMap.Service<
   ApiClient,
@@ -18,7 +17,9 @@ export class ApiClient extends ServiceMap.Service<
     HttpApiClient.make(Api, {
       transformClient: (client) =>
         client.pipe(
-          HttpClient.mapRequest(flow(HttpClientRequest.prependUrl(apiUrl))),
+          HttpClient.mapRequest(
+            flow(HttpClientRequest.prependUrl(apiClientConfig.apiUrl)),
+          ),
         ),
     }),
   ).pipe(Layer.provide(FetchHttpClient.layer))
