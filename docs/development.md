@@ -20,6 +20,8 @@ Start the webapp and server together:
 pnpm dev
 ```
 
+Press `Ctrl+C` once to stop both processes. The root development command runs the server and webapp concurrently and stops both when either process exits.
+
 Default URLs:
 
 - webapp: `http://localhost:5173`
