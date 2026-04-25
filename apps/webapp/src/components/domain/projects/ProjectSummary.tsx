@@ -1,4 +1,5 @@
 import { Link } from "wouter"
+import { Screen } from "@/components/patterns/Screen"
 import { Badge } from "@/components/ui/badge"
 import {
   Breadcrumb,
@@ -8,7 +9,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import { Screen } from "@/components/patterns/Screen"
 import { pathForRoute } from "@/lib/router"
 
 export function ProjectSummary(props: {
@@ -39,10 +39,14 @@ export function ProjectSummary(props: {
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <Screen.Title>{props.name}</Screen.Title>
-              {props.archived ? <Badge variant="outline">Archived</Badge> : null}
+              {props.archived ? (
+                <Badge variant="outline">Archived</Badge>
+              ) : null}
             </div>
             <Screen.Description>
-              {props.description.length > 0 ? props.description : "No description"}
+              {props.description.length > 0
+                ? props.description
+                : "No description"}
             </Screen.Description>
           </div>
 

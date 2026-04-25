@@ -1,4 +1,4 @@
-import { randomBytes, scrypt as nodeScrypt, timingSafeEqual } from "node:crypto"
+import { scrypt as nodeScrypt, randomBytes, timingSafeEqual } from "node:crypto"
 import { promisify } from "node:util"
 import { Effect, Layer, ServiceMap } from "effect"
 
@@ -24,7 +24,8 @@ export class Passwords extends ServiceMap.Service<
             const derived = (await scrypt(password, salt, 64)) as Buffer
             return `${toHex(salt)}:${toHex(derived)}`
           },
-          catch: (error) => new Error(`Failed to hash password: ${String(error)}`),
+          catch: (error) =>
+            new Error(`Failed to hash password: ${String(error)}`),
         }).pipe(Effect.orDie),
       verify: (password: string, hash: string) =>
         Effect.tryPromise({
@@ -40,10 +41,15 @@ export class Passwords extends ServiceMap.Service<
 
             const salt = fromHex(saltHex)
             const expected = fromHex(derivedHex)
-            const actual = (await scrypt(password, salt, expected.length)) as Buffer
+            const actual = (await scrypt(
+              password,
+              salt,
+              expected.length,
+            )) as Buffer
             return timingSafeEqual(expected, actual)
           },
-          catch: (error) => new Error(`Failed to verify password: ${String(error)}`),
+          catch: (error) =>
+            new Error(`Failed to verify password: ${String(error)}`),
         }).pipe(Effect.orDie),
     }),
   )

@@ -1,11 +1,11 @@
 import type { CurrentSession } from "@app/shared"
 import { useAtom } from "@effect/atom-react"
-import * as React from "react"
+import type * as React from "react"
 import { Link } from "wouter"
 import { logoutAction } from "@/atoms/auth"
 import { SessionSummary } from "@/components/domain/auth/SessionSummary"
 import { Button } from "@/components/ui/button"
-import { pathForRoute, type AppRoute } from "@/lib/router"
+import { type AppRoute, pathForRoute } from "@/lib/router"
 import { cn } from "@/lib/utils"
 
 type AppShellProps = {
@@ -14,7 +14,10 @@ type AppShellProps = {
   readonly children: React.ReactNode
 }
 
-const navItems: ReadonlyArray<{ readonly label: string; readonly route: AppRoute }> = [
+const navItems: ReadonlyArray<{
+  readonly label: string
+  readonly route: AppRoute
+}> = [
   { label: "Dashboard", route: { name: "dashboard" } },
   { label: "Todos", route: { name: "todos" } },
   { label: "Projects", route: { name: "projects" } },
@@ -39,7 +42,10 @@ export function AppShell({ route, session, children }: AppShellProps) {
           {session === null || isAuthRoute ? (
             <div />
           ) : (
-            <nav aria-label="Primary" className="flex shrink-0 items-center gap-2">
+            <nav
+              aria-label="Primary"
+              className="flex shrink-0 items-center gap-2"
+            >
               {navItems.map((item) => {
                 const active = isActive(route, item.route)
 
@@ -50,7 +56,8 @@ export function AppShell({ route, session, children }: AppShellProps) {
                     variant={active ? "default" : "outline"}
                     className={cn(
                       "min-w-24 justify-center shadow-sm",
-                      active && "border-primary bg-primary text-primary-foreground hover:bg-primary/90",
+                      active &&
+                        "border-primary bg-primary text-primary-foreground hover:bg-primary/90",
                     )}
                   >
                     <Link
@@ -82,7 +89,9 @@ export function AppShell({ route, session, children }: AppShellProps) {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">{children}</main>
+      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+        {children}
+      </main>
     </div>
   )
 }

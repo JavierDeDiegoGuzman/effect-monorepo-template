@@ -1,7 +1,13 @@
-import { Api, AuthSession, CurrentSession, InvalidCredentials } from "@app/shared"
+import {
+  Api,
+  AuthSession,
+  CurrentSession,
+  CurrentUser,
+  CurrentWorkspace,
+  InvalidCredentials,
+} from "@app/shared"
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
-import { CurrentUser, CurrentWorkspace } from "@app/shared"
 import { AuthTokens } from "../../services/AuthTokens"
 import { Passwords } from "../../services/Passwords"
 import { Users } from "../../services/Users"
@@ -45,7 +51,9 @@ export const AuthApiHandlers = HttpApiBuilder.group(
         Effect.gen(function* () {
           const authRecord = yield* users.getAuthByEmail(payload.email)
           if (authRecord === null) {
-            return yield* new InvalidCredentials({ message: "Invalid email or password" })
+            return yield* new InvalidCredentials({
+              message: "Invalid email or password",
+            })
           }
 
           const validPassword = yield* passwords.verify(
@@ -53,10 +61,14 @@ export const AuthApiHandlers = HttpApiBuilder.group(
             authRecord.passwordHash,
           )
           if (!validPassword) {
-            return yield* new InvalidCredentials({ message: "Invalid email or password" })
+            return yield* new InvalidCredentials({
+              message: "Invalid email or password",
+            })
           }
 
-          const workspace = yield* workspaces.getCurrentForUser(authRecord.user.id)
+          const workspace = yield* workspaces.getCurrentForUser(
+            authRecord.user.id,
+          )
           const token = yield* authTokens.sign(authRecord.user.id)
 
           return new AuthSession({

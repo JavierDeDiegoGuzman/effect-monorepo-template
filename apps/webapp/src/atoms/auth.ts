@@ -1,4 +1,4 @@
-import { LoginInput, RegisterInput } from "@app/shared"
+import type { LoginInput, RegisterInput } from "@app/shared"
 import { Effect } from "effect"
 import * as Layer from "effect/Layer"
 import * as Atom from "effect/unstable/reactivity/Atom"
@@ -11,7 +11,9 @@ import {
 } from "../lib/auth-storage"
 import { ObservabilityLayer } from "../observability"
 
-const apiRuntime = Atom.runtime(Layer.mergeAll(ApiClient.layer, ObservabilityLayer))
+const apiRuntime = Atom.runtime(
+  Layer.mergeAll(ApiClient.layer, ObservabilityLayer),
+)
 
 export const currentSessionQuery = apiRuntime
   .atom(

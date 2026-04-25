@@ -22,9 +22,12 @@ export function TodoList(props: {
   )
 }
 
-export function renderTodoProjectMeta(projectById: ReadonlyMap<number, Project>) {
+export function renderTodoProjectMeta(
+  projectById: ReadonlyMap<number, Project>,
+) {
   return (todo: Todo) => {
-    const project = todo.projectId === null ? null : (projectById.get(todo.projectId) ?? null)
+    const project =
+      todo.projectId === null ? null : (projectById.get(todo.projectId) ?? null)
 
     return (
       <p className="text-xs text-muted-foreground">
@@ -50,7 +53,10 @@ function TodoListItem(props: {
         aria-label={`${props.todo.completed ? "Mark as incomplete" : "Mark as complete"}: ${props.todo.title}`}
         className="flex w-full items-center gap-3 rounded-lg border border-border/70 bg-background/70 px-4 py-3 text-left transition-colors hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
       >
-        <Checkbox checked={props.todo.completed} className="pointer-events-none" />
+        <Checkbox
+          checked={props.todo.completed}
+          className="pointer-events-none"
+        />
         <div className="min-w-0 flex-1">
           <p
             className={cn(

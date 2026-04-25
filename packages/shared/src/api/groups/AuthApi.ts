@@ -1,9 +1,10 @@
+import { HttpApiEndpoint, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
 import {
-  HttpApiEndpoint,
-  HttpApiGroup,
-  OpenApi,
-} from "effect/unstable/httpapi"
-import { AuthSession, CurrentSession, LoginInput, RegisterInput } from "../../domain/Auth"
+  AuthSession,
+  CurrentSession,
+  LoginInput,
+  RegisterInput,
+} from "../../domain/Auth"
 import { InvalidCredentials, UserAlreadyExists } from "../../domain/User"
 import { Authorization, Unauthorized } from "../middleware/Authorization"
 

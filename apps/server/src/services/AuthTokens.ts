@@ -1,5 +1,5 @@
-import { SignJWT, jwtVerify } from "jose"
 import { Config, Effect, Layer, Schema, ServiceMap } from "effect"
+import { jwtVerify, SignJWT } from "jose"
 
 const authTokenConfig = Effect.gen(function* () {
   return {
@@ -49,7 +49,8 @@ export class AuthTokens extends ServiceMap.Service<
                   .setIssuedAt()
                   .setExpirationTime(`${config.ttlSeconds}s`)
                   .sign(secret),
-              catch: (error) => new Error(`Failed to sign auth token: ${String(error)}`),
+              catch: (error) =>
+                new Error(`Failed to sign auth token: ${String(error)}`),
             }).pipe(Effect.orDie),
           verify: (token: string) =>
             Effect.tryPromise({

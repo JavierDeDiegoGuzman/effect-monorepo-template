@@ -10,7 +10,8 @@ import { writeJson } from "../output"
 
 const formatProject = (project: Project) => {
   const status = project.archived ? "[A]" : "[ ]"
-  const description = project.description.length > 0 ? ` — ${project.description}` : ""
+  const description =
+    project.description.length > 0 ? ` — ${project.description}` : ""
   return `${status} ${project.id} ${project.name}${description}`
 }
 

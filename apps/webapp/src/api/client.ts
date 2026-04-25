@@ -6,7 +6,11 @@ import {
   HttpClientRequest,
 } from "effect/unstable/http"
 import { HttpApiClient, HttpApiMiddleware } from "effect/unstable/httpapi"
-import { clearAuthToken, isProbablyJwt, readAuthToken } from "../lib/auth-storage"
+import {
+  clearAuthToken,
+  isProbablyJwt,
+  readAuthToken,
+} from "../lib/auth-storage"
 import { apiClientConfig } from "./config"
 
 const AuthorizationClient = HttpApiMiddleware.layerClient(
@@ -41,5 +45,8 @@ export class ApiClient extends ServiceMap.Service<
           ),
         ),
     }),
-  ).pipe(Layer.provide(AuthorizationClient), Layer.provide(FetchHttpClient.layer))
+  ).pipe(
+    Layer.provide(AuthorizationClient),
+    Layer.provide(FetchHttpClient.layer),
+  )
 }

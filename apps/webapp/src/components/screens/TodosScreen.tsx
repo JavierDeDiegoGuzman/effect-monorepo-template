@@ -5,15 +5,22 @@ import * as React from "react"
 import { projectsQuery } from "@/atoms/projects"
 import { createTodoAction, todosQuery, updateTodoAction } from "@/atoms/todos"
 import { TodoCreateForm } from "@/components/domain/todos/TodoCreateForm"
-import { renderTodoProjectMeta, TodoList } from "@/components/domain/todos/TodoList"
+import {
+  renderTodoProjectMeta,
+  TodoList,
+} from "@/components/domain/todos/TodoList"
 import { Screen } from "@/components/patterns/Screen"
 import { toErrorMessage } from "@/lib/errors"
 
 export function TodosScreen() {
   const todosState = useAtomValue(todosQuery)
   const projectsState = useAtomValue(projectsQuery)
-  const [createTodoState, createTodo] = useAtom(createTodoAction, { mode: "promise" })
-  const [updateTodoState, updateTodo] = useAtom(updateTodoAction, { mode: "promise" })
+  const [createTodoState, createTodo] = useAtom(createTodoAction, {
+    mode: "promise",
+  })
+  const [updateTodoState, updateTodo] = useAtom(updateTodoAction, {
+    mode: "promise",
+  })
   const [title, setTitle] = React.useState("")
   const [projectId, setProjectId] = React.useState("none")
   const [pending, startTransition] = React.useTransition()
@@ -36,7 +43,9 @@ export function TodosScreen() {
         value: String(project.id),
         label: `${project.name}${project.archived ? " (archived)" : ""}`,
       }))
-      const projectById = new Map(projects.map((project) => [project.id, project]))
+      const projectById = new Map(
+        projects.map((project) => [project.id, project]),
+      )
 
       const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -60,14 +69,19 @@ export function TodosScreen() {
 
       return AsyncResult.matchWithError(todosState, {
         onInitial: () => <TodosScreenLoading />,
-        onError: (error) => <TodosScreenError message={toErrorMessage(error)} />,
-        onDefect: (defect) => <TodosScreenError message={toErrorMessage(defect)} />,
+        onError: (error) => (
+          <TodosScreenError message={toErrorMessage(error)} />
+        ),
+        onDefect: (defect) => (
+          <TodosScreenError message={toErrorMessage(defect)} />
+        ),
         onSuccess: ({ value: todos }) => (
           <Screen.Root>
             <Screen.Header>
               <Screen.Title>Todos</Screen.Title>
               <Screen.Description>
-                A collection screen for the todos that belong to your current workspace.
+                A collection screen for the todos that belong to your current
+                workspace.
               </Screen.Description>
             </Screen.Header>
 
@@ -76,7 +90,8 @@ export function TodosScreen() {
                 <Screen.SectionHeader>
                   <Screen.SectionTitle>Add todo</Screen.SectionTitle>
                   <Screen.SectionDescription>
-                    Create a task in the current workspace and optionally assign it to a project.
+                    Create a task in the current workspace and optionally assign
+                    it to a project.
                   </Screen.SectionDescription>
                 </Screen.SectionHeader>
                 <TodoCreateForm
@@ -90,8 +105,12 @@ export function TodosScreen() {
                 />
                 {AsyncResult.matchWithError(createTodoState, {
                   onInitial: () => null,
-                  onError: (error) => <Screen.Error>{toErrorMessage(error)}</Screen.Error>,
-                  onDefect: (defect) => <Screen.Error>{toErrorMessage(defect)}</Screen.Error>,
+                  onError: (error) => (
+                    <Screen.Error>{toErrorMessage(error)}</Screen.Error>
+                  ),
+                  onDefect: (defect) => (
+                    <Screen.Error>{toErrorMessage(defect)}</Screen.Error>
+                  ),
                   onSuccess: () => null,
                 })}
               </Screen.Section>
@@ -102,13 +121,18 @@ export function TodosScreen() {
                 <Screen.SectionHeader>
                   <Screen.SectionTitle>All todos</Screen.SectionTitle>
                   <Screen.SectionDescription>
-                    Each task belongs to the current workspace and can optionally belong to a project.
+                    Each task belongs to the current workspace and can
+                    optionally belong to a project.
                   </Screen.SectionDescription>
                 </Screen.SectionHeader>
                 {AsyncResult.matchWithError(updateTodoState, {
                   onInitial: () => null,
-                  onError: (error) => <Screen.Error>{toErrorMessage(error)}</Screen.Error>,
-                  onDefect: (defect) => <Screen.Error>{toErrorMessage(defect)}</Screen.Error>,
+                  onError: (error) => (
+                    <Screen.Error>{toErrorMessage(error)}</Screen.Error>
+                  ),
+                  onDefect: (defect) => (
+                    <Screen.Error>{toErrorMessage(defect)}</Screen.Error>
+                  ),
                   onSuccess: () => null,
                 })}
                 {todos.length === 0 ? (

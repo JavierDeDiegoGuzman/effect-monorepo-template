@@ -1,4 +1,9 @@
-import { Api, CurrentWorkspace, type ProjectNotFound, type TodoNotFound } from "@app/shared"
+import {
+  Api,
+  CurrentWorkspace,
+  type ProjectNotFound,
+  type TodoNotFound,
+} from "@app/shared"
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
 import { Todos } from "../../services/Todos"
@@ -24,7 +29,10 @@ export const TodosApiHandlers = HttpApiBuilder.group(
       .handle("listByProject", ({ params }) =>
         Effect.gen(function* () {
           const workspace = yield* CurrentWorkspace
-          return yield* todos.listByProjectInWorkspace(workspace.id, params.projectId)
+          return yield* todos.listByProjectInWorkspace(
+            workspace.id,
+            params.projectId,
+          )
         }).pipe(
           Effect.annotateSpans({
             "http.route": "/projects/:projectId/todos",
@@ -67,7 +75,11 @@ export const TodosApiHandlers = HttpApiBuilder.group(
       .handle("update", ({ params, payload }) =>
         Effect.gen(function* () {
           const workspace = yield* CurrentWorkspace
-          return yield* todos.updateInWorkspace(workspace.id, params.id, payload)
+          return yield* todos.updateInWorkspace(
+            workspace.id,
+            params.id,
+            payload,
+          )
         }).pipe(
           Effect.annotateSpans({
             "http.route": "/todos/:id",

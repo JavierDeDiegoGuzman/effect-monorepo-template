@@ -1,9 +1,9 @@
 import { Config, Effect, Option } from "effect"
 
-export const getObservabilityConfig = Effect.gen(function*() {
-  const environment = yield* Config
-    .nonEmptyString("NODE_ENV")
-    .pipe(Config.withDefault("development"))
+export const getObservabilityConfig = Effect.gen(function* () {
+  const environment = yield* Config.nonEmptyString("NODE_ENV").pipe(
+    Config.withDefault("development"),
+  )
   const endpointOption = yield* Config.option(
     Config.nonEmptyString("OTEL_EXPORTER_OTLP_ENDPOINT"),
   )

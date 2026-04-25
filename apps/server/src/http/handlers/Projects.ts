@@ -52,7 +52,11 @@ export const ProjectsApiHandlers = HttpApiBuilder.group(
       .handle("update", ({ params, payload }) =>
         Effect.gen(function* () {
           const workspace = yield* CurrentWorkspace
-          return yield* projects.updateInWorkspace(workspace.id, params.id, payload)
+          return yield* projects.updateInWorkspace(
+            workspace.id,
+            params.id,
+            payload,
+          )
         }).pipe(
           Effect.annotateSpans({
             "http.route": "/projects/:id",

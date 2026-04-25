@@ -21,12 +21,23 @@ function Root({ className, ...props }: React.ComponentProps<typeof Card>) {
   )
 }
 
-function Header({ className, ...props }: React.ComponentProps<typeof CardHeader>) {
+function Header({
+  className,
+  ...props
+}: React.ComponentProps<typeof CardHeader>) {
   return <CardHeader className={cn("gap-2", className)} {...props} />
 }
 
-function Title({ className, ...props }: React.ComponentProps<typeof CardTitle>) {
-  return <CardTitle className={cn("text-3xl tracking-tight", className)} {...props} />
+function Title({
+  className,
+  ...props
+}: React.ComponentProps<typeof CardTitle>) {
+  return (
+    <CardTitle
+      className={cn("text-3xl tracking-tight", className)}
+      {...props}
+    />
+  )
 }
 
 function Description({
@@ -41,7 +52,10 @@ function Description({
   )
 }
 
-function Body({ className, ...props }: React.ComponentProps<typeof CardContent>) {
+function Body({
+  className,
+  ...props
+}: React.ComponentProps<typeof CardContent>) {
   return <CardContent className={cn("space-y-6", className)} {...props} />
 }
 
@@ -61,8 +75,13 @@ function SectionTitle({ className, ...props }: React.ComponentProps<"h2">) {
   return <h2 className={cn("text-lg font-semibold", className)} {...props} />
 }
 
-function SectionDescription({ className, ...props }: React.ComponentProps<"p">) {
-  return <p className={cn("text-sm text-muted-foreground", className)} {...props} />
+function SectionDescription({
+  className,
+  ...props
+}: React.ComponentProps<"p">) {
+  return (
+    <p className={cn("text-sm text-muted-foreground", className)} {...props} />
+  )
 }
 
 function Actions({ className, ...props }: React.ComponentProps<"div">) {
@@ -95,14 +114,19 @@ function Stat({ className, ...props }: React.ComponentProps<"div">) {
 function StatLabel({ className, ...props }: React.ComponentProps<"p">) {
   return (
     <p
-      className={cn("text-xs uppercase tracking-[0.18em] text-muted-foreground", className)}
+      className={cn(
+        "text-xs uppercase tracking-[0.18em] text-muted-foreground",
+        className,
+      )}
       {...props}
     />
   )
 }
 
 function StatValue({ className, ...props }: React.ComponentProps<"p">) {
-  return <p className={cn("mt-1 text-lg font-semibold", className)} {...props} />
+  return (
+    <p className={cn("mt-1 text-lg font-semibold", className)} {...props} />
+  )
 }
 
 function Empty({ className, ...props }: React.ComponentProps<"div">) {
@@ -121,7 +145,7 @@ function Loading(props: React.ComponentProps<typeof Empty>) {
   return <Empty {...props} />
 }
 
-function Error({ className, ...props }: React.ComponentProps<"div">) {
+function ErrorState({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       className={cn(
@@ -151,5 +175,5 @@ export const Screen = {
   StatValue,
   Empty,
   Loading,
-  Error,
+  Error: ErrorState,
 }

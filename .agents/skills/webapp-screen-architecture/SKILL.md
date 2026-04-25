@@ -33,6 +33,17 @@ Read [references/screen-architecture.md](references/screen-architecture.md) befo
 6. If the screen has more than one major job, consider splitting it across routes.
 7. Run the webapp checks after the refactor.
 
+## Documentation expectations
+
+When applying this skill, update relevant docs if app shell geometry, screen recipes, routing structure, or page composition rules change.
+
+Typical docs:
+
+- `docs/webapp-architecture.md`
+- `docs/architecture.md`
+
+Docs describe this template's concrete screen setup. This skill describes the reusable screen architecture pattern.
+
 ## Output expectations
 
 When you change screen architecture:

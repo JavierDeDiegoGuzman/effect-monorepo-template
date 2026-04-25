@@ -5,7 +5,11 @@ import {
   HttpApiSchema,
   OpenApi,
 } from "effect/unstable/httpapi"
-import { CreateProjectInput, Project, UpdateProjectInput } from "../../domain/Project"
+import {
+  CreateProjectInput,
+  Project,
+  UpdateProjectInput,
+} from "../../domain/Project"
 import { ProjectNotFound } from "../../domain/ProjectErrors"
 import { Authorization } from "../middleware/Authorization"
 

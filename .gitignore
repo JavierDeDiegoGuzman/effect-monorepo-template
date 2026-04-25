@@ -19,3 +19,5 @@ apps/*/.vite/
 *.tsbuildinfo
 
 tmp/
+.data/
+apps/server/.data/

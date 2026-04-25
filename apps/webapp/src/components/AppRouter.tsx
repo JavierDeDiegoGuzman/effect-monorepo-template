@@ -13,8 +13,7 @@ import { ProjectsScreen } from "./screens/ProjectsScreen"
 import { RegisterScreen } from "./screens/RegisterScreen"
 import { TodosScreen } from "./screens/TodosScreen"
 
-const isPublicPath = (path: string) =>
-  path === "/login" || path === "/register"
+const isPublicPath = (path: string) => path === "/login" || path === "/register"
 
 export function AppRouter() {
   const [location] = useLocation()
@@ -70,7 +69,9 @@ function AppRoutes({ session }: { readonly session: CurrentSession | null }) {
             <Route path="/todos" component={TodosScreen} />
             <Route path="/projects" component={ProjectsScreen} />
             <Route path="/projects/:projectId">
-              {(params) => <ProjectScreen projectId={Number(params.projectId)} />}
+              {(params) => (
+                <ProjectScreen projectId={Number(params.projectId)} />
+              )}
             </Route>
             <Route component={DashboardScreen} />
           </>

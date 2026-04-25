@@ -41,6 +41,18 @@ Read [references/component-architecture.md](references/component-architecture.md
 6. Keep screens thin by moving reusable UI into `patterns/*` or feature folders.
 7. After edits, run the webapp checks.
 
+## Documentation expectations
+
+When applying this skill, update relevant docs if the component layer model, shadcn usage policy, shared patterns, or Storybook/testing expectations change.
+
+Typical docs:
+
+- `docs/webapp-architecture.md`
+- `docs/testing.md`
+- `docs/storybook.md`
+
+Docs describe this template's concrete component setup. This skill describes the reusable component architecture pattern.
+
 ## Output expectations
 
 When you change component architecture:

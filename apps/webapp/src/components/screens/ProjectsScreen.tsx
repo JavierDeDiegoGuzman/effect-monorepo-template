@@ -2,7 +2,11 @@ import { CreateProjectInput, type Project } from "@app/shared"
 import { useAtom, useAtomValue } from "@effect/atom-react"
 import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
 import * as React from "react"
-import { archiveProjectAction, createProjectAction, projectsQuery } from "@/atoms/projects"
+import {
+  archiveProjectAction,
+  createProjectAction,
+  projectsQuery,
+} from "@/atoms/projects"
 import { ProjectCreateForm } from "@/components/domain/projects/ProjectCreateForm"
 import { ProjectList } from "@/components/domain/projects/ProjectList"
 import { Screen } from "@/components/patterns/Screen"
@@ -10,7 +14,9 @@ import { toErrorMessage } from "@/lib/errors"
 
 export function ProjectsScreen() {
   const projectsState = useAtomValue(projectsQuery)
-  const [createProjectState, createProject] = useAtom(createProjectAction, { mode: "promise" })
+  const [createProjectState, createProject] = useAtom(createProjectAction, {
+    mode: "promise",
+  })
   const [archiveProjectState, archiveProject] = useAtom(archiveProjectAction, {
     mode: "promise",
   })
@@ -51,13 +57,16 @@ export function ProjectsScreen() {
   return AsyncResult.matchWithError(projectsState, {
     onInitial: () => <ProjectsScreenLoading />,
     onError: (error) => <ProjectsScreenError message={toErrorMessage(error)} />,
-    onDefect: (defect) => <ProjectsScreenError message={toErrorMessage(defect)} />,
+    onDefect: (defect) => (
+      <ProjectsScreenError message={toErrorMessage(defect)} />
+    ),
     onSuccess: ({ value: projects }) => (
       <Screen.Root>
         <Screen.Header>
           <Screen.Title>Projects</Screen.Title>
           <Screen.Description>
-            A collection screen for the projects that belong to your current workspace.
+            A collection screen for the projects that belong to your current
+            workspace.
           </Screen.Description>
         </Screen.Header>
 
@@ -79,8 +88,12 @@ export function ProjectsScreen() {
             />
             {AsyncResult.matchWithError(createProjectState, {
               onInitial: () => null,
-              onError: (error) => <Screen.Error>{toErrorMessage(error)}</Screen.Error>,
-              onDefect: (defect) => <Screen.Error>{toErrorMessage(defect)}</Screen.Error>,
+              onError: (error) => (
+                <Screen.Error>{toErrorMessage(error)}</Screen.Error>
+              ),
+              onDefect: (defect) => (
+                <Screen.Error>{toErrorMessage(defect)}</Screen.Error>
+              ),
               onSuccess: () => null,
             })}
           </Screen.Section>
@@ -91,19 +104,28 @@ export function ProjectsScreen() {
             <Screen.SectionHeader>
               <Screen.SectionTitle>All projects</Screen.SectionTitle>
               <Screen.SectionDescription>
-                Manage the workspace project collection here and jump into each project detail.
+                Manage the workspace project collection here and jump into each
+                project detail.
               </Screen.SectionDescription>
             </Screen.SectionHeader>
             {AsyncResult.matchWithError(archiveProjectState, {
               onInitial: () => null,
-              onError: (error) => <Screen.Error>{toErrorMessage(error)}</Screen.Error>,
-              onDefect: (defect) => <Screen.Error>{toErrorMessage(defect)}</Screen.Error>,
+              onError: (error) => (
+                <Screen.Error>{toErrorMessage(error)}</Screen.Error>
+              ),
+              onDefect: (defect) => (
+                <Screen.Error>{toErrorMessage(defect)}</Screen.Error>
+              ),
               onSuccess: () => null,
             })}
             {projects.length === 0 ? (
               <Screen.Empty>No projects yet.</Screen.Empty>
             ) : (
-              <ProjectList projects={projects} pending={pending} onArchive={onArchive} />
+              <ProjectList
+                projects={projects}
+                pending={pending}
+                onArchive={onArchive}
+              />
             )}
           </Screen.Section>
         </Screen.Body>

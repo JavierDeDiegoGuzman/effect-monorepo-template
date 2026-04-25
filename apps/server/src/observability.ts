@@ -4,7 +4,7 @@ import { Otlp } from "effect/unstable/observability"
 import { getObservabilityConfig } from "./observability.config"
 
 export const ObservabilityLayer = Layer.unwrap(
-  Effect.gen(function*() {
+  Effect.gen(function* () {
     const config = yield* getObservabilityConfig
 
     if (!config.enabled) {

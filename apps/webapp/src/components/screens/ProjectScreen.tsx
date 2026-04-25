@@ -16,8 +16,12 @@ import { pathForRoute } from "@/lib/router"
 export function ProjectScreen({ projectId }: { readonly projectId: number }) {
   const projectsState = useAtomValue(projectsQuery)
   const todosState = useAtomValue(todosQuery)
-  const [createTodoState, createTodo] = useAtom(createTodoAction, { mode: "promise" })
-  const [updateTodoState, updateTodo] = useAtom(updateTodoAction, { mode: "promise" })
+  const [createTodoState, createTodo] = useAtom(createTodoAction, {
+    mode: "promise",
+  })
+  const [updateTodoState, updateTodo] = useAtom(updateTodoAction, {
+    mode: "promise",
+  })
   const [title, setTitle] = React.useState("")
   const [pending, startTransition] = React.useTransition()
 
@@ -33,7 +37,9 @@ export function ProjectScreen({ projectId }: { readonly projectId: number }) {
   return AsyncResult.matchWithError(projectsState, {
     onInitial: () => <ProjectScreenLoading />,
     onError: (error) => <ProjectScreenError message={toErrorMessage(error)} />,
-    onDefect: (defect) => <ProjectScreenError message={toErrorMessage(defect)} />,
+    onDefect: (defect) => (
+      <ProjectScreenError message={toErrorMessage(defect)} />
+    ),
     onSuccess: ({ value: projects }) => {
       const project = projects.find((candidate) => candidate.id === projectId)
 
@@ -49,9 +55,13 @@ export function ProjectScreen({ projectId }: { readonly projectId: number }) {
             <Screen.Body>
               <Screen.Empty>
                 <div className="flex flex-wrap items-center gap-3">
-                  <span>Go back to the projects collection to pick another project.</span>
+                  <span>
+                    Go back to the projects collection to pick another project.
+                  </span>
                   <Button asChild variant="outline">
-                    <Link href={pathForRoute({ name: "projects" })}>Back to projects</Link>
+                    <Link href={pathForRoute({ name: "projects" })}>
+                      Back to projects
+                    </Link>
                   </Button>
                 </div>
               </Screen.Empty>
@@ -81,11 +91,19 @@ export function ProjectScreen({ projectId }: { readonly projectId: number }) {
 
       return AsyncResult.matchWithError(todosState, {
         onInitial: () => <ProjectScreenLoading />,
-        onError: (error) => <ProjectScreenError message={toErrorMessage(error)} />,
-        onDefect: (defect) => <ProjectScreenError message={toErrorMessage(defect)} />,
+        onError: (error) => (
+          <ProjectScreenError message={toErrorMessage(error)} />
+        ),
+        onDefect: (defect) => (
+          <ProjectScreenError message={toErrorMessage(defect)} />
+        ),
         onSuccess: ({ value: todos }) => {
-          const projectTodos = todos.filter((todo) => todo.projectId === project.id)
-          const completedTodos = projectTodos.filter((todo) => todo.completed).length
+          const projectTodos = todos.filter(
+            (todo) => todo.projectId === project.id,
+          )
+          const completedTodos = projectTodos.filter(
+            (todo) => todo.completed,
+          ).length
 
           return (
             <Screen.Root>
@@ -102,7 +120,8 @@ export function ProjectScreen({ projectId }: { readonly projectId: number }) {
                   <Screen.SectionHeader>
                     <Screen.SectionTitle>Add todo</Screen.SectionTitle>
                     <Screen.SectionDescription>
-                      This page is dedicated to one workspace project and its tasks.
+                      This page is dedicated to one workspace project and its
+                      tasks.
                     </Screen.SectionDescription>
                   </Screen.SectionHeader>
                   <TodoCreateForm
@@ -119,8 +138,12 @@ export function ProjectScreen({ projectId }: { readonly projectId: number }) {
                   />
                   {AsyncResult.matchWithError(createTodoState, {
                     onInitial: () => null,
-                    onError: (error) => <Screen.Error>{toErrorMessage(error)}</Screen.Error>,
-                    onDefect: (defect) => <Screen.Error>{toErrorMessage(defect)}</Screen.Error>,
+                    onError: (error) => (
+                      <Screen.Error>{toErrorMessage(error)}</Screen.Error>
+                    ),
+                    onDefect: (defect) => (
+                      <Screen.Error>{toErrorMessage(defect)}</Screen.Error>
+                    ),
                     onSuccess: () => null,
                   })}
                 </Screen.Section>
@@ -131,13 +154,18 @@ export function ProjectScreen({ projectId }: { readonly projectId: number }) {
                   <Screen.SectionHeader>
                     <Screen.SectionTitle>Project todos</Screen.SectionTitle>
                     <Screen.SectionDescription>
-                      A full task view for this project within the current workspace.
+                      A full task view for this project within the current
+                      workspace.
                     </Screen.SectionDescription>
                   </Screen.SectionHeader>
                   {AsyncResult.matchWithError(updateTodoState, {
                     onInitial: () => null,
-                    onError: (error) => <Screen.Error>{toErrorMessage(error)}</Screen.Error>,
-                    onDefect: (defect) => <Screen.Error>{toErrorMessage(defect)}</Screen.Error>,
+                    onError: (error) => (
+                      <Screen.Error>{toErrorMessage(error)}</Screen.Error>
+                    ),
+                    onDefect: (defect) => (
+                      <Screen.Error>{toErrorMessage(defect)}</Screen.Error>
+                    ),
                     onSuccess: () => null,
                   })}
                   {projectTodos.length === 0 ? (

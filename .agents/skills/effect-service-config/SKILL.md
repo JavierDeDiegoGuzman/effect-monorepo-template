@@ -38,6 +38,18 @@ Read [references/config-rules.md](references/config-rules.md) before making chan
 8. If a service currently has fallback or mock behavior because config is absent, preserve it only if explicitly requested. Otherwise make initialization fail.
 9. After edits, run the project typecheck or equivalent verification command.
 
+## Documentation expectations
+
+When applying this skill, update relevant docs if environment variables, startup requirements, defaults, local development commands, or deployment/runtime behavior changes.
+
+Typical docs:
+
+- `docs/development.md`
+- `docs/architecture.md`
+- `docs/observability.md` when telemetry config changes
+
+Docs describe this template's concrete config. This skill describes the reusable config pattern.
+
 ## Output expectations
 
 When you change config-related code:

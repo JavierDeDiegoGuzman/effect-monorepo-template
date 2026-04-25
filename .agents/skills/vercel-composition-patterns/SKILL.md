@@ -84,6 +84,10 @@ Each rule file contains:
 - Correct code example with explanation
 - Additional context and references
 
+## Documentation Expectations
+
+When applying these composition patterns in a way that changes the project's reusable component APIs, update the relevant webapp/component docs. This skill describes reusable React composition patterns; project docs describe the concrete component system.
+
 ## Full Compiled Document
 
 For the complete guide with all rules expanded: `AGENTS.md`

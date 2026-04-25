@@ -19,7 +19,9 @@ const AuthorizationClient = Layer.unwrap(
           return yield* next(request)
         }
 
-        return yield* next(HttpClientRequest.bearerToken(request, authToken.value))
+        return yield* next(
+          HttpClientRequest.bearerToken(request, authToken.value),
+        )
       }),
     )
   }),
@@ -41,5 +43,8 @@ export class ApiClient extends ServiceMap.Service<
           ),
       })
     }),
-  ).pipe(Layer.provide(AuthorizationClient), Layer.provide(FetchHttpClient.layer))
+  ).pipe(
+    Layer.provide(AuthorizationClient),
+    Layer.provide(FetchHttpClient.layer),
+  )
 }

@@ -4,6 +4,12 @@ import { NodeHttpServer } from "@effect/platform-node"
 import { Effect, Layer } from "effect"
 import { HttpRouter } from "effect/unstable/http"
 import { HttpApiBuilder, HttpApiScalar } from "effect/unstable/httpapi"
+import { SqliteLayer } from "../infra/sql/Sqlite"
+import { SqlProjectsRepositoryLayer } from "../repositories/sql/SqlProjectsRepository"
+import { SqlTodosRepositoryLayer } from "../repositories/sql/SqlTodosRepository"
+import { SqlTransactionsLayer } from "../repositories/sql/SqlTransactions"
+import { SqlUsersRepositoryLayer } from "../repositories/sql/SqlUsersRepository"
+import { SqlWorkspacesRepositoryLayer } from "../repositories/sql/SqlWorkspacesRepository"
 import { AuthTokens } from "../services/AuthTokens"
 import { Passwords } from "../services/Passwords"
 import { Projects } from "../services/Projects"
@@ -17,26 +23,48 @@ import { SystemApiHandlers } from "./handlers/System"
 import { TodosApiHandlers } from "./handlers/Todos"
 import { AuthorizationLayer } from "./middleware/Authorization"
 
-const ServicesLayer = Layer.mergeAll(
+const RepositoryLayer = Layer.mergeAll(
+  SqlUsersRepositoryLayer,
+  SqlWorkspacesRepositoryLayer,
+  SqlProjectsRepositoryLayer,
+  SqlTodosRepositoryLayer,
+  SqlTransactionsLayer,
+).pipe(Layer.provide(SqliteLayer))
+
+const CoreDomainLayer = Layer.mergeAll(
+  Users.layer,
+  Workspaces.layer,
+  Projects.layer,
+).pipe(Layer.provide(RepositoryLayer), Layer.provide(SqliteLayer))
+
+const TodosDomainLayer = Todos.layer.pipe(
+  Layer.provideMerge(CoreDomainLayer),
+  Layer.provide(RepositoryLayer),
+)
+
+const DomainLayer = Layer.mergeAll(CoreDomainLayer, TodosDomainLayer)
+
+export const HttpServerDependenciesLayer = Layer.mergeAll(
+  SqliteLayer,
+  RepositoryLayer,
+  DomainLayer,
   AuthTokens.layer,
   Passwords.layer,
-  Projects.layer,
-  Todos.layer,
-  Workspaces.layer,
-  Users.layer,
 )
 
 const ApiRoutes = HttpApiBuilder.layer(Api, {
   openapiPath: "/openapi.json",
 }).pipe(
   Layer.provide([
-    AuthApiHandlers.pipe(Layer.provide(ServicesLayer)),
+    AuthApiHandlers.pipe(Layer.provide(HttpServerDependenciesLayer)),
     SessionApiHandlers,
-    ProjectsApiHandlers.pipe(Layer.provide(ServicesLayer)),
-    TodosApiHandlers.pipe(Layer.provide(ServicesLayer)),
+    ProjectsApiHandlers.pipe(Layer.provide(HttpServerDependenciesLayer)),
+    TodosApiHandlers.pipe(Layer.provide(HttpServerDependenciesLayer)),
     SystemApiHandlers,
   ]),
-  Layer.provide(AuthorizationLayer.pipe(Layer.provide(ServicesLayer))),
+  Layer.provide(
+    AuthorizationLayer.pipe(Layer.provide(HttpServerDependenciesLayer)),
+  ),
 )
 
 const DocsRoute = HttpApiScalar.layer(Api, {
@@ -51,7 +79,7 @@ const CorsLayer = HttpRouter.cors({
 const AllRoutes = Layer.mergeAll(ApiRoutes, DocsRoute, CorsLayer)
 
 export const HttpServerLayer = Layer.unwrap(
-  Effect.gen(function*() {
+  Effect.gen(function* () {
     const { port } = yield* getHttpServerConfig
 
     return HttpRouter.serve(AllRoutes).pipe(

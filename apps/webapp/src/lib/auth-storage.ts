@@ -1,6 +1,7 @@
 const authTokenKey = "app.auth.token"
 
-export const isProbablyJwt = (value: string): boolean => value.split(".").length === 3
+export const isProbablyJwt = (value: string): boolean =>
+  value.split(".").length === 3
 
 export const readAuthToken = (): string | null => {
   if (typeof window === "undefined") {

@@ -28,7 +28,8 @@ export function LoginScreen() {
       <Screen.Header>
         <Screen.Title>Sign in</Screen.Title>
         <Screen.Description>
-          Access your personal workspace and continue working on projects and todos.
+          Access your personal workspace and continue working on projects and
+          todos.
         </Screen.Description>
       </Screen.Header>
       <Screen.Body>
@@ -43,8 +44,12 @@ export function LoginScreen() {
           />
           {AsyncResult.matchWithError(loginState, {
             onInitial: () => null,
-            onError: (error) => <Screen.Error>{toErrorMessage(error)}</Screen.Error>,
-            onDefect: (defect) => <Screen.Error>{toErrorMessage(defect)}</Screen.Error>,
+            onError: (error) => (
+              <Screen.Error>{toErrorMessage(error)}</Screen.Error>
+            ),
+            onDefect: (defect) => (
+              <Screen.Error>{toErrorMessage(defect)}</Screen.Error>
+            ),
             onSuccess: () => null,
           })}
         </Screen.Section>
@@ -59,7 +64,9 @@ export function LoginScreen() {
             </Screen.SectionDescription>
           </Screen.SectionHeader>
           <Button asChild variant="outline">
-            <Link href={pathForRoute({ name: "register" })}>Create account</Link>
+            <Link href={pathForRoute({ name: "register" })}>
+              Create account
+            </Link>
           </Button>
         </Screen.Section>
       </Screen.Body>

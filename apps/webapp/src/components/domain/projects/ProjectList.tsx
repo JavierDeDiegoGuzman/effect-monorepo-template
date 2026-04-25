@@ -33,7 +33,9 @@ function ProjectListItem(props: {
       <div className="space-y-1">
         <div className="flex flex-wrap items-center gap-2">
           <span className="font-medium">{props.project.name}</span>
-          {props.project.archived ? <Badge variant="outline">Archived</Badge> : null}
+          {props.project.archived ? (
+            <Badge variant="outline">Archived</Badge>
+          ) : null}
         </div>
         <p className="text-sm text-muted-foreground">
           {props.project.description.length > 0
@@ -44,7 +46,12 @@ function ProjectListItem(props: {
 
       <div className="flex flex-wrap gap-2">
         <Button asChild variant="outline">
-          <Link href={pathForRoute({ name: "project", projectId: props.project.id })}>
+          <Link
+            href={pathForRoute({
+              name: "project",
+              projectId: props.project.id,
+            })}
+          >
             View details
           </Link>
         </Button>

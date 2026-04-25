@@ -3,18 +3,18 @@ import { Effect } from "effect"
 import * as Layer from "effect/Layer"
 import * as Atom from "effect/unstable/reactivity/Atom"
 import { ApiClient } from "../api/client"
-import { isProbablyJwt, readAuthToken } from "../lib/auth-storage"
 import { ObservabilityLayer } from "../observability"
+import { currentSessionQuery } from "./auth"
 
 const apiRuntime = Atom.runtime(
   Layer.mergeAll(ApiClient.layer, ObservabilityLayer),
 )
 
 export const todosQuery = apiRuntime
-  .atom(
-    Effect.sync(readAuthToken).pipe(
-      Effect.flatMap((token) => {
-        if (token === null || !isProbablyJwt(token)) {
+  .atom((get) =>
+    get.result(currentSessionQuery, { suspendOnWaiting: true }).pipe(
+      Effect.flatMap((session) => {
+        if (session === null) {
           return Effect.succeed([])
         }
 

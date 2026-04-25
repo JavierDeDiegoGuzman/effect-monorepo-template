@@ -1,20 +1,20 @@
-import { CreateProjectInput, UpdateProjectInput } from "@app/shared"
+import type { CreateProjectInput, UpdateProjectInput } from "@app/shared"
 import { Effect } from "effect"
 import * as Layer from "effect/Layer"
 import * as Atom from "effect/unstable/reactivity/Atom"
 import { ApiClient } from "../api/client"
-import { isProbablyJwt, readAuthToken } from "../lib/auth-storage"
 import { ObservabilityLayer } from "../observability"
+import { currentSessionQuery } from "./auth"
 
 const apiRuntime = Atom.runtime(
   Layer.mergeAll(ApiClient.layer, ObservabilityLayer),
 )
 
 export const projectsQuery = apiRuntime
-  .atom(
-    Effect.sync(readAuthToken).pipe(
-      Effect.flatMap((token) => {
-        if (token === null || !isProbablyJwt(token)) {
+  .atom((get) =>
+    get.result(currentSessionQuery, { suspendOnWaiting: true }).pipe(
+      Effect.flatMap((session) => {
+        if (session === null) {
           return Effect.succeed([])
         }
 
@@ -42,7 +42,13 @@ export const createProjectAction = apiRuntime.fn(
 )
 
 export const updateProjectAction = apiRuntime.fn(
-  ({ id, input }: { readonly id: number; readonly input: UpdateProjectInput }) =>
+  ({
+    id,
+    input,
+  }: {
+    readonly id: number
+    readonly input: UpdateProjectInput
+  }) =>
     ApiClient.use((client) =>
       client.projects.update({ params: { id }, payload: input }),
     ).pipe(

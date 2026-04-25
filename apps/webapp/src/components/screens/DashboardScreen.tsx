@@ -6,7 +6,13 @@ import { projectsQuery } from "@/atoms/projects"
 import { todosQuery } from "@/atoms/todos"
 import { Screen } from "@/components/patterns/Screen"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { toErrorMessage } from "@/lib/errors"
 import { pathForRoute } from "@/lib/router"
 
@@ -17,8 +23,12 @@ export function DashboardScreen() {
 
   return AsyncResult.matchWithError(sessionState, {
     onInitial: () => <DashboardScreenLoading />,
-    onError: (error) => <DashboardScreenError message={toErrorMessage(error)} />,
-    onDefect: (defect) => <DashboardScreenError message={toErrorMessage(defect)} />,
+    onError: (error) => (
+      <DashboardScreenError message={toErrorMessage(error)} />
+    ),
+    onDefect: (defect) => (
+      <DashboardScreenError message={toErrorMessage(defect)} />
+    ),
     onSuccess: ({ value: session }) => {
       if (session === null) {
         return <DashboardScreenError message="No active session" />
@@ -26,17 +36,29 @@ export function DashboardScreen() {
 
       return AsyncResult.matchWithError(projectsState, {
         onInitial: () => <DashboardScreenLoading />,
-        onError: (error) => <DashboardScreenError message={toErrorMessage(error)} />,
-        onDefect: (defect) => <DashboardScreenError message={toErrorMessage(defect)} />,
+        onError: (error) => (
+          <DashboardScreenError message={toErrorMessage(error)} />
+        ),
+        onDefect: (defect) => (
+          <DashboardScreenError message={toErrorMessage(defect)} />
+        ),
         onSuccess: ({ value: projects }) =>
           AsyncResult.matchWithError(todosState, {
             onInitial: () => <DashboardScreenLoading />,
-            onError: (error) => <DashboardScreenError message={toErrorMessage(error)} />,
-            onDefect: (defect) => <DashboardScreenError message={toErrorMessage(defect)} />,
+            onError: (error) => (
+              <DashboardScreenError message={toErrorMessage(error)} />
+            ),
+            onDefect: (defect) => (
+              <DashboardScreenError message={toErrorMessage(defect)} />
+            ),
             onSuccess: ({ value: todos }) => {
-              const completedTodos = todos.filter((todo) => todo.completed).length
+              const completedTodos = todos.filter(
+                (todo) => todo.completed,
+              ).length
               const pendingTodos = todos.length - completedTodos
-              const activeProjects = projects.filter((project) => !project.archived).length
+              const activeProjects = projects.filter(
+                (project) => !project.archived,
+              ).length
               const archivedProjects = projects.length - activeProjects
               const recentTodos = todos.slice(0, 3)
               const recentProjects = projects.slice(0, 3)
@@ -46,7 +68,8 @@ export function DashboardScreen() {
                   <Screen.Header>
                     <Screen.Title>Dashboard</Screen.Title>
                     <Screen.Description>
-                      A workspace dashboard that summarizes your current scope before you move into collection and detail screens.
+                      A workspace dashboard that summarizes your current scope
+                      before you move into collection and detail screens.
                     </Screen.Description>
                   </Screen.Header>
 
@@ -67,9 +90,18 @@ export function DashboardScreen() {
                         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                           <MetricCard label="Todos" value={todos.length} />
                           <MetricCard label="Pending" value={pendingTodos} />
-                          <MetricCard label="Completed" value={completedTodos} />
-                          <MetricCard label="Active projects" value={activeProjects} />
-                          <MetricCard label="Archived projects" value={archivedProjects} />
+                          <MetricCard
+                            label="Completed"
+                            value={completedTodos}
+                          />
+                          <MetricCard
+                            label="Active projects"
+                            value={activeProjects}
+                          />
+                          <MetricCard
+                            label="Archived projects"
+                            value={archivedProjects}
+                          />
                         </div>
                       </div>
                     </Screen.Section>
@@ -78,18 +110,26 @@ export function DashboardScreen() {
                       <div className="grid gap-6 xl:grid-cols-[1.2fr_1fr_1fr]">
                         <Card className="border-border/60 bg-muted/20">
                           <CardHeader>
-                            <CardTitle>Move from overview to execution</CardTitle>
+                            <CardTitle>
+                              Move from overview to execution
+                            </CardTitle>
                             <CardDescription>
-                              Use the dashboard to orient yourself, then jump into the workspace collections where the real CRUD work happens.
+                              Use the dashboard to orient yourself, then jump
+                              into the workspace collections where the real CRUD
+                              work happens.
                             </CardDescription>
                           </CardHeader>
                           <CardContent className="space-y-4 text-sm text-muted-foreground">
                             <div className="flex flex-wrap gap-2">
                               <Button asChild variant="outline">
-                                <Link href={pathForRoute({ name: "todos" })}>Open todos</Link>
+                                <Link href={pathForRoute({ name: "todos" })}>
+                                  Open todos
+                                </Link>
                               </Button>
                               <Button asChild variant="outline">
-                                <Link href={pathForRoute({ name: "projects" })}>Open projects</Link>
+                                <Link href={pathForRoute({ name: "projects" })}>
+                                  Open projects
+                                </Link>
                               </Button>
                             </div>
                           </CardContent>
@@ -100,8 +140,9 @@ export function DashboardScreen() {
                           description="A small preview instead of the full collection."
                           items={
                             recentTodos.length > 0
-                              ? recentTodos.map((todo) =>
-                                  `${todo.completed ? "[x]" : "[ ]"} ${todo.title}`,
+                              ? recentTodos.map(
+                                  (todo) =>
+                                    `${todo.completed ? "[x]" : "[ ]"} ${todo.title}`,
                                 )
                               : ["No todos yet"]
                           }
@@ -112,8 +153,9 @@ export function DashboardScreen() {
                           description="Full details live in their dedicated screens."
                           items={
                             recentProjects.length > 0
-                              ? recentProjects.map((project) =>
-                                  `${project.archived ? "[A]" : "[ ]"} ${project.name}`,
+                              ? recentProjects.map(
+                                  (project) =>
+                                    `${project.archived ? "[A]" : "[ ]"} ${project.name}`,
                                 )
                               : ["No projects yet"]
                           }
@@ -158,7 +200,13 @@ function DashboardScreenError({ message }: { readonly message: string }) {
   )
 }
 
-function MetricCard({ label, value }: { readonly label: string; readonly value: number }) {
+function MetricCard({
+  label,
+  value,
+}: {
+  readonly label: string
+  readonly value: number
+}) {
   return (
     <Card className="border-border/60 bg-muted/20">
       <CardHeader className="pb-3">
@@ -183,7 +231,10 @@ function PreviewCard(props: {
       <CardContent>
         <ul className="grid gap-2 text-sm text-muted-foreground">
           {props.items.map((item) => (
-            <li key={item} className="rounded-lg border border-border/60 bg-background/70 px-3 py-2">
+            <li
+              key={item}
+              className="rounded-lg border border-border/60 bg-background/70 px-3 py-2"
+            >
               {item}
             </li>
           ))}

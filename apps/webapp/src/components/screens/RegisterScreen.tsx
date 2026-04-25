@@ -21,12 +21,18 @@ export function RegisterScreen() {
     event.preventDefault()
     const nextName = name.trim()
     const nextEmail = email.trim()
-    if (nextName.length === 0 || nextEmail.length === 0 || password.length === 0) {
+    if (
+      nextName.length === 0 ||
+      nextEmail.length === 0 ||
+      password.length === 0
+    ) {
       return
     }
 
     startTransition(() => {
-      void register(new RegisterInput({ name: nextName, email: nextEmail, password }))
+      void register(
+        new RegisterInput({ name: nextName, email: nextEmail, password }),
+      )
     })
   }
 
@@ -35,7 +41,8 @@ export function RegisterScreen() {
       <Screen.Header>
         <Screen.Title>Create account</Screen.Title>
         <Screen.Description>
-          We will create your personal workspace automatically so you can start organizing work immediately.
+          We will create your personal workspace automatically so you can start
+          organizing work immediately.
         </Screen.Description>
       </Screen.Header>
       <Screen.Body>
@@ -52,8 +59,12 @@ export function RegisterScreen() {
           />
           {AsyncResult.matchWithError(registerState, {
             onInitial: () => null,
-            onError: (error) => <Screen.Error>{toErrorMessage(error)}</Screen.Error>,
-            onDefect: (defect) => <Screen.Error>{toErrorMessage(defect)}</Screen.Error>,
+            onError: (error) => (
+              <Screen.Error>{toErrorMessage(error)}</Screen.Error>
+            ),
+            onDefect: (defect) => (
+              <Screen.Error>{toErrorMessage(defect)}</Screen.Error>
+            ),
             onSuccess: () => null,
           })}
         </Screen.Section>

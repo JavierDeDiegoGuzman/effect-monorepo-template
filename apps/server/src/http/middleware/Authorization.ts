@@ -22,18 +22,27 @@ export const AuthorizationLayer = Layer.effect(
 
         const verified = yield* authTokens.verify(token).pipe(
           Effect.mapError(
-            () => new Unauthorized({ message: "Missing or invalid bearer token" }),
+            () =>
+              new Unauthorized({
+                message: "Missing or invalid bearer token",
+              }),
           ),
         )
 
         const user = yield* users.getById(verified.userId).pipe(
           Effect.mapError(
-            () => new Unauthorized({ message: "Missing or invalid bearer token" }),
+            () =>
+              new Unauthorized({
+                message: "Missing or invalid bearer token",
+              }),
           ),
         )
         const workspace = yield* workspaces.getCurrentForUser(user.id).pipe(
           Effect.mapError(
-            () => new Unauthorized({ message: "Missing or invalid bearer token" }),
+            () =>
+              new Unauthorized({
+                message: "Missing or invalid bearer token",
+              }),
           ),
         )
 

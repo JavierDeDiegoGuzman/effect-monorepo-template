@@ -10,7 +10,9 @@ export class Workspace extends Schema.Class<Workspace>("Workspace")({
   kind: WorkspaceKind,
 }) {}
 
-export class WorkspaceMember extends Schema.Class<WorkspaceMember>("WorkspaceMember")({
+export class WorkspaceMember extends Schema.Class<WorkspaceMember>(
+  "WorkspaceMember",
+)({
   workspaceId: Schema.Number,
   userId: Schema.Number,
   role: WorkspaceRole,

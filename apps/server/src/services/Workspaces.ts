@@ -1,5 +1,7 @@
-import { type User, Workspace, WorkspaceMember } from "@app/shared"
-import { Effect, Layer, Ref, ServiceMap } from "effect"
+import type { User, Workspace } from "@app/shared"
+import { Effect, Layer, ServiceMap } from "effect"
+import { Transactions } from "../repositories/Transactions"
+import { WorkspacesRepository } from "../repositories/WorkspacesRepository"
 
 export class Workspaces extends ServiceMap.Service<
   Workspaces,
@@ -11,52 +13,46 @@ export class Workspaces extends ServiceMap.Service<
   static readonly layer = Layer.effect(
     Workspaces,
     Effect.gen(function* () {
-      const nextId = yield* Ref.make(3)
-      const workspaces = new Map<number, Workspace>([
-        [1, new Workspace({ id: 1, name: "Alice Personal", kind: "personal" })],
-        [2, new Workspace({ id: 2, name: "Bob Personal", kind: "personal" })],
-      ])
-      const memberships = new Map<number, WorkspaceMember>([
-        [1, new WorkspaceMember({ workspaceId: 1, userId: 1, role: "owner" })],
-        [2, new WorkspaceMember({ workspaceId: 2, userId: 2, role: "owner" })],
-      ])
+      const transactions = yield* Transactions
+      const workspacesRepository = yield* WorkspacesRepository
 
-      const getCurrentForUser = Effect.fn("Workspaces.getCurrentForUser")(function* (userId: number) {
-        const membership = memberships.get(userId)
-        if (membership === undefined) {
-          return yield* Effect.die(`Missing workspace membership for user ${userId}`)
-        }
+      const getCurrentForUser = Effect.fn("Workspaces.getCurrentForUser")(
+        function* (userId: number) {
+          const workspace =
+            yield* workspacesRepository.getCurrentForUser(userId)
+          if (workspace === null) {
+            return yield* Effect.die(
+              `Missing workspace membership for user ${userId}`,
+            )
+          }
 
-        const workspace = workspaces.get(membership.workspaceId)
-        if (workspace === undefined) {
-          return yield* Effect.die(`Missing workspace ${membership.workspaceId}`)
-        }
+          return workspace
+        },
+      )
 
-        return workspace
-      })
-
-      const createPersonalForUser = Effect.fn("Workspaces.createPersonalForUser")(function* (user: User) {
-        const existingMembership = memberships.get(user.id)
-        if (existingMembership !== undefined) {
+      const createPersonalForUser = Effect.fn(
+        "Workspaces.createPersonalForUser",
+      )(function* (user: User) {
+        const existingMembership =
+          yield* workspacesRepository.getMembershipForUser(user.id)
+        if (existingMembership !== null) {
           return yield* getCurrentForUser(user.id)
         }
 
-        const id = yield* Ref.getAndUpdate(nextId, (current) => current + 1)
-        const workspace = new Workspace({
-          id,
-          name: `${user.name} Personal`,
-          kind: "personal",
-        })
-        workspaces.set(id, workspace)
-        memberships.set(
-          user.id,
-          new WorkspaceMember({
-            workspaceId: id,
+        return yield* Effect.gen(function* () {
+          const workspace = yield* workspacesRepository.create({
+            name: `${user.name} Personal`,
+            kind: "personal",
+          })
+
+          yield* workspacesRepository.createMembership({
+            workspaceId: workspace.id,
             userId: user.id,
             role: "owner",
-          }),
-        )
-        return workspace
+          })
+
+          return workspace
+        }).pipe(transactions.withTransaction)
       })
 
       return Workspaces.of({
