@@ -52,6 +52,7 @@ The frontend is organized in layers:
 - Keep query state branching visible in screens instead of hiding it behind generic renderer components
 - Use action state explicitly for inline pending/error feedback near the form or list that triggered the action
 - Keep transient form and interaction state local unless it truly needs to be shared or remote
+- When a resource has both global and parent-scoped views, model both reads explicitly with query atoms and make mutations invalidate all affected reactivity keys
 
 ## Design principles
 
@@ -87,6 +88,25 @@ A new product module should usually be added through the phased product-module p
 13. run final verification
 
 Use `product-module-expansion` for this process. Do not start by building the UI unless the change is explicitly UI-only.
+
+## Relationship-driven UX
+
+When adding or extending a module that references, belongs to, or is scoped by another user-facing module, do not stop at a global collection screen.
+
+For each classified relationship, decide whether the related parent/detail screen should expose:
+
+- a scoped list of related records
+- a contextual create form
+- edit/update affordances for related records
+- navigation or deep links to the global collection or related detail pages
+
+If a resource can be linked to a project, account, workspace, organization, or similar user-facing parent, the parent detail screen should usually show and create linked resources unless there is a clear product reason not to.
+
+Examples:
+
+- Notes linked to projects should appear on the project detail screen.
+- Todos linked to projects should appear on the project detail screen.
+- Billing records scoped to an account should appear on account or billing detail surfaces.
 
 ## Available skills
 
@@ -134,6 +154,17 @@ Layer impact matrix:
 ```
 
 For new product modules, Phase 0 and Phase 1 from `product-module-expansion` must be completed before writing implementation code.
+
+For relationship-bearing modules, include a relationship-driven UX matrix:
+
+```txt
+- global collection screen: yes/no
+- parent/detail related section: yes/no
+- parent-scoped create/update flow: yes/no
+- scoped query/action atoms: yes/no
+- navigation/deep links: yes/no
+- reason for any omitted expected surface: <reason>
+```
 
 ## Documentation expectations
 

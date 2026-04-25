@@ -37,15 +37,17 @@ Read [references/atom-rules.md](references/atom-rules.md) before making changes.
    - use shared contract input types
    - add span annotations when useful and safe
    - set `reactivityKeys` to refresh dependent reads
-6. In React screens/components:
+   - invalidate both global and scoped reads when a mutation affects both surfaces
+6. For features with global and parent-scoped views, model scoped reads explicitly instead of filtering only in the screen.
+7. In React screens/components:
    - read with `useAtomValue(query)`
    - render query states explicitly with `AsyncResult.match(...)` / `AsyncResult.matchWithError(...)`
    - write with `useAtom(action, { mode: "promise" })` when action state is needed
    - write with `useAtomSet(action, { mode: "promise" })` when only triggering the action
    - keep transient form/input/pending orchestration local
-7. Preserve root support for atoms: registry/provider and error boundary according to the app architecture.
-8. Update docs if atom/state architecture changes.
-9. Run webapp checks/tests/build as relevant.
+8. Preserve root support for atoms: registry/provider and error boundary according to the app architecture.
+9. Update docs if atom/state architecture changes.
+10. Run webapp checks/tests/build as relevant.
 
 ## Documentation expectations
 
@@ -65,6 +67,7 @@ When changing atom-related code, report:
 - atom file/module that owns the feature state
 - query/action names used or added
 - reactivity keys used or added
+- scoped query/action atoms used or explicitly declined
 - state kept local vs moved into atoms
 - spans/annotations added for observability
 - docs updated if architecture changed

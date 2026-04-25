@@ -111,6 +111,44 @@ auth
 
 Use the same key across reads and writes that belong to the same invalidation domain.
 
+## Parameterized/scoped queries
+
+When a feature has both global and parent-scoped views, model both explicitly.
+
+Example:
+
+```ts
+export const notesQuery = apiRuntime
+  .atom(
+    ApiClient.use((client) => client.notes.list()).pipe(
+      Effect.withSpan("notes.list", { kind: "client" }),
+    ),
+  )
+  .pipe(Atom.keepAlive, Atom.withReactivity(["notes"]))
+
+export const notesByProjectQuery = (projectId: number) =>
+  apiRuntime
+    .atom(
+      ApiClient.use((client) =>
+        client.projects.notes({ path: { projectId } }),
+      ).pipe(
+        Effect.annotateSpans({ "project.id": projectId }),
+        Effect.withSpan("projects.notes.list", { kind: "client" }),
+      ),
+    )
+    .pipe(
+      Atom.keepAlive,
+      Atom.withReactivity(["notes", `project-notes:${projectId}`]),
+    )
+```
+
+Rules:
+
+- use the scoped query when route context already provides the parent scope
+- prefer server/API scoped reads over fetching a global collection and filtering in a screen
+- mutations that create, update, or delete linked records should invalidate both global and scoped keys
+- related create forms should prefill, lock, or hide scope values already known from the route
+
 ## Observability
 
 Observability belongs in the atom effect so the operation is observable regardless of which component triggers it.
@@ -132,6 +170,8 @@ Safe annotations include counts, lengths, IDs when acceptable, booleans, and enu
 - [ ] Are read atoms named `*Query`?
 - [ ] Are mutation atoms named `*Action`?
 - [ ] Do reads and writes use matching reactivity keys?
+- [ ] If both global and parent-scoped views exist, are scoped query atoms modeled explicitly?
+- [ ] Do mutations invalidate every global and scoped read that can show affected data?
 - [ ] Are spans/annotations present and safe?
 - [ ] Does the consuming screen render query states explicitly?
 - [ ] Does root atom wiring remain valid?

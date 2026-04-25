@@ -65,6 +65,14 @@ Use for:
 
 A detail screen should answer: “how do I work inside this one thing?”
 
+Related-resource sections belong on detail screens when a referenced, child, or scoped resource is a natural contextual workflow for the parent entity. For example:
+
+- project detail may show todos linked to the project
+- project detail may show notes linked to the project
+- account detail may show members, billing records, or usage records
+
+When route context already identifies the parent, related create forms should prefill, lock, or hide that context instead of asking the user to select it again. If an expected related section is omitted, document the product reason.
+
 ## One thing per page
 
 Each screen should have one primary responsibility.
@@ -114,3 +122,6 @@ Before finishing:
 - Is repeated layout extracted into patterns?
 - Are feature-specific blocks kept out of the shell?
 - Should this actually be split into another route?
+- For detail screens, were meaningful referenced/child/scoped resources considered?
+- If a related-resource section was omitted, is there a product reason?
+- Do scoped forms avoid asking for context already known from the route?

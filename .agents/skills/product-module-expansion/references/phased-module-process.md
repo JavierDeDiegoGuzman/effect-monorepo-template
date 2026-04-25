@@ -74,6 +74,33 @@ Classify every relationship as one or more of:
 
 Do not add direct module coupling merely because two tables can be joined.
 
+## Phase 1.5 — Identify relationship-driven UX entry points
+
+When a user-facing module references, belongs to, or is scoped by another user-facing module, identify every entry point implied by that relationship before implementing screens.
+
+For each relationship, answer:
+
+- Should users create the child or referenced resource from the related parent/detail screen?
+- Should the parent/detail screen show related records?
+- Should both a global collection screen and a parent-scoped collection or section exist?
+- Does the relationship imply a prefilled, locked, or hidden form field?
+- Does the API need a scoped query such as `/projects/:projectId/notes`?
+- Do mutation reactivity keys need to refresh both global and scoped reads?
+- Are navigation links or deep links needed between the global and scoped surfaces?
+
+Output a relationship-driven UX matrix:
+
+```txt
+- global collection screen: yes/no
+- parent/detail related section: yes/no
+- parent-scoped create/update flow: yes/no
+- scoped query/action atoms: yes/no
+- navigation/deep links: yes/no
+- reason for any omitted expected surface: <reason>
+```
+
+Example: if `notes -> projects` is a nullable reference, a global `/notes` screen can list and create independent or project-linked notes, while project detail `/projects/:projectId` should usually show project-linked notes and allow creating notes with `projectId` preselected by route context.
+
 ## Phase 2 — Design the shared contract
 
 Define contract before backend implementation and UI.
@@ -242,6 +269,7 @@ Screens own:
 - explicit `AsyncResult.match(...)` state branching
 - composition of patterns and feature components
 - route params and local route orchestration
+- related-resource sections when route context is the natural workflow entry point
 
 Screens should not own:
 

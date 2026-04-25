@@ -30,8 +30,9 @@ Read [references/screen-architecture.md](references/screen-architecture.md) befo
 3. Give each screen one primary job.
 4. Use reusable page header and section patterns instead of duplicating layout markup.
 5. Keep forms, lists, and detail blocks in feature components when possible.
-6. If the screen has more than one major job, consider splitting it across routes.
-7. Run the webapp checks after the refactor.
+6. For detail screens, consider related-resource sections implied by classified domain relationships.
+7. If the screen has more than one major job, consider splitting it across routes.
+8. Run the webapp checks after the refactor.
 
 ## Documentation expectations
 
@@ -50,4 +51,5 @@ When you change screen architecture:
 - mention the screen type affected
 - mention any shell/layout changes
 - mention any extracted screen patterns or sections
+- mention related-resource sections added or explicitly declined for detail screens
 - mention if responsibilities were split across screens

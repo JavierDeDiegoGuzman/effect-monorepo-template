@@ -27,24 +27,26 @@ Read the references in order:
 1. Classify the feature/change.
 2. Complete the layer impact matrix.
 3. Define the module boundary and domain relationships.
-4. Design the shared contract.
-4. Design persistence/repositories if needed.
-5. Implement domain services.
-6. Implement HTTP/transport handlers.
-7. Add backend tests.
-8. Add frontend atoms for remote/shared state.
-9. Add feature UI components.
-10. Add screens/routes/navigation.
-11. Add observability.
-12. Update docs.
-13. Plan atomic commits.
-14. Run final verification.
+4. Identify relationship-driven UX entry points.
+5. Design the shared contract.
+6. Design persistence/repositories if needed.
+7. Implement domain services.
+8. Implement HTTP/transport handlers.
+9. Add backend tests.
+10. Add frontend atoms for remote/shared state.
+11. Add feature UI components.
+12. Add screens/routes/navigation.
+13. Add observability.
+14. Update docs.
+15. Plan atomic commits.
+16. Run final verification.
 
 ## Hard rules
 
 - Do not write implementation code for a new product module before Phase 0 classification and Phase 1 boundary/relationship output are stated.
 - Do not start with the UI for a full product module.
 - Do not add persistence relationships before classifying the domain relationship.
+- Do not add only a global collection screen for a relationship-bearing user-facing module without considering parent/detail entry points.
 - Do not let SQL joins define module boundaries.
 - Do not call repositories directly from HTTP handlers.
 - Do not hide remote query state branching behind generic renderers in route screens.
@@ -74,6 +76,7 @@ When applying this skill, report:
 - layer impact matrix
 - module boundary and owned concepts
 - relationships to existing modules and their classification
+- relationship-driven UX entry points added or explicitly declined
 - shared contracts added/changed
 - persistence/repository design
 - domain service behavior and transaction boundaries

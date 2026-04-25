@@ -15,6 +15,8 @@
 - [ ] Owned concepts are explicit.
 - [ ] Concepts owned by other modules are not duplicated.
 - [ ] Relationships to existing modules are classified.
+- [ ] Relationship-driven UX entry points were identified for user-facing relationships.
+- [ ] Expected parent/detail surfaces were added or explicitly declined with a product reason.
 - [ ] Modeling tradeoffs were surfaced before implementation when they affect future modules.
 
 ## Contract
@@ -52,6 +54,15 @@
 - [ ] Reactivity keys are defined and match invalidation needs.
 - [ ] Transient form/interaction state stays local.
 - [ ] Atom effects include spans.
+
+## Relationship-driven UX
+
+- [ ] Global collection screens exist where the module needs global browse/manage workflows.
+- [ ] Parent/detail screens show related records when the relationship is a primary contextual workflow.
+- [ ] Parent-scoped create/update flows do not ask users for context already known from the route.
+- [ ] Scoped reads/mutations are represented in atoms when the UI has scoped surfaces.
+- [ ] Mutations invalidate both global and scoped reads when both can show affected data.
+- [ ] Navigation or deep links connect global and scoped surfaces where useful.
 
 ## UI architecture
 
