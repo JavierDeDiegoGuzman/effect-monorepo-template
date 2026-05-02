@@ -15,7 +15,6 @@ This template is designed around a small number of rules:
 apps/
   server/
   webapp/
-  cli/
 
 packages/
   shared/
@@ -23,10 +22,9 @@ packages/
 
 ## Dependency Rules
 
-- `packages/shared` must not depend on `apps/server`, `apps/webapp`, or `apps/cli`
+- `packages/shared` must not depend on `apps/server` or `apps/webapp`
 - `apps/server` depends on `packages/shared`
 - `apps/webapp` depends on `packages/shared`
-- `apps/cli` depends on `packages/shared`
 
 This keeps the contract portable and prevents server-specific or browser-specific details from leaking into shared code.
 
@@ -41,7 +39,7 @@ The shared package defines:
 
 The server implements handlers for those endpoints.
 
-The webapp and CLI generate typed clients from the same `HttpApi`.
+The webapp and HTTP integration tests generate typed clients from the same `HttpApi`.
 
 ```text
 packages/shared
@@ -50,7 +48,7 @@ packages/shared
 apps/server
   -> HttpApi handlers
 
-apps/webapp / apps/cli
+apps/webapp / apps/server tests
   -> HttpApiClient consumers
 ```
 
@@ -91,14 +89,6 @@ Put in `apps/webapp`:
 - browser-side observability
 - web-specific client configuration
 
-### CLI
-
-Put in `apps/cli`:
-
-- debugging commands
-- smoke-test friendly commands
-- machine-readable output for automation and LLM workflows
-
 ## Current Example
 
 The initial todo app is intentionally minimal.
@@ -119,11 +109,11 @@ When adding a new feature:
 2. Define API endpoints in `packages/shared/src/api`
 3. Implement or extend a service in `apps/server/src/services`
 4. Implement handlers in `apps/server/src/http/handlers`
-5. Add client usage in `apps/webapp` or `apps/cli`
+5. Add client usage in `apps/webapp` or server integration tests
 
 ## Why This Structure Works Well
 
 - clients and server stay aligned through the same contract
 - refactors are safer because TypeScript sees both sides
 - HTTP remains real, but the client code stays typed
-- the CLI can exercise the real API without extra ad-hoc tooling
+- server integration tests can exercise the real API without extra ad-hoc tooling

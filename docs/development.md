@@ -43,12 +43,10 @@ Build all workspaces:
 pnpm build
 ```
 
-Run CLI commands:
+Run server tests:
 
 ```bash
-pnpm cli -- health
-pnpm cli -- todos list
-pnpm cli -- todos create "read docs"
+pnpm --filter @app/server test
 ```
 
 ## Environment Variables
@@ -70,10 +68,6 @@ Set `OTEL_EXPORTER_OTLP_ENDPOINT=off` to disable tracing.
 - `VITE_OTEL_SERVICE_VERSION`: defaults to `0.1.0`
 
 Set `VITE_OTEL_EXPORTER_OTLP_ENDPOINT=off` to disable tracing.
-
-### CLI
-
-- `API_URL`: backend base URL. Defaults to `http://localhost:3001`
 
 ## Common Issues
 

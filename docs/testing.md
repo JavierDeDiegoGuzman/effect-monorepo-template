@@ -2,56 +2,58 @@
 
 ## Current State
 
-This template does not yet ship with a full integration test harness.
+This template includes layered backend tests and one real HTTP integration test.
 
-What it does ship with is the structure needed to build one in a clean way:
+The HTTP integration test lives in `apps/server/src/http/HttpIntegration.test.ts` and demonstrates the preferred black-box flow:
 
-- a real HTTP server
-- a typed CLI client
-- a shared API contract
+1. start the real HTTP router on an ephemeral port
+2. use a temporary SQLite database
+3. create a typed `HttpApiClient` from the shared `Api`
+4. authenticate through the real auth endpoint
+5. call protected todos endpoints through the real HTTP boundary
+6. assert on typed responses
 
 ## Recommended Testing Philosophy
 
-Prefer real HTTP integration tests over heavy mocking.
+Prefer the smallest test that exercises the behavior you care about:
 
-That means:
+- domain behavior: test services with in-memory repositories
+- SQL mapping and constraints: test repositories with temporary SQLite
+- transport behavior and end-to-end API flows: test the real HTTP server with `HttpApiClient`
 
-- start the server
-- call it through the real HTTP boundary
-- assert on real responses
+Avoid duplicating the production client behind a separate SDK just for tests. Tests can use `HttpApiClient.make(Api)` directly so they stay aligned with the shared contract.
 
-This matches how the webapp and CLI use the system in practice.
+## HTTP Integration Test Pattern
 
-## Role Of The CLI
+Use `NodeHttpServer.layerTest` to run the server on an ephemeral port and provide an `HttpClient` that is already pointed at that server.
 
-The CLI in `apps/cli` is intended for two use cases:
+The canonical shape is:
 
-1. debugging
-2. smoke and integration testing
+```ts
+const TestApiLive = HttpRouter.serve(
+  makeApiRoutesLayer(
+    makeHttpServerDependenciesLayer(makeTestSqliteLayer({ seed: false })),
+  ),
+  { disableListenLog: true, disableLogger: true },
+).pipe(Layer.provideMerge(NodeHttpServer.layerTest))
 
-Because it uses the same shared API contract, it is a good automation surface for:
+const program = Effect.gen(function* () {
+  const client = yield* HttpApiClient.make(Api)
+  const session = yield* client.auth.register({ payload })
+  const authedClient = yield* HttpApiClient.make(Api).pipe(
+    Effect.provide(makeAuthorizationClientLayer(session.token)),
+  )
 
-- CI smoke checks
-- local debugging
-- LLM-driven verification flows
+  const before = yield* authedClient.todos.list()
+  const created = yield* authedClient.todos.create({ payload: todoInput })
+  const after = yield* authedClient.todos.list()
 
-## Suggested Next Step For This Template
+  expect(after).toContainEqual(created)
+}).pipe(Effect.provide(TestApiLive))
+```
 
-Add a helper that starts the server on an ephemeral port, then run tests against it with either:
-
-- a typed client
-- the CLI
-
-That would let you write tests like:
-
-1. start test server
-2. create a todo
-3. list todos
-4. update a todo
-5. assert on the final state
+This keeps tests programmatic, typed, and close to the runtime behavior used by the webapp.
 
 ## Why This Matters
 
-This template is intended to make end-to-end verification simple.
-
-The combination of shared API definitions and a real CLI makes it easier to avoid tests that drift away from actual runtime behavior.
+The shared API definition is the contract between server and clients. Running integration tests through `HttpApiClient` catches route, middleware, schema, auth, and persistence wiring issues without introducing another client abstraction to maintain.

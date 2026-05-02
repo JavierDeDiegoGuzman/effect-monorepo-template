@@ -7,7 +7,7 @@ This template starts with a small todo app, but the real goal is the architectur
 - shared API and domain schemas in `packages/shared`
 - HTTP server implemented with Effect in `apps/server`
 - React webapp in `apps/webapp`
-- typed CLI client in `apps/cli`
+- typed HTTP integration tests using the shared API contract
 - optional local OTLP tracing with Jaeger
 
 ## What This Template Includes
@@ -16,7 +16,7 @@ This template starts with a small todo app, but the real goal is the architectur
 - `pnpm` workspaces
 - shared `HttpApi` definition
 - server handlers implemented from the shared API
-- typed HTTP clients in the webapp and CLI
+- typed HTTP clients in the webapp and integration tests
 - React + `@effect/atom-react`
 - local observability stack with OTLP Collector + Jaeger
 
@@ -24,7 +24,6 @@ This template starts with a small todo app, but the real goal is the architectur
 
 ```text
 apps/
-  cli/       Typed CLI for testing and debugging the API
   server/    Effect HTTP server
   webapp/    React application using atoms
 
@@ -45,10 +44,10 @@ The core rule is simple:
 
 - `packages/shared` defines the domain and the API
 - `apps/server` implements that API
-- `apps/webapp` and `apps/cli` consume the same API through typed clients
+- `apps/webapp` and server integration tests consume the same API through typed clients
 
 ```text
-React UI / CLI
+React UI / integration tests
   -> typed HttpApiClient
   -> Effect HTTP server
   -> domain service implementation
@@ -60,10 +59,9 @@ This means the API contract lives in one place and both client and server compil
 
 The included example is intentionally small:
 
-- todo list
-- in-memory storage only
-- no authentication
-- no persistence
+- authenticated todos and projects
+- SQLite persistence
+- typed HTTP integration coverage
 
 This keeps the template easy to understand while preserving the full architecture you will likely want in a real project.
 
@@ -79,7 +77,6 @@ Set the required environment variables:
 
 ```bash
 export PORT=3001
-export API_URL=http://localhost:3001
 export VITE_API_URL=http://localhost:3001
 export OTEL_EXPORTER_OTLP_ENDPOINT=off
 export VITE_OTEL_EXPORTER_OTLP_ENDPOINT=off
@@ -109,27 +106,15 @@ Open:
 - scalar docs: `http://localhost:3001/docs`
 - openapi: `http://localhost:3001/openapi.json`
 
-## CLI
+## Testing The API
 
-The CLI is useful both for debugging and for future smoke/integration testing.
-
-Examples:
+Server integration tests exercise the real HTTP API through `HttpApiClient` and the shared contract:
 
 ```bash
-pnpm cli -- health
-pnpm cli -- todos list
-pnpm cli -- todos create "Ship the first version"
-pnpm cli -- todos update --id 1 --completed true
-pnpm cli -- todos list --json
+pnpm --filter @app/server test
 ```
 
-The CLI uses the same shared API definition as the webapp.
-
-It requires `API_URL` to be set, for example:
-
-```bash
-API_URL=http://localhost:3001 pnpm cli -- health
-```
+See [`docs/testing.md`](./docs/testing.md) for the recommended pattern.
 
 ## Configuration
 
@@ -137,7 +122,6 @@ Configuration is now local to each app/service:
 
 - `apps/server/src/http/config.ts` owns `PORT`
 - `apps/server/src/observability.config.ts` owns server OTLP config
-- `apps/cli/src/api/config.ts` owns `API_URL`
 - `apps/webapp/src/api/config.ts` owns `VITE_API_URL`
 - `apps/webapp/src/observability.config.ts` owns browser OTLP config
 
@@ -176,7 +160,7 @@ More details: [`docs/observability.md`](./docs/observability.md)
 pnpm dev
 pnpm build
 pnpm check
-pnpm cli -- health
+pnpm --filter @app/server test
 pnpm observability:up
 pnpm observability:down
 ```
@@ -189,7 +173,7 @@ To add a new feature or domain:
 2. Add endpoints/groups in `packages/shared/src/api`
 3. Implement handlers in `apps/server/src/http/handlers`
 4. Add or update domain services in `apps/server/src/services`
-5. Consume the API from `apps/webapp` or `apps/cli`
+5. Consume the API from `apps/webapp` or server integration tests
 
 ## Good Next Steps For Real Projects
 
@@ -197,7 +181,7 @@ Typical evolutions after cloning this template:
 
 1. Replace the in-memory todo store with a real persistence layer
 2. Add auth middleware to the shared API and implement it in the server
-3. Add integration tests using real HTTP and the CLI
+3. Add integration tests using real HTTP and `HttpApiClient`
 4. Add more bounded contexts under the same API-first approach
 
 ## Documentation
