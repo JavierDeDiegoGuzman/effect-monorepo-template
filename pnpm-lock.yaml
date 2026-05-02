@@ -24,22 +24,6 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  apps/cli:
-    dependencies:
-      '@app/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
-      '@effect/platform-node':
-        specifier: 4.0.0-beta.43
-        version: 4.0.0-beta.43(effect@4.0.0-beta.43)(ioredis@5.10.1)
-      effect:
-        specifier: 4.0.0-beta.43
-        version: 4.0.0-beta.43
-    devDependencies:
-      tsx:
-        specifier: ^4.20.5
-        version: 4.21.0
-
   apps/server:
     dependencies:
       '@app/shared':
