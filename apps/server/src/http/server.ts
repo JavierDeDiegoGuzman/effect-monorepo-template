@@ -23,49 +23,65 @@ import { SystemApiHandlers } from "./handlers/System"
 import { TodosApiHandlers } from "./handlers/Todos"
 import { AuthorizationLayer } from "./middleware/Authorization"
 
-const RepositoryLayer = Layer.mergeAll(
-  SqlUsersRepositoryLayer,
-  SqlWorkspacesRepositoryLayer,
-  SqlProjectsRepositoryLayer,
-  SqlTodosRepositoryLayer,
-  SqlTransactionsLayer,
-).pipe(Layer.provide(SqliteLayer))
+export const makeRepositoryLayer = (sqliteLayer = SqliteLayer) =>
+  Layer.mergeAll(
+    SqlUsersRepositoryLayer,
+    SqlWorkspacesRepositoryLayer,
+    SqlProjectsRepositoryLayer,
+    SqlTodosRepositoryLayer,
+    SqlTransactionsLayer,
+  ).pipe(Layer.provide(sqliteLayer))
 
-const CoreDomainLayer = Layer.mergeAll(
-  Users.layer,
-  Workspaces.layer,
-  Projects.layer,
-).pipe(Layer.provide(RepositoryLayer), Layer.provide(SqliteLayer))
+export const makeDomainLayer = (
+  repositoryLayer = makeRepositoryLayer(),
+  sqliteLayer = SqliteLayer,
+) => {
+  const coreDomainLayer = Layer.mergeAll(
+    Users.layer,
+    Workspaces.layer,
+    Projects.layer,
+  ).pipe(Layer.provide(repositoryLayer), Layer.provide(sqliteLayer))
 
-const TodosDomainLayer = Todos.layer.pipe(
-  Layer.provideMerge(CoreDomainLayer),
-  Layer.provide(RepositoryLayer),
-)
+  const todosDomainLayer = Todos.layer.pipe(
+    Layer.provideMerge(coreDomainLayer),
+    Layer.provide(repositoryLayer),
+  )
 
-const DomainLayer = Layer.mergeAll(CoreDomainLayer, TodosDomainLayer)
+  return Layer.mergeAll(coreDomainLayer, todosDomainLayer)
+}
 
-export const HttpServerDependenciesLayer = Layer.mergeAll(
-  SqliteLayer,
-  RepositoryLayer,
-  DomainLayer,
-  AuthTokens.layer,
-  Passwords.layer,
-)
+export const makeHttpServerDependenciesLayer = (sqliteLayer = SqliteLayer) => {
+  const repositoryLayer = makeRepositoryLayer(sqliteLayer)
+  const domainLayer = makeDomainLayer(repositoryLayer, sqliteLayer)
 
-const ApiRoutes = HttpApiBuilder.layer(Api, {
-  openapiPath: "/openapi.json",
-}).pipe(
-  Layer.provide([
-    AuthApiHandlers.pipe(Layer.provide(HttpServerDependenciesLayer)),
-    SessionApiHandlers,
-    ProjectsApiHandlers.pipe(Layer.provide(HttpServerDependenciesLayer)),
-    TodosApiHandlers.pipe(Layer.provide(HttpServerDependenciesLayer)),
-    SystemApiHandlers,
-  ]),
-  Layer.provide(
-    AuthorizationLayer.pipe(Layer.provide(HttpServerDependenciesLayer)),
-  ),
-)
+  return Layer.mergeAll(
+    sqliteLayer,
+    repositoryLayer,
+    domainLayer,
+    AuthTokens.layer,
+    Passwords.layer,
+  )
+}
+
+export const HttpServerDependenciesLayer = makeHttpServerDependenciesLayer()
+
+export const makeApiRoutesLayer = (
+  dependenciesLayer = HttpServerDependenciesLayer,
+) =>
+  HttpApiBuilder.layer(Api, {
+    openapiPath: "/openapi.json",
+  }).pipe(
+    Layer.provide([
+      AuthApiHandlers.pipe(Layer.provide(dependenciesLayer)),
+      SessionApiHandlers,
+      ProjectsApiHandlers.pipe(Layer.provide(dependenciesLayer)),
+      TodosApiHandlers.pipe(Layer.provide(dependenciesLayer)),
+      SystemApiHandlers,
+    ]),
+    Layer.provide(AuthorizationLayer.pipe(Layer.provide(dependenciesLayer))),
+  )
+
+const ApiRoutes = makeApiRoutesLayer()
 
 const DocsRoute = HttpApiScalar.layer(Api, {
   path: "/docs",
