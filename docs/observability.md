@@ -1,6 +1,8 @@
 # Observability
 
-This workspace exports tracing data from both the browser app and the server using OTLP.
+This workspace can export tracing data from both the browser app and the server using OTLP.
+
+Tracing is disabled by default in `.env.example` with endpoint values set to `off`. In development, omitting the endpoint also disables tracing. In non-development environments, an endpoint is required when tracing should be active.
 
 ## Local stack
 
@@ -24,25 +26,26 @@ pnpm observability:down
 
 ## Endpoint configuration
 
-Tracing is explicit now.
+To enable local tracing, set these values in the root `.env` file and restart `pnpm dev`:
 
-- set `OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318` for the server
-- set `VITE_OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318` for the webapp
-- set either value to `off` to disable tracing intentionally
+```env
+OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+VITE_OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+OTEL_SERVICE_NAME=todo-server
+OTEL_SERVICE_VERSION=0.1.0
+VITE_OTEL_SERVICE_NAME=todo-webapp
+VITE_OTEL_SERVICE_VERSION=0.1.0
+```
+
+Set either endpoint value to `off` to disable tracing intentionally for that app.
 
 The collector is configured with CORS for `http://localhost:5173` so the Vite app can export traces directly.
-
-The Jaeger UI is available at:
-
-```text
-http://localhost:16686
-```
 
 ## Environment variables
 
 ### Server
 
-Required when tracing is enabled:
+Required when server tracing is enabled:
 
 - `OTEL_EXPORTER_OTLP_ENDPOINT`
 - `OTEL_SERVICE_NAME`
@@ -52,81 +55,40 @@ Optional:
 
 - `NODE_ENV` defaults to `development`
 
-Set `OTEL_EXPORTER_OTLP_ENDPOINT=off` to disable tracing.
-
 ### Webapp
 
-Required when tracing is enabled:
+Required when browser tracing is enabled:
 
 - `VITE_OTEL_EXPORTER_OTLP_ENDPOINT`
 - `VITE_OTEL_SERVICE_NAME`
 - `VITE_OTEL_SERVICE_VERSION`
 
-Set `VITE_OTEL_EXPORTER_OTLP_ENDPOINT=off` to disable tracing.
-
 ## What is instrumented
 
 ### Webapp
 
-- `todos.list`
-- `todos.create`
-- `todos.update`
+Current atom queries/actions create client spans for:
+
+- `auth.me`, `auth.login`, `auth.register`, `auth.logout`
+- `projects.list`, `projects.create`, `projects.update`, `projects.archive`
+- `todos.list`, `todos.create`, `todos.update`
 
 ### Server
 
-- `Todos.list`
-- `Todos.getById`
-- `Todos.create`
-- `Todos.update`
+The server installs the Effect OTLP layer when tracing is enabled, so server-side spans emitted by the Effect HTTP/runtime stack are exported with the `todo-server` service resource. The current server services do not add custom domain-span names.
 
 ## What You Should See In Jaeger
 
-After starting the stack and generating traffic in the app, the services list should include:
+After enabling tracing, starting the stack, restarting `pnpm dev`, and generating traffic in the app, the services list should include:
 
 - `todo-server`
 - `todo-webapp`
 
 If you only see `jaeger-all-in-one`, your application spans are not reaching Jaeger yet.
 
-## Useful Searches
-
-### Client-side business spans
-
-- service: `todo-webapp`
-- operations:
-  - `todos.list`
-  - `todos.create`
-  - `todos.update`
-
-### Server-side business spans
-
-- service: `todo-server`
-- operations:
-  - `Todos.list`
-  - `Todos.create`
-  - `Todos.update`
-  - `Todos.getById`
-
-### HTTP spans
-
-- service: `todo-server`
-- operations like:
-  - `http.server GET`
-  - `http.server POST`
-  - `http.server PATCH`
-
 ## Expected trace shape
 
-When creating a todo, you should see a trace similar to:
-
-```text
-todos.create
-  http.client POST /todos
-    http.server POST /todos
-      Todos.create
-```
-
-Creating or updating a todo will usually also trigger a new `todos.list` trace afterwards because the UI refreshes the list through atom reactivity.
+When creating a todo, expect a `todos.create` client span. Depending on the enabled Effect HTTP instrumentation, it may be correlated with HTTP/server spans. Creating or updating a todo will usually also trigger a new list trace afterwards because the UI refreshes data through atom reactivity.
 
 ## Troubleshooting
 
@@ -135,9 +97,10 @@ Creating or updating a todo will usually also trigger a new `todos.list` trace a
 Check this order:
 
 1. `pnpm observability:up`
-2. restart `pnpm dev`
-3. generate traffic in the app
-4. refresh Jaeger
+2. set both OTLP endpoint variables to `http://localhost:4318` in `.env`
+3. restart `pnpm dev`
+4. generate traffic in the app
+5. refresh Jaeger
 
 You can also verify by API:
 

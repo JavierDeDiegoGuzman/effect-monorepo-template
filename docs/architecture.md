@@ -7,6 +7,7 @@ This template is designed around a small number of rules:
 - one shared API contract
 - clear separation between portable code and runtime-specific code
 - typed clients instead of ad-hoc fetch calls
+- layered backend code with transport handlers, domain services, and repositories
 - a monorepo layout that scales to multiple apps
 
 ## Workspace Structure
@@ -45,8 +46,9 @@ The shared package defines:
 - typed errors
 - `HttpApi` root
 - endpoint groups
+- auth middleware requirements
 
-The server implements handlers for those endpoints.
+The server implements handlers for those endpoints. Protected groups use bearer-token authorization and provide the current user and workspace to handlers.
 
 The webapp and HTTP integration tests generate typed clients from the same `HttpApi`. Storybook stories and webapp component tests stay at the React boundary with mocked props/fixtures, so visual and behavioral component coverage does not require the API server.
 
@@ -56,6 +58,9 @@ packages/shared
 
 apps/server
   -> HttpApi handlers
+  -> domain services
+  -> repositories
+  -> SQLite
 
 apps/webapp / apps/server tests
   -> HttpApiClient consumers
@@ -83,9 +88,10 @@ Do not put in `packages/shared`:
 
 Put in `apps/server`:
 
-- infrastructure
-- database access
-- service implementations
+- HTTP server setup and middleware
+- SQLite infrastructure and schema initialization
+- repository contracts and implementations
+- domain service implementations
 - handler wiring
 - environment-specific layers
 
@@ -105,15 +111,15 @@ Screens are connected composition boundaries and should not own structural marku
 
 ## Current Example
 
-The initial todo app is intentionally minimal.
+The example app includes:
 
-The `Todos` service in `apps/server` uses an in-memory `Map`, so data is reset on restart.
+- auth registration/login and `/auth/me`
+- bearer-token protected projects and todos endpoints
+- users, default workspaces, projects, and todos persisted in SQLite
+- global todo listing plus project-scoped todo listing at `/projects/:projectId/todos`
+- project detail UI that shows related todos
 
-That is a deliberate template choice:
-
-- easy to understand
-- fast to iterate on
-- obvious place to replace with real persistence later
+The default SQLite file is `./.data/app.db` relative to the server process directory (`apps/server` when using `pnpm dev`).
 
 ## Recommended Feature Workflow
 
@@ -121,9 +127,11 @@ When adding a new feature:
 
 1. Define domain schemas in `packages/shared/src/domain`
 2. Define API endpoints in `packages/shared/src/api`
-3. Implement or extend a service in `apps/server/src/services`
-4. Implement handlers in `apps/server/src/http/handlers`
-5. Add client usage in `apps/webapp` or server integration tests
+3. Implement or extend repository contracts and persistence in `apps/server/src/repositories`
+4. Implement or extend services in `apps/server/src/services`
+5. Implement handlers in `apps/server/src/http/handlers`
+6. Add client usage in `apps/webapp` or server integration tests
+7. Update relevant docs and architecture checks
 
 ## Why This Structure Works Well
 
@@ -131,3 +139,4 @@ When adding a new feature:
 - refactors are safer because TypeScript sees both sides
 - HTTP remains real, but the client code stays typed
 - server integration tests can exercise the real API without extra ad-hoc tooling
+- persistence is replaceable behind repository contracts

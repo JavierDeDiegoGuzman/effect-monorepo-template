@@ -10,7 +10,10 @@
 
 ```bash
 pnpm install
+cp .env.example .env
 ```
+
+The root `pnpm dev` command loads the root `.env` file for both apps.
 
 ## Run Locally
 
@@ -80,25 +83,36 @@ The webapp uses TanStack Router in SPA mode with hash history. Route wiring live
 
 ## Environment Variables
 
+Copy `.env.example` to `.env` before local development. Keep secrets out of committed files.
+
 ### Server
 
 - `PORT`: HTTP server port. Defaults to `3001`
-- `OTEL_EXPORTER_OTLP_ENDPOINT`: OTLP base URL. Defaults to `http://localhost:4318`
-- `OTEL_SERVICE_NAME`: defaults to `todo-server`
-- `OTEL_SERVICE_VERSION`: defaults to `0.1.0`
-
-Set `OTEL_EXPORTER_OTLP_ENDPOINT=off` to disable tracing.
+- `SQLITE_FILENAME`: SQLite database file. Defaults to `./.data/app.db` relative to the server process directory
+- `AUTH_JWT_SECRET`: required signing secret for auth tokens
+- `AUTH_JWT_ISSUER`: required JWT issuer
+- `AUTH_JWT_AUDIENCE`: required JWT audience
+- `AUTH_ACCESS_TOKEN_TTL_SECONDS`: token lifetime in seconds. Defaults to `3600`
+- `OTEL_EXPORTER_OTLP_ENDPOINT`: OTLP base URL. Omit in development or set to `off` to disable tracing
+- `OTEL_SERVICE_NAME`: required only when server tracing is enabled
+- `OTEL_SERVICE_VERSION`: required only when server tracing is enabled
 
 ### Webapp
 
 - `VITE_API_URL`: backend base URL. Defaults to `http://localhost:3001`
-- `VITE_OTEL_EXPORTER_OTLP_ENDPOINT`: OTLP base URL. Defaults to `http://localhost:4318`
-- `VITE_OTEL_SERVICE_NAME`: defaults to `todo-webapp`
-- `VITE_OTEL_SERVICE_VERSION`: defaults to `0.1.0`
+- `VITE_OTEL_EXPORTER_OTLP_ENDPOINT`: OTLP base URL. Omit in development or set to `off` to disable tracing
+- `VITE_OTEL_SERVICE_NAME`: required only when browser tracing is enabled
+- `VITE_OTEL_SERVICE_VERSION`: required only when browser tracing is enabled
 
-Set `VITE_OTEL_EXPORTER_OTLP_ENDPOINT=off` to disable tracing.
+## Current Local Data
+
+The example app persists users, workspaces, projects, and todos in SQLite. With the default `.env.example`, the database file is `apps/server/.data/app.db` when running through `pnpm dev`.
 
 ## Common Issues
+
+### Missing auth config
+
+If the server fails during startup with missing `AUTH_JWT_*` variables, copy `.env.example` to `.env` or add those values to your existing `.env`.
 
 ### CORS problems in the browser
 
@@ -110,6 +124,7 @@ If you change the webapp origin, update the CORS configuration in `apps/server/s
 
 That usually means one of these:
 
+- tracing is disabled in `.env`
 - the app has not generated traffic yet
 - the dev server needs a restart after observability config changes
 - the collector stack is not running
@@ -120,7 +135,7 @@ Start the stack:
 pnpm observability:up
 ```
 
-Then restart `pnpm dev` and generate traffic again.
+Then set both OTLP endpoint variables to `http://localhost:4318`, restart `pnpm dev`, and generate traffic again.
 
 ### Port already in use
 
