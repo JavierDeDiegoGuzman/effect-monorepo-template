@@ -2,16 +2,14 @@ import { CreateTodoInput, type Todo, UpdateTodoInput } from "@app/shared"
 import { useAtom, useAtomValue } from "@effect/atom-react"
 import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
 import * as React from "react"
-import { Link } from "wouter"
 import { projectsQuery } from "@/atoms/projects"
 import { createTodoAction, todosQuery, updateTodoAction } from "@/atoms/todos"
+import { ProjectNotFound } from "@/components/domain/projects/ProjectNotFound"
 import { ProjectSummary } from "@/components/domain/projects/ProjectSummary"
 import { ProjectTodoList } from "@/components/domain/projects/ProjectTodoList"
 import { TodoCreateForm } from "@/components/domain/todos/TodoCreateForm"
 import { Screen } from "@/components/patterns/Screen"
-import { Button } from "@/components/ui/button"
 import { toErrorMessage } from "@/lib/errors"
-import { pathForRoute } from "@/lib/router"
 
 export function ProjectScreen({ projectId }: { readonly projectId: number }) {
   const projectsState = useAtomValue(projectsQuery)
@@ -44,30 +42,7 @@ export function ProjectScreen({ projectId }: { readonly projectId: number }) {
       const project = projects.find((candidate) => candidate.id === projectId)
 
       if (project === undefined) {
-        return (
-          <Screen.Root>
-            <Screen.Header>
-              <Screen.Title>Project not found</Screen.Title>
-              <Screen.Description>
-                The requested project does not exist in the current workspace.
-              </Screen.Description>
-            </Screen.Header>
-            <Screen.Body>
-              <Screen.Empty>
-                <div className="flex flex-wrap items-center gap-3">
-                  <span>
-                    Go back to the projects collection to pick another project.
-                  </span>
-                  <Button asChild variant="outline">
-                    <Link href={pathForRoute({ name: "projects" })}>
-                      Back to projects
-                    </Link>
-                  </Button>
-                </div>
-              </Screen.Empty>
-            </Screen.Body>
-          </Screen.Root>
-        )
+        return <ProjectNotFound />
       }
 
       const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {

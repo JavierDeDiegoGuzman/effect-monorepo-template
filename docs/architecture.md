@@ -28,6 +28,15 @@ packages/
 
 This keeps the contract portable and prevents server-specific or browser-specific details from leaking into shared code.
 
+Executable architecture checks live at the repo root:
+
+```bash
+pnpm boundaries
+pnpm verify:architecture
+```
+
+The webapp checks also enforce component-layer import boundaries, screen/route markup ownership, and the synchronization-hook policy. See [`docs/webapp-architecture.md`](./webapp-architecture.md).
+
 ## API-First Flow
 
 The shared package defines:
@@ -39,7 +48,7 @@ The shared package defines:
 
 The server implements handlers for those endpoints.
 
-The webapp and HTTP integration tests generate typed clients from the same `HttpApi`.
+The webapp and HTTP integration tests generate typed clients from the same `HttpApi`. Storybook stories and webapp component tests stay at the React boundary with mocked props/fixtures, so visual and behavioral component coverage does not require the API server.
 
 ```text
 packages/shared
@@ -84,10 +93,15 @@ Put in `apps/server`:
 
 Put in `apps/webapp`:
 
-- React components
+- React components organized by `ui`, `patterns`, `domain`, and `screens`
+- TanStack Router SPA route definitions and app-shell outlet wiring
 - atoms and UI state
 - browser-side observability
 - web-specific client configuration
+- Storybook stories for visual component states
+- Vitest/Testing Library component tests for user-visible behavior
+
+Screens are connected composition boundaries and should not own structural markup directly. Route files should render screens, not feature UI.
 
 ## Current Example
 

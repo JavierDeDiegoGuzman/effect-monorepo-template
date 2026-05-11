@@ -1,7 +1,7 @@
 import type { CurrentSession } from "@app/shared"
 import { useAtom } from "@effect/atom-react"
+import { Link } from "@tanstack/react-router"
 import type * as React from "react"
-import { Link } from "wouter"
 import { logoutAction } from "@/atoms/auth"
 import { SessionSummary } from "@/components/domain/auth/SessionSummary"
 import { Button } from "@/components/ui/button"
@@ -61,7 +61,7 @@ export function AppShell({ route, session, children }: AppShellProps) {
                     )}
                   >
                     <Link
-                      href={pathForRoute(item.route)}
+                      to={pathForRoute(item.route)}
                       aria-current={active ? "page" : undefined}
                     >
                       {item.label}

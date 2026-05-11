@@ -18,6 +18,8 @@ This template starts with a small todo app, but the real goal is the architectur
 - server handlers implemented from the shared API
 - typed HTTP clients in the webapp and integration tests
 - React + `@effect/atom-react`
+- Storybook for visual component development
+- Vitest + Testing Library for webapp component tests
 - local observability stack with OTLP Collector + Jaeger
 
 ## Repository Layout
@@ -35,6 +37,7 @@ docs/
   architecture.md
   development.md
   observability.md
+  storybook.md
   testing.md
 ```
 
@@ -106,7 +109,7 @@ Open:
 - scalar docs: `http://localhost:3001/docs`
 - openapi: `http://localhost:3001/openapi.json`
 
-## Testing The API
+## Testing
 
 Server integration tests exercise the real HTTP API through `HttpApiClient` and the shared contract:
 
@@ -114,7 +117,19 @@ Server integration tests exercise the real HTTP API through `HttpApiClient` and 
 pnpm --filter @app/server test
 ```
 
-See [`docs/testing.md`](./docs/testing.md) for the recommended pattern.
+Webapp component tests use Vitest and Testing Library:
+
+```bash
+pnpm --filter @app/webapp test
+```
+
+Storybook provides a visual component workshop:
+
+```bash
+pnpm --filter @app/webapp storybook
+```
+
+See [`docs/testing.md`](./docs/testing.md) and [`docs/storybook.md`](./docs/storybook.md) for the recommended patterns.
 
 ## Configuration
 
@@ -161,6 +176,9 @@ pnpm dev
 pnpm build
 pnpm check
 pnpm --filter @app/server test
+pnpm --filter @app/webapp test
+pnpm --filter @app/webapp storybook
+pnpm --filter @app/webapp build-storybook
 pnpm observability:up
 pnpm observability:down
 ```

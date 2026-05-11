@@ -125,3 +125,11 @@ Before finishing:
 - For detail screens, were meaningful referenced/child/scoped resources considered?
 - If a related-resource section was omitted, is there a product reason?
 - Do scoped forms avoid asking for context already known from the route?
+
+## Route and screen boundaries
+
+The webapp uses TanStack Router for SPA routing. Route files/router setup own paths, params/search wiring, auth redirects, and rendering screens. Route URL/search state should come from router APIs, not manual URL synchronization effects.
+
+Screens are connected composition boundaries. They may read atoms, branch visibly on `AsyncResult`, wire actions, and compose patterns/domain components. They should not hand-roll structural JSX or full-page layout. Use `Screen` and other official patterns for page structure.
+
+When a screen has many visual/query states, split it into a connected container plus a `ScreenView` component that receives explicit state/callback props for tests and stories.

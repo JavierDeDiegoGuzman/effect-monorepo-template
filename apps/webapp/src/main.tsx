@@ -2,8 +2,6 @@ import { RegistryProvider } from "@effect/atom-react"
 import * as React from "react"
 import { createRoot } from "react-dom/client"
 import { ErrorBoundary } from "react-error-boundary"
-import { Router } from "wouter"
-import { useHashLocation } from "wouter/use-hash-location"
 import "./styles/globals.css"
 import { AppRouter } from "./components/AppRouter"
 
@@ -13,9 +11,7 @@ function Root() {
       <ErrorBoundary
         fallback={<div style={fallbackStyle}>Could not load the app.</div>}
       >
-        <Router hook={useHashLocation}>
-          <AppRouter />
-        </Router>
+        <AppRouter />
       </ErrorBoundary>
     </RegistryProvider>
   )

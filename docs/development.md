@@ -49,6 +49,35 @@ Run server tests:
 pnpm --filter @app/server test
 ```
 
+Run webapp component tests:
+
+```bash
+pnpm --filter @app/webapp test
+```
+
+Run architecture boundary checks:
+
+```bash
+pnpm boundaries
+pnpm verify:architecture
+```
+
+Start Storybook for visual component development:
+
+```bash
+pnpm --filter @app/webapp storybook
+```
+
+Build the static Storybook catalog:
+
+```bash
+pnpm --filter @app/webapp build-storybook
+```
+
+## Webapp Routing Notes
+
+The webapp uses TanStack Router in SPA mode with hash history. Route wiring lives in `apps/webapp/src/router.tsx`; routes should define paths/params and render screens. Keep remote data in atoms and keep route URL/search state in router APIs.
+
 ## Environment Variables
 
 ### Server

@@ -130,3 +130,13 @@ Prefer smallest useful boundary:
 - custom test helpers that hide important UI states
 - mocking everything so the test no longer resembles user behavior
 - not documenting new commands/setup
+
+## State provisioning policy
+
+Prefer props-first component tests. Domain components should receive data, pending flags, errors, and callbacks directly so tests/stories do not need atoms, router, or API mocks.
+
+For screens, prefer testing an extracted `ScreenView` with explicit loading/error/empty/populated/pending states. Test the connected screen only when atom/router integration is the behavior under review.
+
+Avoid adding a generic atom test harness such as `renderWithAtoms` until an integration test truly needs it. Provider-based composition components should expose injectable state/action/meta interfaces so stories and tests can provide deterministic state while production providers can derive state from atoms, router, or sync hooks.
+
+ScreenView stories should use fixtures and cover the visual state matrix relevant to the screen.

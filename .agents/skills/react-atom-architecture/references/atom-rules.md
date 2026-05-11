@@ -176,3 +176,11 @@ Safe annotations include counts, lengths, IDs when acceptable, booleans, and enu
 - [ ] Does the consuming screen render query states explicitly?
 - [ ] Does root atom wiring remain valid?
 - [ ] Were docs updated if architecture changed?
+
+## Router, effects, and screen views
+
+Atoms own remote/shared state; do not create atoms only to make component tests easier. Component tests should usually pass props and callbacks.
+
+Route URL/search state belongs to TanStack Router APIs. Screens should not parse or synchronize URL state with direct effects.
+
+Direct fetching or remote mutation in React effects is disallowed. Use query/action atoms and render their `AsyncResult` states explicitly in screen containers. When a screen is split, the connected container uses atoms and the view receives explicit state/callback props.

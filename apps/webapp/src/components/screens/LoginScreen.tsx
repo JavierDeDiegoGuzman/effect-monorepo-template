@@ -1,8 +1,8 @@
 import { LoginInput } from "@app/shared"
 import { useAtom } from "@effect/atom-react"
+import { Link } from "@tanstack/react-router"
 import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
 import * as React from "react"
-import { Link } from "wouter"
 import { loginAction } from "@/atoms/auth"
 import { LoginForm } from "@/components/domain/auth/LoginForm"
 import { Screen } from "@/components/patterns/Screen"
@@ -64,9 +64,7 @@ export function LoginScreen() {
             </Screen.SectionDescription>
           </Screen.SectionHeader>
           <Button asChild variant="outline">
-            <Link href={pathForRoute({ name: "register" })}>
-              Create account
-            </Link>
+            <Link to={pathForRoute({ name: "register" })}>Create account</Link>
           </Button>
         </Screen.Section>
       </Screen.Body>

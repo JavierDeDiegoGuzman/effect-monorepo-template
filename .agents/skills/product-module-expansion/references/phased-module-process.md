@@ -350,3 +350,15 @@ pnpm --filter @app/server test
 ```
 
 Also run package-specific checks, Storybook/frontend test commands, and Biome formatting/lint commands when relevant. Use `pnpm lint:fix` or `pnpm format` intentionally; do not mix broad formatting churn into unrelated commits.
+
+## Frontend architecture checklist for product modules
+
+When a module adds webapp UI:
+
+- add or update TanStack Router route wiring for global/detail routes;
+- keep route files focused on params/search/metadata and rendering screens;
+- keep screens free of structural intrinsic JSX; use `patterns/*` and `domain/*` components;
+- keep domain components props-first and storybookable;
+- keep URL/search state in router APIs;
+- cover loading, error, empty, populated, and pending states in tests/stories where relevant;
+- run `pnpm verify:architecture` with the usual webapp checks.

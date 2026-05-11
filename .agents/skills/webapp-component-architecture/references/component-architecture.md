@@ -138,3 +138,13 @@ Before finishing:
 - Did I extract repeated structure into a pattern?
 - Did I keep screens thin?
 - Did I keep logic out of `ui/*`?
+
+## Markup and layout ownership
+
+Structural intrinsic JSX (`div`, `section`, `main`, `article`, `header`, `footer`, `aside`, `nav`, `ul`, `ol`, `li`) is owned by `components/ui/*`, `components/patterns/*`, and local `components/domain/<feature>/*` pieces.
+
+Screens and routes should compose named pattern/domain components rather than hand-writing structural JSX. If repeated page structure appears in a screen, extract it to `components/patterns/*`. If the structure is feature-specific, extract it to `components/domain/<feature>/*`.
+
+`components/domain/*` may use local markup for feature cards, lists, and forms, but must not own app-wide geometry or full-page layout.
+
+Run `pnpm verify:architecture` after webapp architecture changes.

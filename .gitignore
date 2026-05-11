@@ -6,6 +6,8 @@ build/
 .turbo/
 
 coverage/
+storybook-static/
+apps/*/storybook-static/
 
 .DS_Store
 

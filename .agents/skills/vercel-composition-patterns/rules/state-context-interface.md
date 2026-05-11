@@ -189,3 +189,7 @@ lifting state into providers.
 
 The UI is reusable bits you compose together. The state is dependency-injected
 by the provider. Swap the provider, keep the UI.
+
+## Project note: provider interfaces in the webapp template
+
+When applying provider/context composition in `apps/webapp`, expose injectable state/action/meta interfaces for tests and stories. Production providers may derive those interfaces from atoms, TanStack Router, or synchronization hooks, but children should only consume the interface. This keeps component tests props-first and avoids global state providers for visual states.

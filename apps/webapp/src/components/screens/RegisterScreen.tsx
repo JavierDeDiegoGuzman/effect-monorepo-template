@@ -1,8 +1,8 @@
 import { RegisterInput } from "@app/shared"
 import { useAtom } from "@effect/atom-react"
+import { Link } from "@tanstack/react-router"
 import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
 import * as React from "react"
-import { Link } from "wouter"
 import { registerAction } from "@/atoms/auth"
 import { RegisterForm } from "@/components/domain/auth/RegisterForm"
 import { Screen } from "@/components/patterns/Screen"
@@ -79,7 +79,7 @@ export function RegisterScreen() {
             </Screen.SectionDescription>
           </Screen.SectionHeader>
           <Button asChild variant="outline">
-            <Link href={pathForRoute({ name: "login" })}>Back to sign in</Link>
+            <Link to={pathForRoute({ name: "login" })}>Back to sign in</Link>
           </Button>
         </Screen.Section>
       </Screen.Body>

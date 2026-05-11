@@ -1,5 +1,5 @@
 import type { Project } from "@app/shared"
-import { Link } from "wouter"
+import { Link } from "@tanstack/react-router"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { pathForRoute } from "@/lib/router"
@@ -47,7 +47,7 @@ function ProjectListItem(props: {
       <div className="flex flex-wrap gap-2">
         <Button asChild variant="outline">
           <Link
-            href={pathForRoute({
+            to={pathForRoute({
               name: "project",
               projectId: props.project.id,
             })}
