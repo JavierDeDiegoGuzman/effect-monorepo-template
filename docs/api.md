@@ -41,7 +41,7 @@ Endpoint-specific request and response schemas, such as register/login payloads 
 
 - handlers and middleware: `apps/server/src/http/*`
 - runtime layer composition: `apps/server/src/layers/*`
-- services: `apps/server/src/services/*`
+- services: `apps/server/src/services/<feature>/*`
 - repositories: `apps/server/src/repositories/*`
 - HTTP config: `apps/server/src/infra/http/*`
 - SQLite infrastructure: `apps/server/src/infra/sql/*`
@@ -90,7 +90,7 @@ Example workflow:
 2. Add the endpoint in the appropriate group under `packages/shared/src/api/groups`
 3. Export the new group or schema if needed from `packages/shared/src/index.ts`
 4. Implement or extend repository contracts and persistence if the endpoint stores data
-5. Implement or extend the underlying service in `apps/server/src/services`
+5. Implement or extend the underlying service folder in `apps/server/src/services/<feature>`
 6. Implement the handler in `apps/server/src/http/handlers`
 7. Use the typed client from the webapp or an integration test
 
