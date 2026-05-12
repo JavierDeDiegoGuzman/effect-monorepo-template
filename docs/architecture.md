@@ -72,10 +72,11 @@ apps/webapp / apps/server tests
 
 Put in `packages/shared`:
 
-- `Schema` models
+- domain `Schema` models for resources that cross process/client boundaries
 - tagged errors
 - API definitions
-- shared types and validation rules
+- endpoint-specific request/response schemas beside their API group
+- shared structural validation rules
 
 Do not put in `packages/shared`:
 

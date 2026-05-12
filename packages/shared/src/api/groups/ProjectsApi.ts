@@ -5,13 +5,23 @@ import {
   HttpApiSchema,
   OpenApi,
 } from "effect/unstable/httpapi"
-import {
-  CreateProjectInput,
-  Project,
-  UpdateProjectInput,
-} from "../../domain/Project"
+import { Project } from "../../domain/Project"
 import { ProjectNotFound } from "../../domain/ProjectErrors"
 import { Authorization } from "../middleware/Authorization"
+
+export class CreateProjectInput extends Schema.Class<CreateProjectInput>(
+  "CreateProjectInput",
+)({
+  name: Schema.String,
+  description: Schema.String,
+}) {}
+
+export class UpdateProjectInput extends Schema.Class<UpdateProjectInput>(
+  "UpdateProjectInput",
+)({
+  name: Schema.String,
+  description: Schema.String,
+}) {}
 
 export class ProjectsApi extends HttpApiGroup.make("projects")
   .add(

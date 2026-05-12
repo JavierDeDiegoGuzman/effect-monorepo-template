@@ -27,12 +27,15 @@ Most product endpoints are protected by bearer-token authorization. Register or 
 
 ### Domain schemas and errors
 
-- `packages/shared/src/domain/Auth.ts`
+Domain files contain reusable resource schemas and typed domain errors:
+
 - `packages/shared/src/domain/User.ts`
 - `packages/shared/src/domain/Project.ts`
 - `packages/shared/src/domain/ProjectErrors.ts`
 - `packages/shared/src/domain/Todo.ts`
 - `packages/shared/src/domain/TodoErrors.ts`
+
+Endpoint-specific request and response schemas, such as register/login payloads and create/update inputs, live beside the endpoint group in `packages/shared/src/api/groups/*`.
 
 ### Server handlers and services
 
