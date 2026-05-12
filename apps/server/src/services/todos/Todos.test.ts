@@ -1,7 +1,7 @@
 import { Project } from "@app/shared"
 import { assert, describe, it } from "@effect/vitest"
 import { Effect } from "effect"
-import { makeInMemoryDomainTestLayer } from "../test/layers/DomainTestLayer"
+import { makeInMemoryDomainTestLayer } from "../../test/layers/DomainTestLayer"
 import { Todos } from "./Todos"
 
 const project = new Project({

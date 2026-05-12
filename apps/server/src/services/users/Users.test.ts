@@ -1,10 +1,11 @@
 import { assert, describe, it } from "@effect/vitest"
 import { Effect, Layer } from "effect"
-import { makeInMemoryRepositoriesLayer } from "../test/layers/InMemoryRepositoriesLayer"
+import { makeInMemoryRepositoriesLayer } from "../../test/layers/InMemoryRepositoriesLayer"
 import { Users } from "./Users"
+import { UsersLive } from "./UsersLive"
 
 const makeUsersDomainTestLayer = () =>
-  Users.layer.pipe(Layer.provide(makeInMemoryRepositoriesLayer()))
+  UsersLive.pipe(Layer.provide(makeInMemoryRepositoriesLayer()))
 
 describe("Users domain service", () => {
   it.effect(

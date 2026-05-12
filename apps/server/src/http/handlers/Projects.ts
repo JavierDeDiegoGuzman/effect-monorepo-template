@@ -1,7 +1,7 @@
 import { Api, CurrentUser, type ProjectNotFound } from "@app/shared"
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
-import { Projects } from "../../services/Projects"
+import { Projects } from "../../services/projects/Projects"
 
 export const ProjectsApiHandlers = HttpApiBuilder.group(
   Api,

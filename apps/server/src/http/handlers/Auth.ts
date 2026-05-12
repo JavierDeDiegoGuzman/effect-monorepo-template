@@ -7,9 +7,9 @@ import {
 } from "@app/shared"
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
-import { AuthTokens } from "../../services/AuthTokens"
-import { Passwords } from "../../services/Passwords"
-import { Users } from "../../services/Users"
+import { AuthTokens } from "../../services/auth-tokens/AuthTokens"
+import { Passwords } from "../../services/passwords/Passwords"
+import { Users } from "../../services/users/Users"
 
 export const AuthApiHandlers = HttpApiBuilder.group(
   Api,

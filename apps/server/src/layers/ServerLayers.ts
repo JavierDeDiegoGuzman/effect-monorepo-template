@@ -4,11 +4,11 @@ import { SqlProjectsRepositoryLayer } from "../repositories/sql/SqlProjectsRepos
 import { SqlTodosRepositoryLayer } from "../repositories/sql/SqlTodosRepository"
 import { SqlTransactionsLayer } from "../repositories/sql/SqlTransactions"
 import { SqlUsersRepositoryLayer } from "../repositories/sql/SqlUsersRepository"
-import { AuthTokens } from "../services/AuthTokens"
-import { Passwords } from "../services/Passwords"
-import { Projects } from "../services/Projects"
-import { Todos } from "../services/Todos"
-import { Users } from "../services/Users"
+import { AuthTokensLive } from "../services/auth-tokens/AuthTokensLive"
+import { PasswordsLive } from "../services/passwords/PasswordsLive"
+import { ProjectsLive } from "../services/projects/ProjectsLive"
+import { TodosLive } from "../services/todos/TodosLive"
+import { UsersLive } from "../services/users/UsersLive"
 
 export const makeRepositoryLayer = (sqliteLayer = SqliteLayer) =>
   Layer.mergeAll(
@@ -19,11 +19,11 @@ export const makeRepositoryLayer = (sqliteLayer = SqliteLayer) =>
   ).pipe(Layer.provide(sqliteLayer))
 
 export const makeDomainLayer = (repositoryLayer = makeRepositoryLayer()) => {
-  const coreDomainLayer = Layer.mergeAll(Users.layer, Projects.layer).pipe(
+  const coreDomainLayer = Layer.mergeAll(UsersLive, ProjectsLive).pipe(
     Layer.provide(repositoryLayer),
   )
 
-  const todosDomainLayer = Todos.layer.pipe(
+  const todosDomainLayer = TodosLive.pipe(
     Layer.provideMerge(coreDomainLayer),
     Layer.provide(repositoryLayer),
   )
@@ -39,8 +39,8 @@ export const makeHttpServerDependenciesLayer = (sqliteLayer = SqliteLayer) => {
     sqliteLayer,
     repositoryLayer,
     domainLayer,
-    AuthTokens.layer,
-    Passwords.layer,
+    AuthTokensLive,
+    PasswordsLive,
   )
 }
 

@@ -6,7 +6,7 @@ import {
 } from "@app/shared"
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
-import { Todos } from "../../services/Todos"
+import { Todos } from "../../services/todos/Todos"
 
 export const TodosApiHandlers = HttpApiBuilder.group(
   Api,
