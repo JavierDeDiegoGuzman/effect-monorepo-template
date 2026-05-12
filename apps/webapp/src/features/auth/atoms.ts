@@ -2,14 +2,14 @@ import type { LoginInput, RegisterInput } from "@app/shared"
 import { Effect } from "effect"
 import * as Layer from "effect/Layer"
 import * as Atom from "effect/unstable/reactivity/Atom"
-import { ApiClient } from "../api/client"
+import { ApiClient } from "@/api/client"
 import {
   clearAuthToken,
   isProbablyJwt,
   readAuthToken,
   writeAuthToken,
-} from "../lib/auth-storage"
-import { ObservabilityLayer } from "../observability"
+} from "@/lib/auth-storage"
+import { ObservabilityLayer } from "@/observability"
 
 const apiRuntime = Atom.runtime(
   Layer.mergeAll(ApiClient.layer, ObservabilityLayer),

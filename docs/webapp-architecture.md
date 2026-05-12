@@ -6,16 +6,16 @@ The webapp is intentionally opinionated so humans and agents put responsibilitie
 
 - `src/components/ui/*`: shadcn/ui primitives and thin primitive wrappers only.
 - `src/components/patterns/*`: reusable layout recipes, page structure, shell pieces, section patterns, empty/loading/error states.
-- `src/components/domain/<feature>/*`: props-first feature UI such as forms, lists, summaries, and feature-specific cards.
-- `src/components/screens/*`: connected screen containers. Screens read atoms, branch on `AsyncResult`, wire actions, and compose patterns/domain components.
+- `src/features/<feature>/components/*`: props-first feature UI such as forms, lists, summaries, and feature-specific cards.
+- `src/features/<feature>/atoms.ts`: remote/shared feature state and mutations backed by the typed API client and Effect observability spans.
+- `src/components/screens/*`: connected screen containers. Screens read atoms, branch on `AsyncResult`, wire actions, and compose patterns/feature components.
 - `src/router.tsx`: TanStack Router SPA route tree, auth redirects, route params, and shell outlet wiring.
-- `src/atoms/*`: remote/shared state and mutations backed by the typed API client and Effect observability spans.
 
 ## Markup and layout ownership
 
 Structural markup (`div`, `section`, `main`, `header`, `nav`, `ul`, `li`, etc.) belongs in `ui`, `patterns`, and local feature components. Screens and route files should compose named components instead of hand-rolling structure.
 
-If a screen needs repeated layout, extract it to `components/patterns/*`. If it is feature-specific UI, extract it to `components/domain/<feature>/*`.
+If a screen needs repeated layout, extract it to `components/patterns/*`. If it is feature-specific UI, extract it to `features/<feature>/components/*`.
 
 An escape hatch exists for exceptional cases:
 
@@ -35,9 +35,9 @@ The app uses TanStack Router with hash history for SPA routing. Route responsibi
 Routes should not call APIs directly or build feature UI. The normal flow is:
 
 ```txt
-router -> screens -> patterns/domain -> ui
+router -> screens -> patterns/features -> ui
               |
-              -> atoms -> typed api client
+              -> feature atoms -> typed api client
 ```
 
 ## Synchronization hooks

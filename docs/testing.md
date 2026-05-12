@@ -44,10 +44,10 @@ Shared story/test fixtures live in `apps/webapp/src/test/fixtures.ts`. Feature c
 
 Testing by layer:
 
-- `components/domain/*`: props-first tests with callbacks and fixtures; no atoms/router/API.
+- `features/<feature>/components/*`: props-first tests with callbacks and fixtures; no atoms/router/API.
 - `components/screens/*`: prefer a `ScreenView` split when loading/error/empty/populated/pending states need direct coverage; keep connected screen tests integration-oriented.
 - `src/router.tsx`: route wiring and redirects only, not component internals.
-- `src/atoms/*`: test only non-trivial reactivity, error mapping, or transformation behavior.
+- `features/<feature>/atoms.ts`: test only non-trivial reactivity, error mapping, or transformation behavior.
 
 Avoid adding a generic `renderWithAtoms` helper unless an integration test truly needs atom runtime wiring.
 

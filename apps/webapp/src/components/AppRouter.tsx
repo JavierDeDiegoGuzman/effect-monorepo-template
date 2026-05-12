@@ -1,7 +1,7 @@
 import { useAtomValue } from "@effect/atom-react"
 import { RouterProvider } from "@tanstack/react-router"
 import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
-import { currentSessionQuery } from "@/atoms/auth"
+import { currentSessionQuery } from "@/features/auth/atoms"
 import { AppShell } from "@/components/patterns/app-shell/AppShell"
 import { Screen } from "@/components/patterns/Screen"
 import { routeFromPath } from "@/lib/router"

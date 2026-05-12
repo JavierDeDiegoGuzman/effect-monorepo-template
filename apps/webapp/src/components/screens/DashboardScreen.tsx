@@ -1,9 +1,9 @@
 import { useAtomValue } from "@effect/atom-react"
 import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
-import { currentSessionQuery } from "@/atoms/auth"
-import { projectsQuery } from "@/atoms/projects"
-import { todosQuery } from "@/atoms/todos"
-import { DashboardSummary } from "@/components/domain/dashboard/DashboardSummary"
+import { currentSessionQuery } from "@/features/auth/atoms"
+import { projectsQuery } from "@/features/projects/atoms"
+import { todosQuery } from "@/features/todos/atoms"
+import { DashboardSummary } from "@/features/dashboard/components/DashboardSummary"
 import { Screen } from "@/components/patterns/Screen"
 import { toErrorMessage } from "@/lib/errors"
 

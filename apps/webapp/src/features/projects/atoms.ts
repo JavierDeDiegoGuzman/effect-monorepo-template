@@ -2,9 +2,9 @@ import type { CreateProjectInput, UpdateProjectInput } from "@app/shared"
 import { Effect } from "effect"
 import * as Layer from "effect/Layer"
 import * as Atom from "effect/unstable/reactivity/Atom"
-import { ApiClient } from "../api/client"
-import { ObservabilityLayer } from "../observability"
-import { currentSessionQuery } from "./auth"
+import { ApiClient } from "@/api/client"
+import { ObservabilityLayer } from "@/observability"
+import { currentSessionQuery } from "../auth/atoms"
 
 const apiRuntime = Atom.runtime(
   Layer.mergeAll(ApiClient.layer, ObservabilityLayer),

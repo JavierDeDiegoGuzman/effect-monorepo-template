@@ -6,9 +6,9 @@ import {
   archiveProjectAction,
   createProjectAction,
   projectsQuery,
-} from "@/atoms/projects"
-import { ProjectCreateForm } from "@/components/domain/projects/ProjectCreateForm"
-import { ProjectList } from "@/components/domain/projects/ProjectList"
+} from "@/features/projects/atoms"
+import { ProjectCreateForm } from "@/features/projects/components/ProjectCreateForm"
+import { ProjectList } from "@/features/projects/components/ProjectList"
 import { Screen } from "@/components/patterns/Screen"
 import { toErrorMessage } from "@/lib/errors"
 

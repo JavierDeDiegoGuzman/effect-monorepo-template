@@ -40,9 +40,9 @@ The frontend is organized in layers:
 
 - `src/components/ui/*`: shadcn/ui primitives and direct shadcn-generated wrappers
 - `src/components/patterns/*`: reusable screen and layout patterns built from `ui/*`
-- `src/components/domain/<feature>/*`: feature-specific UI pieces
+- `src/features/<feature>/components/*`: feature-specific UI pieces
+- `src/features/<feature>/atoms.ts`: remote/shared feature state and mutations using `@effect/atom-react`
 - `src/components/screens/*`: thin route-level screens that compose patterns and feature components
-- `src/atoms/*`: remote/shared state and mutations using `@effect/atom-react`
 - `src/api/*`: API client and config for remote calls
 
 ## Atom usage conventions

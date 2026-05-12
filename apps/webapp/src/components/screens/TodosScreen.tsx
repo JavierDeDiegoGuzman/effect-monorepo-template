@@ -2,13 +2,13 @@ import { CreateTodoInput, type Todo, UpdateTodoInput } from "@app/shared"
 import { useAtom, useAtomValue } from "@effect/atom-react"
 import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
 import * as React from "react"
-import { projectsQuery } from "@/atoms/projects"
-import { createTodoAction, todosQuery, updateTodoAction } from "@/atoms/todos"
-import { TodoCreateForm } from "@/components/domain/todos/TodoCreateForm"
+import { projectsQuery } from "@/features/projects/atoms"
+import { createTodoAction, todosQuery, updateTodoAction } from "@/features/todos/atoms"
+import { TodoCreateForm } from "@/features/todos/components/TodoCreateForm"
 import {
   renderTodoProjectMeta,
   TodoList,
-} from "@/components/domain/todos/TodoList"
+} from "@/features/todos/components/TodoList"
 import { Screen } from "@/components/patterns/Screen"
 import { toErrorMessage } from "@/lib/errors"
 

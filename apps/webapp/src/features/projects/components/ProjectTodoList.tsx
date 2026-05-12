@@ -1,5 +1,5 @@
 import type { Todo } from "@app/shared"
-import { TodoList } from "@/components/domain/todos/TodoList"
+import { TodoList } from "@/features/todos/components/TodoList"
 
 export function ProjectTodoList(props: {
   readonly todos: ReadonlyArray<Todo>

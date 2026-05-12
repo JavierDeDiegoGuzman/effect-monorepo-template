@@ -26,7 +26,7 @@ Recommended coverage by layer:
 
 - `components/ui/*`: primitive variants and accessibility-sensitive wrappers when useful
 - `components/patterns/*`: layout states such as default, loading, empty, error, actions, and stats
-- `components/domain/<feature>/*`: forms, lists, pending states, empty states, read-only states, and callback-driven behavior
+- `features/<feature>/components/*`: forms, lists, pending states, empty states, read-only states, and callback-driven behavior
 - `components/screens/*`: prefer stories for extracted `ScreenView` components with explicit loading, error, empty, populated, and pending props
 
 Stories must use mock props and fixtures. They should not call production or local development APIs. Connected screens should not be forced into Storybook unless their atom/router boundaries are intentionally mocked.

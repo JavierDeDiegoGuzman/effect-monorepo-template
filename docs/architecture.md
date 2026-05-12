@@ -100,9 +100,9 @@ Put in `apps/server`:
 
 Put in `apps/webapp`:
 
-- React components organized by `ui`, `patterns`, `domain`, and `screens`
+- React primitives and layout recipes organized under `components/ui` and `components/patterns`
+- feature UI and remote state organized under `features/<feature>`
 - TanStack Router SPA route definitions and app-shell outlet wiring
-- atoms and UI state
 - browser-side observability
 - web-specific client configuration
 - Storybook stories for visual component states
@@ -126,12 +126,12 @@ The default SQLite file is `./.data/app.db` relative to the server process direc
 
 When adding a new feature:
 
-1. Define domain schemas in `packages/shared/src/domain`
-2. Define API endpoints in `packages/shared/src/api`
+1. Define reusable domain schemas in `packages/shared/src/domain`
+2. Define API endpoints and endpoint-specific payload schemas in `packages/shared/src/api`
 3. Implement or extend repository contracts and persistence in `apps/server/src/repositories`
-4. Implement or extend services in `apps/server/src/services`
+4. Implement or extend service folders in `apps/server/src/services/<feature>`
 5. Implement handlers in `apps/server/src/http/handlers`
-6. Add client usage in `apps/webapp` or server integration tests
+6. Add webapp feature atoms/components in `apps/webapp/src/features/<feature>` or server integration tests
 7. Update relevant docs and architecture checks
 
 ## Why This Structure Works Well
