@@ -1,7 +1,7 @@
 import {
   type CreateTodoInput,
-  type UpdateTodoInput,
   TodoNotFound,
+  type UpdateTodoInput,
 } from "@app/shared"
 import { Effect, Layer } from "effect"
 import { TodosRepository } from "../../repositories/TodosRepository"

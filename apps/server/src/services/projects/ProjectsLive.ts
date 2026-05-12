@@ -1,4 +1,8 @@
-import { ProjectNotFound, type CreateProjectInput, type UpdateProjectInput } from "@app/shared"
+import {
+  type CreateProjectInput,
+  ProjectNotFound,
+  type UpdateProjectInput,
+} from "@app/shared"
 import { Effect, Layer } from "effect"
 import { ProjectsRepository } from "../../repositories/ProjectsRepository"
 import { Projects } from "./Projects"

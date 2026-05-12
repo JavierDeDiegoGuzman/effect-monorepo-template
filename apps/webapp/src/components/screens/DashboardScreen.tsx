@@ -1,10 +1,10 @@
 import { useAtomValue } from "@effect/atom-react"
 import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
+import { Screen } from "@/components/patterns/Screen"
 import { currentSessionQuery } from "@/features/auth/atoms"
+import { DashboardSummary } from "@/features/dashboard/components/DashboardSummary"
 import { projectsQuery } from "@/features/projects/atoms"
 import { todosQuery } from "@/features/todos/atoms"
-import { DashboardSummary } from "@/features/dashboard/components/DashboardSummary"
-import { Screen } from "@/components/patterns/Screen"
 import { toErrorMessage } from "@/lib/errors"
 
 export function DashboardScreen() {

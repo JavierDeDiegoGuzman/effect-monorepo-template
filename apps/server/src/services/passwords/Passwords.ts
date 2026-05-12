@@ -1,4 +1,4 @@
-import { Effect, ServiceMap } from "effect"
+import { type Effect, ServiceMap } from "effect"
 
 export class Passwords extends ServiceMap.Service<
   Passwords,

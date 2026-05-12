@@ -2,6 +2,7 @@ import { CreateProjectInput, type Project } from "@app/shared"
 import { useAtom, useAtomValue } from "@effect/atom-react"
 import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
 import * as React from "react"
+import { Screen } from "@/components/patterns/Screen"
 import {
   archiveProjectAction,
   createProjectAction,
@@ -9,7 +10,6 @@ import {
 } from "@/features/projects/atoms"
 import { ProjectCreateForm } from "@/features/projects/components/ProjectCreateForm"
 import { ProjectList } from "@/features/projects/components/ProjectList"
-import { Screen } from "@/components/patterns/Screen"
 import { toErrorMessage } from "@/lib/errors"
 
 export function ProjectsScreen() {

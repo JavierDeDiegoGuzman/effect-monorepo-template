@@ -1,11 +1,11 @@
-import {
-  type CreateTodoInput,
-  type ProjectNotFound,
-  type Todo,
+import type {
+  CreateTodoInput,
+  ProjectNotFound,
+  Todo,
   TodoNotFound,
-  type UpdateTodoInput,
+  UpdateTodoInput,
 } from "@app/shared"
-import { Effect, ServiceMap } from "effect"
+import { type Effect, ServiceMap } from "effect"
 
 export class Todos extends ServiceMap.Service<
   Todos,

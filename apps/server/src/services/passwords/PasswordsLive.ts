@@ -35,7 +35,11 @@ export const PasswordsLive = Layer.succeed(
 
           const salt = fromHex(saltHex)
           const expected = fromHex(derivedHex)
-          const actual = (await scrypt(password, salt, expected.length)) as Buffer
+          const actual = (await scrypt(
+            password,
+            salt,
+            expected.length,
+          )) as Buffer
           return timingSafeEqual(expected, actual)
         },
         catch: (error) =>

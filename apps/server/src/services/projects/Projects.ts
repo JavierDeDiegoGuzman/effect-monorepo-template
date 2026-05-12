@@ -1,10 +1,10 @@
-import {
-  type CreateProjectInput,
-  type Project,
+import type {
+  CreateProjectInput,
+  Project,
   ProjectNotFound,
-  type UpdateProjectInput,
+  UpdateProjectInput,
 } from "@app/shared"
-import { Effect, ServiceMap } from "effect"
+import { type Effect, ServiceMap } from "effect"
 
 export class Projects extends ServiceMap.Service<
   Projects,
