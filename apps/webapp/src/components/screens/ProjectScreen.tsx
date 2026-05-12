@@ -95,8 +95,7 @@ export function ProjectScreen({ projectId }: { readonly projectId: number }) {
                   <Screen.SectionHeader>
                     <Screen.SectionTitle>Add todo</Screen.SectionTitle>
                     <Screen.SectionDescription>
-                      This page is dedicated to one workspace project and its
-                      tasks.
+                      This page is dedicated to one project and its tasks.
                     </Screen.SectionDescription>
                   </Screen.SectionHeader>
                   <TodoCreateForm
@@ -130,7 +129,7 @@ export function ProjectScreen({ projectId }: { readonly projectId: number }) {
                     <Screen.SectionTitle>Project todos</Screen.SectionTitle>
                     <Screen.SectionDescription>
                       A full task view for this project within the current
-                      workspace.
+                      account.
                     </Screen.SectionDescription>
                   </Screen.SectionHeader>
                   {AsyncResult.matchWithError(updateTodoState, {

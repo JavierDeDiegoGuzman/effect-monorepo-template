@@ -13,24 +13,22 @@ const normalizeDescription = (description: string) => description.trim()
 export class Projects extends ServiceMap.Service<
   Projects,
   {
-    readonly listByWorkspace: (
-      workspaceId: number,
-    ) => Effect.Effect<Array<Project>>
-    readonly getByIdInWorkspace: (
-      workspaceId: number,
+    readonly listByUser: (userId: number) => Effect.Effect<Array<Project>>
+    readonly getByIdForUser: (
+      userId: number,
       id: number,
     ) => Effect.Effect<Project, ProjectNotFound>
-    readonly createInWorkspace: (
-      workspaceId: number,
+    readonly createForUser: (
+      userId: number,
       input: CreateProjectInput,
     ) => Effect.Effect<Project>
-    readonly updateInWorkspace: (
-      workspaceId: number,
+    readonly updateForUser: (
+      userId: number,
       id: number,
       input: UpdateProjectInput,
     ) => Effect.Effect<Project, ProjectNotFound>
-    readonly archiveInWorkspace: (
-      workspaceId: number,
+    readonly archiveForUser: (
+      userId: number,
       id: number,
     ) => Effect.Effect<Project, ProjectNotFound>
   }
@@ -40,79 +38,81 @@ export class Projects extends ServiceMap.Service<
     Effect.gen(function* () {
       const projectsRepository = yield* ProjectsRepository
 
-      const listByWorkspace = Effect.fn("Projects.listByWorkspace")(function* (
-        workspaceId: number,
+      const listByUser = Effect.fn("Projects.listByUser")(function* (
+        userId: number,
       ) {
-        return yield* projectsRepository.listByWorkspace(workspaceId)
+        return yield* projectsRepository.listByUser(userId)
       })
 
-      const getByIdInWorkspace = Effect.fn("Projects.getByIdInWorkspace")(
-        function* (workspaceId: number, id: number) {
-          yield* Effect.annotateCurrentSpan({
-            "workspace.id": workspaceId,
-            "project.id": id,
-          })
+      const getByIdForUser = Effect.fn("Projects.getByIdForUser")(function* (
+        userId: number,
+        id: number,
+      ) {
+        yield* Effect.annotateCurrentSpan({
+          "user.id": userId,
+          "project.id": id,
+        })
 
-          const project = yield* projectsRepository.getByIdInWorkspace(
-            workspaceId,
-            id,
-          )
-          if (project === null) {
-            return yield* new ProjectNotFound({ id })
-          }
+        const project = yield* projectsRepository.getByIdForUser(userId, id)
+        if (project === null) {
+          return yield* new ProjectNotFound({ id })
+        }
 
-          return project
-        },
-      )
+        return project
+      })
 
-      const createInWorkspace = Effect.fn("Projects.createInWorkspace")(
-        function* (workspaceId: number, input: CreateProjectInput) {
-          const name = normalizeName(input.name)
-          const description = normalizeDescription(input.description)
+      const createForUser = Effect.fn("Projects.createForUser")(function* (
+        userId: number,
+        input: CreateProjectInput,
+      ) {
+        const name = normalizeName(input.name)
+        const description = normalizeDescription(input.description)
 
-          yield* Effect.annotateCurrentSpan({
-            "workspace.id": workspaceId,
-            "project.name.length": name.length,
-            "project.description.length": description.length,
-          })
+        yield* Effect.annotateCurrentSpan({
+          "user.id": userId,
+          "project.name.length": name.length,
+          "project.description.length": description.length,
+        })
 
-          return yield* projectsRepository.createInWorkspace({
-            workspaceId,
-            name,
-            description,
-          })
-        },
-      )
+        return yield* projectsRepository.createForUser({
+          userId,
+          name,
+          description,
+        })
+      })
 
-      const updateInWorkspace = Effect.fn("Projects.updateInWorkspace")(
-        function* (workspaceId: number, id: number, input: UpdateProjectInput) {
-          yield* getByIdInWorkspace(workspaceId, id)
+      const updateForUser = Effect.fn("Projects.updateForUser")(function* (
+        userId: number,
+        id: number,
+        input: UpdateProjectInput,
+      ) {
+        yield* getByIdForUser(userId, id)
 
-          yield* projectsRepository.updateInWorkspace({
-            workspaceId,
-            id,
-            name: normalizeName(input.name),
-            description: normalizeDescription(input.description),
-          })
+        yield* projectsRepository.updateForUser({
+          userId,
+          id,
+          name: normalizeName(input.name),
+          description: normalizeDescription(input.description),
+        })
 
-          return yield* getByIdInWorkspace(workspaceId, id)
-        },
-      )
+        return yield* getByIdForUser(userId, id)
+      })
 
-      const archiveInWorkspace = Effect.fn("Projects.archiveInWorkspace")(
-        function* (workspaceId: number, id: number) {
-          yield* getByIdInWorkspace(workspaceId, id)
-          yield* projectsRepository.archiveInWorkspace(workspaceId, id)
-          return yield* getByIdInWorkspace(workspaceId, id)
-        },
-      )
+      const archiveForUser = Effect.fn("Projects.archiveForUser")(function* (
+        userId: number,
+        id: number,
+      ) {
+        yield* getByIdForUser(userId, id)
+        yield* projectsRepository.archiveForUser(userId, id)
+        return yield* getByIdForUser(userId, id)
+      })
 
       return Projects.of({
-        listByWorkspace,
-        getByIdInWorkspace,
-        createInWorkspace,
-        updateInWorkspace,
-        archiveInWorkspace,
+        listByUser,
+        getByIdForUser,
+        createForUser,
+        updateForUser,
+        archiveForUser,
       })
     }),
   )

@@ -29,11 +29,10 @@ export function DashboardSummary(props: {
       <div className="grid gap-4 lg:grid-cols-[1.2fr_2fr]">
         <Card className="border-border/60 bg-muted/20">
           <CardHeader>
-            <CardDescription>Current workspace</CardDescription>
-            <CardTitle>{props.session.workspace.name}</CardTitle>
+            <CardDescription>Signed-in user</CardDescription>
+            <CardTitle>{props.session.user.name}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-muted-foreground">
-            <div>Signed in as {props.session.user.name}</div>
             <div>{props.session.user.email}</div>
           </CardContent>
         </Card>
@@ -52,8 +51,8 @@ export function DashboardSummary(props: {
           <CardHeader>
             <CardTitle>Move from overview to execution</CardTitle>
             <CardDescription>
-              Use the dashboard to orient yourself, then jump into the workspace
-              collections where the real CRUD work happens.
+              Use the dashboard to orient yourself, then jump into the project
+              and todo collections where the real CRUD work happens.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-sm text-muted-foreground">

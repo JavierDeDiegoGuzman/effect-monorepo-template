@@ -4,24 +4,22 @@ import { type Effect, ServiceMap } from "effect"
 export class TodosRepository extends ServiceMap.Service<
   TodosRepository,
   {
-    readonly listByWorkspace: (
-      workspaceId: number,
-    ) => Effect.Effect<Array<Todo>>
-    readonly listByProjectInWorkspace: (
-      workspaceId: number,
+    readonly listByUser: (userId: number) => Effect.Effect<Array<Todo>>
+    readonly listByProjectForUser: (
+      userId: number,
       projectId: number,
     ) => Effect.Effect<Array<Todo>>
-    readonly getByIdInWorkspace: (
-      workspaceId: number,
+    readonly getByIdForUser: (
+      userId: number,
       id: number,
     ) => Effect.Effect<Todo | null>
-    readonly createInWorkspace: (input: {
-      readonly workspaceId: number
+    readonly createForUser: (input: {
+      readonly userId: number
       readonly title: string
       readonly projectId: number | null
     }) => Effect.Effect<Todo>
-    readonly updateCompletedInWorkspace: (input: {
-      readonly workspaceId: number
+    readonly updateCompletedForUser: (input: {
+      readonly userId: number
       readonly id: number
       readonly completed: boolean
     }) => Effect.Effect<void>

@@ -19,9 +19,7 @@ export const CollectionScreen: Story = {
     <Screen.Root className="max-w-3xl">
       <Screen.Header>
         <Screen.Title>Todos</Screen.Title>
-        <Screen.Description>
-          Manage the work items for the current workspace.
-        </Screen.Description>
+        <Screen.Description>Manage your work items.</Screen.Description>
       </Screen.Header>
       <Screen.Body>
         <Screen.Section>

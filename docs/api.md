@@ -10,7 +10,7 @@ The API is defined once in `packages/shared` and then:
 - consumed in `apps/webapp`
 - exercised by server integration tests through `HttpApiClient`
 
-Most product endpoints are protected by bearer-token authorization. Register or log in first, then send the returned access token as `Authorization: Bearer <token>`.
+Most product endpoints are protected by bearer-token authorization. Register or log in first, then send the returned access token as `Authorization: Bearer <token>`. Protected projects and todos are owned by the authenticated user.
 
 ## Where Things Live
 
@@ -29,7 +29,6 @@ Most product endpoints are protected by bearer-token authorization. Register or 
 
 - `packages/shared/src/domain/Auth.ts`
 - `packages/shared/src/domain/User.ts`
-- `packages/shared/src/domain/Workspace.ts`
 - `packages/shared/src/domain/Project.ts`
 - `packages/shared/src/domain/ProjectErrors.ts`
 - `packages/shared/src/domain/Todo.ts`
@@ -75,7 +74,7 @@ Most product endpoints are protected by bearer-token authorization. Register or 
 - `POST /todos`
 - `PATCH /todos/:id`
 
-Todos can optionally belong to a project. Project-scoped reads use `/projects/:projectId/todos`.
+Todos can optionally belong to a project owned by the authenticated user. Project-scoped reads use `/projects/:projectId/todos`.
 
 ## How To Add A New Endpoint
 

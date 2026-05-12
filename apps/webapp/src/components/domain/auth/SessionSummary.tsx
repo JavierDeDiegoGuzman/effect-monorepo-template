@@ -12,7 +12,7 @@ export function SessionSummary({
         {session.user.name}
       </div>
       <Badge variant="outline" className="max-w-40 truncate">
-        {session.workspace.name}
+        {session.user.email}
       </Badge>
     </div>
   )

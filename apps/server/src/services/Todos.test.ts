@@ -6,7 +6,7 @@ import { Todos } from "./Todos"
 
 const project = new Project({
   id: 1,
-  workspaceId: 1,
+  userId: 1,
   name: "Template",
   description: "Test project",
   archived: false,
@@ -14,12 +14,12 @@ const project = new Project({
 
 describe("Todos domain service", () => {
   it.effect(
-    "creates a todo when the referenced project exists in the workspace",
+    "creates a todo when the referenced project belongs to the user",
     () =>
       Effect.gen(function* () {
         const todos = yield* Todos
 
-        const todo = yield* todos.createInWorkspace(1, {
+        const todo = yield* todos.createForUser(1, {
           title: " Write tests ",
           projectId: project.id,
         })
@@ -37,13 +37,13 @@ describe("Todos domain service", () => {
   )
 
   it.effect(
-    "fails with ProjectNotFound when the referenced project is outside the workspace",
+    "fails with ProjectNotFound when the referenced project belongs to another user",
     () =>
       Effect.gen(function* () {
         const todos = yield* Todos
 
         const error = yield* todos
-          .createInWorkspace(2, {
+          .createForUser(2, {
             title: "Write tests",
             projectId: project.id,
           })

@@ -4,27 +4,22 @@ import { type Effect, ServiceMap } from "effect"
 export class ProjectsRepository extends ServiceMap.Service<
   ProjectsRepository,
   {
-    readonly listByWorkspace: (
-      workspaceId: number,
-    ) => Effect.Effect<Array<Project>>
-    readonly getByIdInWorkspace: (
-      workspaceId: number,
+    readonly listByUser: (userId: number) => Effect.Effect<Array<Project>>
+    readonly getByIdForUser: (
+      userId: number,
       id: number,
     ) => Effect.Effect<Project | null>
-    readonly createInWorkspace: (input: {
-      readonly workspaceId: number
+    readonly createForUser: (input: {
+      readonly userId: number
       readonly name: string
       readonly description: string
     }) => Effect.Effect<Project>
-    readonly updateInWorkspace: (input: {
-      readonly workspaceId: number
+    readonly updateForUser: (input: {
+      readonly userId: number
       readonly id: number
       readonly name: string
       readonly description: string
     }) => Effect.Effect<void>
-    readonly archiveInWorkspace: (
-      workspaceId: number,
-      id: number,
-    ) => Effect.Effect<void>
+    readonly archiveForUser: (userId: number, id: number) => Effect.Effect<void>
   }
 >()("app/repositories/ProjectsRepository") {}

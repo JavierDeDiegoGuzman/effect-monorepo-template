@@ -24,7 +24,7 @@ export const Default: Story = {
   render: () => (
     <Card className="w-[360px]">
       <CardHeader>
-        <CardTitle>Workspace</CardTitle>
+        <CardTitle>Account</CardTitle>
         <CardDescription>
           Cards group related content and actions.
         </CardDescription>

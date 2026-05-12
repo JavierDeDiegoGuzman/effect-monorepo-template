@@ -9,7 +9,7 @@ export function ProjectNotFound() {
       <Screen.Header>
         <Screen.Title>Project not found</Screen.Title>
         <Screen.Description>
-          The requested project does not exist in the current workspace.
+          The requested project does not exist in your account.
         </Screen.Description>
       </Screen.Header>
       <Screen.Body>

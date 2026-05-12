@@ -23,6 +23,19 @@
     "enabled": true,
     "rules": {
       "recommended": true,
+      "suspicious": {
+        "noExplicitAny": "error"
+      },
+      "style": {
+        "noRestrictedTypes": {
+          "level": "error",
+          "options": {
+            "types": {
+              "unknown": "Do not use explicit unknown; model the value with a concrete union or generic type instead."
+            }
+          }
+        }
+      },
       "correctness": {
         "useYield": "off"
       }

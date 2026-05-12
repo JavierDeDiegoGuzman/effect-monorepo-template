@@ -46,6 +46,15 @@ Build all workspaces:
 pnpm build
 ```
 
+Run linting and formatting checks:
+
+```bash
+pnpm lint
+pnpm format
+```
+
+The lint configuration rejects explicit `any` and explicit `unknown` in project code. Prefer concrete unions, generics, or domain-specific types.
+
 Run server tests:
 
 ```bash
@@ -106,7 +115,7 @@ Copy `.env.example` to `.env` before local development. Keep secrets out of comm
 
 ## Current Local Data
 
-The example app persists users, workspaces, projects, and todos in SQLite. With the default `.env.example`, the database file is `apps/server/.data/app.db` when running through `pnpm dev`.
+The example app persists users, user-owned projects, and user-owned todos in SQLite. With the default `.env.example`, the database file is `apps/server/.data/app.db` when running through `pnpm dev`.
 
 ## Common Issues
 

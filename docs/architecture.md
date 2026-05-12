@@ -48,7 +48,7 @@ The shared package defines:
 - endpoint groups
 - auth middleware requirements
 
-The server implements handlers for those endpoints. Protected groups use bearer-token authorization and provide the current user and workspace to handlers.
+The server implements handlers for those endpoints. Protected groups use bearer-token authorization and provide the current user to handlers.
 
 The webapp and HTTP integration tests generate typed clients from the same `HttpApi`. Storybook stories and webapp component tests stay at the React boundary with mocked props/fixtures, so visual and behavioral component coverage does not require the API server.
 
@@ -115,7 +115,7 @@ The example app includes:
 
 - auth registration/login and `/auth/me`
 - bearer-token protected projects and todos endpoints
-- users, default workspaces, projects, and todos persisted in SQLite
+- users, user-owned projects, and user-owned todos persisted in SQLite
 - global todo listing plus project-scoped todo listing at `/projects/:projectId/todos`
 - project detail UI that shows related todos
 

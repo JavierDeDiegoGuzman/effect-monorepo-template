@@ -1,6 +1,5 @@
 import { Schema } from "effect"
 import { User } from "./User"
-import { Workspace } from "./Workspace"
 
 export class RegisterInput extends Schema.Class<RegisterInput>("RegisterInput")(
   {
@@ -19,11 +18,9 @@ export class CurrentSession extends Schema.Class<CurrentSession>(
   "CurrentSession",
 )({
   user: User,
-  workspace: Workspace,
 }) {}
 
 export class AuthSession extends Schema.Class<AuthSession>("AuthSession")({
   token: Schema.String,
   user: User,
-  workspace: Workspace,
 }) {}

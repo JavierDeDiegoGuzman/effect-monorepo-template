@@ -3,10 +3,12 @@ import { Effect, Layer } from "effect"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
 import { type UserRecord, UsersRepository } from "../UsersRepository"
 
-const insertedIdFrom = (result: unknown) =>
-  Number(
-    (result as { readonly lastInsertRowid: number | bigint }).lastInsertRowid,
-  )
+type SqliteInsertResult = {
+  readonly lastInsertRowid: number | bigint
+}
+
+const insertedIdFrom = (result: SqliteInsertResult) =>
+  Number(result.lastInsertRowid)
 
 type UserRow = {
   readonly id: number
@@ -70,10 +72,10 @@ export const SqlUsersRepositoryLayer = Layer.effect(
       readonly email: string
       readonly passwordHash: string
     }) {
-      const result = yield* sql`
+      const result = (yield* sql`
         INSERT INTO users (name, email, password_hash)
         VALUES (${input.name}, ${input.email}, ${input.passwordHash})
-      `.raw.pipe(Effect.orDie)
+      `.raw.pipe(Effect.orDie)) as SqliteInsertResult
 
       return yield* getById(insertedIdFrom(result)).pipe(
         Effect.flatMap((user) =>

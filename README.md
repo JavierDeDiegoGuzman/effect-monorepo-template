@@ -21,7 +21,7 @@ This template includes a small authenticated SaaS-style example, but the real go
 - React + `@effect/atom-react`
 - Storybook for visual component development
 - Vitest + Testing Library for webapp component tests
-- SQLite persistence for auth, workspaces, projects, and todos
+- SQLite persistence for auth, user-owned projects, and user-owned todos
 - local observability stack with OTLP Collector + Jaeger
 
 ## Repository Layout
@@ -71,8 +71,8 @@ pnpm verify:architecture
 The included example covers:
 
 - registration, login, and bearer-token protected endpoints
-- users and default workspaces
-- projects
+- registration, login, and per-user sessions
+- user-owned projects
 - global todos and project-scoped todos
 - SQLite persistence under `apps/server/.data` by default
 - typed HTTP integration coverage

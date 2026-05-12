@@ -3,14 +3,16 @@ import { Effect, Layer } from "effect"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
 import { ProjectsRepository } from "../ProjectsRepository"
 
-const insertedIdFrom = (result: unknown) =>
-  Number(
-    (result as { readonly lastInsertRowid: number | bigint }).lastInsertRowid,
-  )
+type SqliteInsertResult = {
+  readonly lastInsertRowid: number | bigint
+}
+
+const insertedIdFrom = (result: SqliteInsertResult) =>
+  Number(result.lastInsertRowid)
 
 type ProjectRow = {
   readonly id: number
-  readonly workspace_id: number
+  readonly user_id: number
   readonly name: string
   readonly description: string
   readonly archived: number
@@ -19,7 +21,7 @@ type ProjectRow = {
 const toProject = (row: ProjectRow) =>
   new Project({
     id: row.id,
-    workspaceId: row.workspace_id,
+    userId: row.user_id,
     name: row.name,
     description: row.description,
     archived: row.archived === 1,
@@ -30,88 +32,85 @@ export const SqlProjectsRepositoryLayer = Layer.effect(
   Effect.gen(function* () {
     const sql = yield* SqlClient.SqlClient
 
-    const listByWorkspace = Effect.fn("SqlProjectsRepository.listByWorkspace")(
-      function* (workspaceId: number) {
-        const rows = yield* sql<ProjectRow>`
-        SELECT id, workspace_id, name, description, archived
+    const listByUser = Effect.fn("SqlProjectsRepository.listByUser")(function* (
+      userId: number,
+    ) {
+      const rows = yield* sql<ProjectRow>`
+        SELECT id, user_id, name, description, archived
         FROM projects
-        WHERE workspace_id = ${workspaceId}
+        WHERE user_id = ${userId}
         ORDER BY id ASC
       `.pipe(Effect.orDie)
 
-        return rows.map(toProject)
-      },
-    )
+      return rows.map(toProject)
+    })
 
-    const getByIdInWorkspace = Effect.fn(
-      "SqlProjectsRepository.getByIdInWorkspace",
-    )(function* (workspaceId: number, id: number) {
-      const rows = yield* sql<ProjectRow>`
-        SELECT id, workspace_id, name, description, archived
+    const getByIdForUser = Effect.fn("SqlProjectsRepository.getByIdForUser")(
+      function* (userId: number, id: number) {
+        const rows = yield* sql<ProjectRow>`
+        SELECT id, user_id, name, description, archived
         FROM projects
-        WHERE workspace_id = ${workspaceId} AND id = ${id}
+        WHERE user_id = ${userId} AND id = ${id}
         LIMIT 1
       `.pipe(Effect.orDie)
 
-      const row = rows[0]
-      return row === undefined ? null : toProject(row)
-    })
+        const row = rows[0]
+        return row === undefined ? null : toProject(row)
+      },
+    )
 
-    const createInWorkspace = Effect.fn(
-      "SqlProjectsRepository.createInWorkspace",
-    )(function* (input: {
-      readonly workspaceId: number
-      readonly name: string
-      readonly description: string
-    }) {
-      const result = yield* sql`
-        INSERT INTO projects (workspace_id, name, description, archived)
-        VALUES (${input.workspaceId}, ${input.name}, ${input.description}, 0)
-      `.raw.pipe(Effect.orDie)
+    const createForUser = Effect.fn("SqlProjectsRepository.createForUser")(
+      function* (input: {
+        readonly userId: number
+        readonly name: string
+        readonly description: string
+      }) {
+        const result = (yield* sql`
+        INSERT INTO projects (user_id, name, description, archived)
+        VALUES (${input.userId}, ${input.name}, ${input.description}, 0)
+      `.raw.pipe(Effect.orDie)) as SqliteInsertResult
 
-      return yield* getByIdInWorkspace(
-        input.workspaceId,
-        insertedIdFrom(result),
-      ).pipe(
-        Effect.flatMap((project) =>
-          project === null
-            ? Effect.die("Inserted project not found")
-            : Effect.succeed(project),
-        ),
-      )
-    })
+        return yield* getByIdForUser(input.userId, insertedIdFrom(result)).pipe(
+          Effect.flatMap((project) =>
+            project === null
+              ? Effect.die("Inserted project not found")
+              : Effect.succeed(project),
+          ),
+        )
+      },
+    )
 
-    const updateInWorkspace = Effect.fn(
-      "SqlProjectsRepository.updateInWorkspace",
-    )(function* (input: {
-      readonly workspaceId: number
-      readonly id: number
-      readonly name: string
-      readonly description: string
-    }) {
-      yield* sql`
+    const updateForUser = Effect.fn("SqlProjectsRepository.updateForUser")(
+      function* (input: {
+        readonly userId: number
+        readonly id: number
+        readonly name: string
+        readonly description: string
+      }) {
+        yield* sql`
         UPDATE projects
         SET name = ${input.name}, description = ${input.description}
-        WHERE workspace_id = ${input.workspaceId} AND id = ${input.id}
+        WHERE user_id = ${input.userId} AND id = ${input.id}
       `.pipe(Effect.orDie)
-    })
+      },
+    )
 
-    const archiveInWorkspace = Effect.fn(
-      "SqlProjectsRepository.archiveInWorkspace",
-    )(function* (workspaceId: number, id: number) {
-      yield* sql`
+    const archiveForUser = Effect.fn("SqlProjectsRepository.archiveForUser")(
+      function* (userId: number, id: number) {
+        yield* sql`
         UPDATE projects
         SET archived = 1
-        WHERE workspace_id = ${workspaceId} AND id = ${id}
+        WHERE user_id = ${userId} AND id = ${id}
       `.pipe(Effect.orDie)
-    })
+      },
+    )
 
     return ProjectsRepository.of({
-      listByWorkspace,
-      getByIdInWorkspace,
-      createInWorkspace,
-      updateInWorkspace,
-      archiveInWorkspace,
+      listByUser,
+      getByIdForUser,
+      createForUser,
+      updateForUser,
+      archiveForUser,
     })
   }),
 )

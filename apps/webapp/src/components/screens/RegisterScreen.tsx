@@ -41,8 +41,7 @@ export function RegisterScreen() {
       <Screen.Header>
         <Screen.Title>Create account</Screen.Title>
         <Screen.Description>
-          We will create your personal workspace automatically so you can start
-          organizing work immediately.
+          Create your account so you can start organizing work immediately.
         </Screen.Description>
       </Screen.Header>
       <Screen.Body>

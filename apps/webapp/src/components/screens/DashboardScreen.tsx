@@ -47,8 +47,8 @@ export function DashboardScreen() {
                 <Screen.Header>
                   <Screen.Title>Dashboard</Screen.Title>
                   <Screen.Description>
-                    A workspace dashboard that summarizes your current scope
-                    before you move into collection and detail screens.
+                    A dashboard that summarizes your current scope before you
+                    move into collection and detail screens.
                   </Screen.Description>
                 </Screen.Header>
 
@@ -88,7 +88,7 @@ function DashboardScreenError({ message }: { readonly message: string }) {
     <Screen.Root>
       <Screen.Header>
         <Screen.Title>Dashboard</Screen.Title>
-        <Screen.Description>Workspace summary screen.</Screen.Description>
+        <Screen.Description>Account summary screen.</Screen.Description>
       </Screen.Header>
       <Screen.Body>
         <Screen.Error>{message}</Screen.Error>

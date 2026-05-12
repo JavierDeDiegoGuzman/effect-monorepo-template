@@ -16,34 +16,34 @@ export const makeInMemoryProjectsRepositoryLayer = (
         new Map(initialProjects.map((project) => [project.id, project])),
       )
 
-      const listByWorkspace = Effect.fn(
-        "InMemoryProjectsRepository.listByWorkspace",
-      )(function* (workspaceId: number) {
-        return Array.from((yield* Ref.get(store)).values()).filter(
-          (project) => project.workspaceId === workspaceId,
-        )
-      })
+      const listByUser = Effect.fn("InMemoryProjectsRepository.listByUser")(
+        function* (userId: number) {
+          return Array.from((yield* Ref.get(store)).values()).filter(
+            (project) => project.userId === userId,
+          )
+        },
+      )
 
-      const getByIdInWorkspace = Effect.fn(
-        "InMemoryProjectsRepository.getByIdInWorkspace",
-      )(function* (workspaceId: number, id: number) {
+      const getByIdForUser = Effect.fn(
+        "InMemoryProjectsRepository.getByIdForUser",
+      )(function* (userId: number, id: number) {
         const project = (yield* Ref.get(store)).get(id)
-        return project !== undefined && project.workspaceId === workspaceId
+        return project !== undefined && project.userId === userId
           ? project
           : null
       })
 
-      const createInWorkspace = Effect.fn(
-        "InMemoryProjectsRepository.createInWorkspace",
+      const createForUser = Effect.fn(
+        "InMemoryProjectsRepository.createForUser",
       )(function* (input: {
-        readonly workspaceId: number
+        readonly userId: number
         readonly name: string
         readonly description: string
       }) {
         const id = yield* Ref.getAndUpdate(nextId, (current) => current + 1)
         const project = new Project({
           id,
-          workspaceId: input.workspaceId,
+          userId: input.userId,
           name: input.name,
           description: input.description,
           archived: false,
@@ -52,20 +52,17 @@ export const makeInMemoryProjectsRepositoryLayer = (
         return project
       })
 
-      const updateInWorkspace = Effect.fn(
-        "InMemoryProjectsRepository.updateInWorkspace",
+      const updateForUser = Effect.fn(
+        "InMemoryProjectsRepository.updateForUser",
       )(function* (input: {
-        readonly workspaceId: number
+        readonly userId: number
         readonly id: number
         readonly name: string
         readonly description: string
       }) {
         yield* Ref.update(store, (current) => {
           const project = current.get(input.id)
-          if (
-            project === undefined ||
-            project.workspaceId !== input.workspaceId
-          ) {
+          if (project === undefined || project.userId !== input.userId) {
             return current
           }
           return new Map(current).set(
@@ -79,12 +76,12 @@ export const makeInMemoryProjectsRepositoryLayer = (
         })
       })
 
-      const archiveInWorkspace = Effect.fn(
-        "InMemoryProjectsRepository.archiveInWorkspace",
-      )(function* (workspaceId: number, id: number) {
+      const archiveForUser = Effect.fn(
+        "InMemoryProjectsRepository.archiveForUser",
+      )(function* (userId: number, id: number) {
         yield* Ref.update(store, (current) => {
           const project = current.get(id)
-          if (project === undefined || project.workspaceId !== workspaceId) {
+          if (project === undefined || project.userId !== userId) {
             return current
           }
           return new Map(current).set(
@@ -95,11 +92,11 @@ export const makeInMemoryProjectsRepositoryLayer = (
       })
 
       return ProjectsRepository.of({
-        listByWorkspace,
-        getByIdInWorkspace,
-        createInWorkspace,
-        updateInWorkspace,
-        archiveInWorkspace,
+        listByUser,
+        getByIdForUser,
+        createForUser,
+        updateForUser,
+        archiveForUser,
       })
     }),
   )

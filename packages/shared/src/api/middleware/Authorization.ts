@@ -1,16 +1,10 @@
 import { Schema, ServiceMap } from "effect"
 import { HttpApiMiddleware, HttpApiSecurity } from "effect/unstable/httpapi"
 import type { User } from "../../domain/User"
-import type { Workspace } from "../../domain/Workspace"
 
 export class CurrentUser extends ServiceMap.Service<CurrentUser, User>()(
   "app/Authorization/CurrentUser",
 ) {}
-
-export class CurrentWorkspace extends ServiceMap.Service<
-  CurrentWorkspace,
-  Workspace
->()("app/Authorization/CurrentWorkspace") {}
 
 export class Unauthorized extends Schema.TaggedErrorClass<Unauthorized>()(
   "Unauthorized",
@@ -23,7 +17,7 @@ export class Unauthorized extends Schema.TaggedErrorClass<Unauthorized>()(
 export class Authorization extends HttpApiMiddleware.Service<
   Authorization,
   {
-    provides: CurrentUser | CurrentWorkspace
+    provides: CurrentUser
     requires: never
   }
 >()("app/Authorization", {

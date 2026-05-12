@@ -1,4 +1,4 @@
-export function toErrorMessage(error: unknown): string {
+export function toErrorMessage<ErrorValue>(error: ErrorValue): string {
   if (error instanceof Error && error.message.length > 0) {
     return error.message
   }

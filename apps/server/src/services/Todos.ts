@@ -12,23 +12,21 @@ import { Projects } from "./Projects"
 export class Todos extends ServiceMap.Service<
   Todos,
   {
-    readonly listByWorkspace: (
-      workspaceId: number,
-    ) => Effect.Effect<Array<Todo>>
-    readonly listByProjectInWorkspace: (
-      workspaceId: number,
+    readonly listByUser: (userId: number) => Effect.Effect<Array<Todo>>
+    readonly listByProjectForUser: (
+      userId: number,
       projectId: number,
     ) => Effect.Effect<Array<Todo>>
-    readonly getByIdInWorkspace: (
-      workspaceId: number,
+    readonly getByIdForUser: (
+      userId: number,
       id: number,
     ) => Effect.Effect<Todo, TodoNotFound>
-    readonly createInWorkspace: (
-      workspaceId: number,
+    readonly createForUser: (
+      userId: number,
       input: CreateTodoInput,
     ) => Effect.Effect<Todo, ProjectNotFound>
-    readonly updateInWorkspace: (
-      workspaceId: number,
+    readonly updateForUser: (
+      userId: number,
       id: number,
       input: UpdateTodoInput,
     ) => Effect.Effect<Todo, TodoNotFound>
@@ -40,77 +38,72 @@ export class Todos extends ServiceMap.Service<
       const projects = yield* Projects
       const todosRepository = yield* TodosRepository
 
-      const listByWorkspace = Effect.fn("Todos.listByWorkspace")(function* (
-        workspaceId: number,
+      const listByUser = Effect.fn("Todos.listByUser")(function* (
+        userId: number,
       ) {
-        return yield* todosRepository.listByWorkspace(workspaceId)
+        return yield* todosRepository.listByUser(userId)
       })
 
-      const listByProjectInWorkspace = Effect.fn(
-        "Todos.listByProjectInWorkspace",
-      )(function* (workspaceId: number, projectId: number) {
-        return yield* todosRepository.listByProjectInWorkspace(
-          workspaceId,
-          projectId,
-        )
-      })
-
-      const getByIdInWorkspace = Effect.fn("Todos.getByIdInWorkspace")(
-        function* (workspaceId: number, id: number) {
-          yield* Effect.annotateCurrentSpan({
-            "workspace.id": workspaceId,
-            "todo.id": id,
-          })
-
-          const todo = yield* todosRepository.getByIdInWorkspace(
-            workspaceId,
-            id,
-          )
-          if (todo === null) {
-            return yield* new TodoNotFound({ id })
-          }
-
-          return todo
+      const listByProjectForUser = Effect.fn("Todos.listByProjectForUser")(
+        function* (userId: number, projectId: number) {
+          return yield* todosRepository.listByProjectForUser(userId, projectId)
         },
       )
 
-      const createInWorkspace = Effect.fn("Todos.createInWorkspace")(function* (
-        workspaceId: number,
+      const getByIdForUser = Effect.fn("Todos.getByIdForUser")(function* (
+        userId: number,
+        id: number,
+      ) {
+        yield* Effect.annotateCurrentSpan({
+          "user.id": userId,
+          "todo.id": id,
+        })
+
+        const todo = yield* todosRepository.getByIdForUser(userId, id)
+        if (todo === null) {
+          return yield* new TodoNotFound({ id })
+        }
+
+        return todo
+      })
+
+      const createForUser = Effect.fn("Todos.createForUser")(function* (
+        userId: number,
         input: CreateTodoInput,
       ) {
         if (input.projectId !== null) {
-          yield* projects.getByIdInWorkspace(workspaceId, input.projectId)
+          yield* projects.getByIdForUser(userId, input.projectId)
         }
 
-        return yield* todosRepository.createInWorkspace({
-          workspaceId,
+        return yield* todosRepository.createForUser({
+          userId,
           title: input.title.trim(),
           projectId: input.projectId,
         })
       })
 
-      const updateInWorkspace = Effect.fn("Todos.updateInWorkspace")(function* (
-        workspaceId: number,
+      const updateForUser = Effect.fn("Todos.updateForUser")(function* (
+        userId: number,
         id: number,
         input: UpdateTodoInput,
       ) {
-        yield* getByIdInWorkspace(workspaceId, id)
+        yield* getByIdForUser(userId, id)
 
-        yield* todosRepository.updateCompletedInWorkspace({
-          workspaceId,
+        yield* todosRepository.updateCompletedForUser({
+          userId,
           id,
           completed: input.completed,
         })
 
-        return yield* getByIdInWorkspace(workspaceId, id)
+        return yield* getByIdForUser(userId, id)
       })
 
       return Todos.of({
-        listByWorkspace,
-        listByProjectInWorkspace,
-        getByIdInWorkspace,
-        createInWorkspace,
-        updateInWorkspace,
+        listByUser,
+        listByProjectForUser,
+        getByIdForUser,
+        createForUser,
+        updateForUser,
       })
     }),
   )
