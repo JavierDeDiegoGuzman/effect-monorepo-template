@@ -1,7 +1,7 @@
 import { Effect, Layer } from "effect"
 import { FetchHttpClient } from "effect/unstable/http"
 import { Otlp } from "effect/unstable/observability"
-import { getObservabilityConfig } from "./observability.config"
+import { getObservabilityConfig } from "./config"
 
 export const ObservabilityLayer = Layer.unwrap(
   Effect.gen(function* () {

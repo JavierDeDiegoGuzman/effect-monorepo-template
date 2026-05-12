@@ -1,7 +1,8 @@
 import { NodeRuntime } from "@effect/platform-node"
 import { Effect, Layer } from "effect"
-import { HttpServerDependenciesLayer, HttpServerLayer } from "./http/server"
-import { ObservabilityLayer } from "./observability"
+import { HttpServerLayer } from "./http/server"
+import { ObservabilityLayer } from "./infra/observability/Observability"
+import { HttpServerDependenciesLayer } from "./layers/ServerLayers"
 
 const AppLayer = Layer.provide(
   HttpServerLayer,

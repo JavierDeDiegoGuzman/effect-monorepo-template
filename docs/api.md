@@ -36,10 +36,13 @@ Most product endpoints are protected by bearer-token authorization. Register or 
 
 ### Server handlers and services
 
-- handlers: `apps/server/src/http/handlers/*`
+- handlers and middleware: `apps/server/src/http/*`
+- runtime layer composition: `apps/server/src/layers/*`
 - services: `apps/server/src/services/*`
 - repositories: `apps/server/src/repositories/*`
+- HTTP config: `apps/server/src/infra/http/*`
 - SQLite infrastructure: `apps/server/src/infra/sql/*`
+- observability infrastructure: `apps/server/src/infra/observability/*`
 
 ### Clients
 

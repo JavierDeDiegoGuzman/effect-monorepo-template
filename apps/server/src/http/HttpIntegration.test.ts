@@ -4,8 +4,9 @@ import { assert, describe, it } from "@effect/vitest"
 import { ConfigProvider, Effect, Layer } from "effect"
 import { HttpClientRequest, HttpRouter } from "effect/unstable/http"
 import { HttpApiClient, HttpApiMiddleware } from "effect/unstable/httpapi"
+import { makeHttpServerDependenciesLayer } from "../layers/ServerLayers"
 import { makeTestSqliteLayer } from "../test/layers/TestSqliteLayer"
-import { makeApiRoutesLayer, makeHttpServerDependenciesLayer } from "./server"
+import { makeApiRoutesLayer } from "./server"
 
 const testConfigProvider = ConfigProvider.fromUnknown({
   AUTH_JWT_SECRET: "integration-test-secret-at-least-32-chars",

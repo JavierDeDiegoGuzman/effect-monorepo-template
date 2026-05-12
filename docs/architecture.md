@@ -88,12 +88,12 @@ Do not put in `packages/shared`:
 
 Put in `apps/server`:
 
-- HTTP server setup and middleware
-- SQLite infrastructure and schema initialization
-- repository contracts and implementations
-- domain service implementations
-- handler wiring
-- environment-specific layers
+- `src/http`: HTTP server setup, route assembly, handlers, and middleware
+- `src/infra`: runtime infrastructure such as HTTP config, SQLite setup/schema, and observability layers
+- `src/layers`: production layer composition for repositories, domain services, auth helpers, and server dependencies
+- `src/repositories`: repository contracts plus memory/SQL implementations
+- `src/services`: domain service implementations
+- `src/test`: reusable test layers and fixtures
 
 ### Webapp
 
