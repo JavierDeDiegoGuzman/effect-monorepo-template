@@ -8,7 +8,7 @@ description: Design and implement tests for layered Effect backends that separat
 Use this skill when adding tests for an Effect backend that follows layered architecture:
 
 ```txt
-infra/sql -> repositories -> domain services -> http handlers
+database -> module repositories -> module domain services -> module HTTP handlers
 ```
 
 Read the references in order:
@@ -61,15 +61,21 @@ Read the references in order:
 
 ```txt
 apps/server/src/
-  repositories/
-    memory/
-      InMemory<Resource>Repository.ts
-      InMemoryTransactions.ts
-    sql/
-      Sql<Resource>Repository.test.ts
-  services/
-    <Resource>Service.test.ts
+  modules/
+    <module>/
+      repository.ts
+      repository.memory.ts
+      repository.sql.ts
+      repository.sql.test.ts
+      service.ts
+      service.live.ts
+      service.test.ts
+  database/
+    transactions.ts
+    transactions.memory.ts
   test/
+    integration/
+      http.test.ts
     layers/
       TestSqliteLayer.ts
       SqlRepositoriesTestLayer.ts

@@ -14,7 +14,7 @@ export class Transactions extends ServiceMap.Service<
       effect: Effect.Effect<A, E, R>
     ) => Effect.Effect<A, E, R>
   }
->()("app/repositories/Transactions") {}
+>()("app/database/Transactions") {}
 ```
 
 ## SQL implementation

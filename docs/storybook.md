@@ -1,6 +1,6 @@
 # Storybook
 
-The webapp uses Storybook as the visual workshop for reusable UI, pattern, domain, and screen-adjacent components.
+The webapp uses Storybook as the visual workshop for reusable UI, pattern, module, and screen-adjacent components.
 
 ## Commands
 
@@ -26,7 +26,7 @@ Recommended coverage by layer:
 
 - `components/ui/*`: primitive variants and accessibility-sensitive wrappers when useful
 - `components/patterns/*`: layout states such as default, loading, empty, error, actions, and stats
-- `features/<feature>/components/*`: forms, lists, pending states, empty states, read-only states, and callback-driven behavior
+- `modules/<module>/components/*`: forms, lists, pending states, empty states, read-only states, and callback-driven behavior
 - `components/screens/*`: prefer stories for extracted `ScreenView` components with explicit loading, error, empty, populated, and pending props
 
 Stories must use mock props and fixtures. They should not call production or local development APIs. Connected screens should not be forced into Storybook unless their atom/router boundaries are intentionally mocked.
@@ -44,10 +44,10 @@ The initial catalog covers:
 - `UI/Breadcrumb`: default and collapsed paths
 - `UI/Separator`: horizontal and vertical orientation
 - `Patterns/Screen`: collection, loading, empty, and error states
-- `Domain/Todos/TodoList`: populated, project metadata, and empty states
-- `Domain/Todos/TodoCreateForm`: default, selected project, pending, and parent-scoped states
-- `Domain/Auth/LoginForm`: empty, filled, and pending states
-- `Domain/Projects/ProjectCreateForm`: empty, filled, and pending states
+- `Modules/Todos/TodoList`: populated, project metadata, and empty states
+- `Modules/Todos/TodoCreateForm`: default, selected project, pending, and parent-scoped states
+- `Modules/Auth/LoginForm`: empty, filled, and pending states
+- `Modules/Projects/ProjectCreateForm`: empty, filled, and pending states
 
 Shared mock fixtures live in `apps/webapp/src/test/fixtures.ts` so stories and component tests can use the same stable data without touching remote APIs.
 

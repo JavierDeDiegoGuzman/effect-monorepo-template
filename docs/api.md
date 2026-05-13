@@ -4,52 +4,46 @@
 
 This template uses `effect/unstable/httpapi` as the shared contract between server and clients.
 
-The API is defined once in `packages/shared` and then:
+The API is defined once in `packages/shared`, implemented in `apps/server`, consumed in `apps/webapp`, and exercised by server integration tests through `HttpApiClient`.
 
-- implemented in `apps/server`
-- consumed in `apps/webapp`
-- exercised by server integration tests through `HttpApiClient`
-
-Most product endpoints are protected by bearer-token authorization. Register or log in first, then send the returned access token as `Authorization: Bearer <token>`. Protected projects and todos are owned by the authenticated user.
+Most product endpoints are protected by bearer-token authorization. Register or log in first, then send the returned access token as `Authorization: Bearer <token>`.
 
 ## Where Things Live
 
 ### API root
 
-- `packages/shared/src/api/Api.ts`
+- `packages/shared/src/api.ts`
 
-### API groups
+### Shared modules
 
-- `packages/shared/src/api/groups/SystemApi.ts`
-- `packages/shared/src/api/groups/AuthApi.ts`
-- `packages/shared/src/api/groups/ProjectsApi.ts`
-- `packages/shared/src/api/groups/TodosApi.ts`
+- `packages/shared/src/modules/system/api.ts`
+- `packages/shared/src/modules/auth/api.ts`
+- `packages/shared/src/modules/auth/contract.ts`
+- `packages/shared/src/modules/auth/errors.ts`
+- `packages/shared/src/modules/auth/middleware.ts`
+- `packages/shared/src/modules/users/schema.ts`
+- `packages/shared/src/modules/users/errors.ts`
+- `packages/shared/src/modules/projects/schema.ts`
+- `packages/shared/src/modules/projects/contract.ts`
+- `packages/shared/src/modules/projects/errors.ts`
+- `packages/shared/src/modules/todos/schema.ts`
+- `packages/shared/src/modules/todos/contract.ts`
+- `packages/shared/src/modules/todos/errors.ts`
 
-### Domain schemas and errors
+Each module exports its public surface from `index.ts`; root `@app/shared` exports the API root and module indexes.
 
-Domain files contain reusable resource schemas and typed domain errors:
+### Server modules
 
-- `packages/shared/src/domain/User.ts`
-- `packages/shared/src/domain/Project.ts`
-- `packages/shared/src/domain/ProjectErrors.ts`
-- `packages/shared/src/domain/Todo.ts`
-- `packages/shared/src/domain/TodoErrors.ts`
-
-Endpoint-specific request and response schemas, such as register/login payloads and create/update inputs, live beside the endpoint group in `packages/shared/src/api/groups/*`.
-
-### Server handlers and services
-
-- handlers, middleware, server setup, and HTTP config: `apps/server/src/http/*`
+- product handlers/services/repositories: `apps/server/src/modules/<module>/*`
+- HTTP server setup and middleware: `apps/server/src/http/*`
 - runtime layer composition: `apps/server/src/layers/*`
-- services: `apps/server/src/services/<feature>/*`
-- repositories: `apps/server/src/repositories/<resource>/*` (service contract, SQL implementation, JSON/in-memory implementation, and barrel exports per repository)
-- SQLite client/schema setup: `apps/server/src/database/*`
+- SQLite client/schema/transactions: `apps/server/src/database/*`
 - observability setup/config: `apps/server/src/observability/*`
 
 ### Clients
 
-- webapp: `apps/webapp/src/api/client.ts`
-- integration tests: `apps/server/src/http/HttpIntegration.test.ts`
+- webapp typed client runtime: `apps/webapp/src/api/client.ts`
+- integration tests: `apps/server/src/test/integration/http.test.ts`
 
 ## Current Endpoints
 
@@ -83,35 +77,13 @@ Todos can optionally belong to a project owned by the authenticated user. Projec
 
 ## How To Add A New Endpoint
 
-Example workflow:
-
-1. Add or update a domain schema in `packages/shared/src/domain`
-2. Add the endpoint in the appropriate group under `packages/shared/src/api/groups`
-3. Export the new group or schema if needed from `packages/shared/src/index.ts`
-4. Implement or extend repository contracts and persistence if the endpoint stores data
-5. Implement or extend the underlying service folder in `apps/server/src/services/<feature>`
-6. Implement the handler in `apps/server/src/http/handlers`
-7. Use the typed client from the webapp or an integration test
+1. Add or update shared schemas/contracts/errors/API under `packages/shared/src/modules/<module>`.
+2. Export the public contract from the module `index.ts` and root `packages/shared/src/index.ts` if needed.
+3. Implement or extend server repository/service/handler files under `apps/server/src/modules/<module>`.
+4. Wire production and test layers through module indexes.
+5. Consume the contract from webapp atoms or integration tests through `@app/shared` and the typed client.
+6. Update docs and architecture checks when module boundaries change.
 
 ## Why Typed Clients Matter Here
 
-Clients are generated from the same `HttpApi` definition that the server implements.
-
-That gives you:
-
-- typed params
-- typed payloads
-- typed responses
-- fewer contract mismatches between frontend, tests, and backend
-
-## Runtime Separation
-
-The API definition belongs in `shared`, but client runtime configuration does not.
-
-For example:
-
-- `packages/shared` defines the shape of the API
-- `apps/webapp/src/api/client.ts` decides the browser base URL
-- server integration tests use `NodeHttpServer.layerTest` to point `HttpApiClient` at an ephemeral test server
-
-That separation is intentional and should be preserved as the template grows.
+Clients are generated from the same `HttpApi` definition that the server implements, giving typed params, payloads, responses, and contract mismatch detection across frontend, tests, and backend.

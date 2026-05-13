@@ -9,14 +9,14 @@ Repository contracts live outside specific implementations.
 Good:
 
 ```txt
-repositories/UsersRepository.ts
-repositories/ProjectsRepository.ts
+modules/users/repository.ts
+modules/projects/repository.ts
 ```
 
 Bad:
 
 ```txt
-repositories/sql/UsersRepository.ts
+modules/users/repository.sql.ts
 ```
 
 ## Naming
@@ -25,7 +25,7 @@ Use:
 
 ```ts
 export class UsersRepository extends ServiceMap.Service<...>()(
-  "app/repositories/UsersRepository"
+  "app/modules/users/UsersRepository"
 ) {}
 ```
 

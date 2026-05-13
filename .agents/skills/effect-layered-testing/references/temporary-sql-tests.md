@@ -49,7 +49,7 @@ Schema initialization should be exported from database infrastructure, not dupli
 Good:
 
 ```txt
-infra/sql/schema.ts
+database/schema.ts
 ```
 
 ```ts

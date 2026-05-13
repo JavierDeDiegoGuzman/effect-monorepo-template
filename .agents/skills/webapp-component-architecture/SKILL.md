@@ -21,7 +21,7 @@ Read [references/component-architecture.md](references/component-architecture.md
 
 - `components/ui/*`: primitives and shadcn-generated wrappers
 - `components/patterns/*`: reusable layout and screen patterns built from `ui/*`
-- `components/domain/<feature>/*`: feature-specific UI pieces
+- `modules/<module>/components/*`: feature-specific UI pieces
 - `components/screens/*`: thin route-level screens
 
 ## Process
@@ -29,7 +29,7 @@ Read [references/component-architecture.md](references/component-architecture.md
 1. Decide the layer before writing code:
    - primitive -> `ui`
    - reusable screen/layout recipe -> `patterns`
-   - domain-specific UI -> `components/domain/<feature>`
+   - domain-specific UI -> `modules/<module>/components`
    - route entrypoint -> `screens`
 2. If shadcn already provides the primitive, add or import that component instead of hand-rolling one.
 3. If the change repeats structure across screens, extract a pattern component instead of duplicating markup.
@@ -38,7 +38,7 @@ Read [references/component-architecture.md](references/component-architecture.md
    - explicit variants/components over many booleans
    - compound components when multiple pieces share a stable structure
 5. Keep business logic and data wiring out of `ui/*`.
-6. Keep screens thin by moving reusable UI into `patterns/*` or feature folders.
+6. Keep screens thin by moving reusable UI into `patterns/*` or `modules/<module>/components/*`.
 7. After edits, run the webapp checks.
 
 ## Documentation expectations

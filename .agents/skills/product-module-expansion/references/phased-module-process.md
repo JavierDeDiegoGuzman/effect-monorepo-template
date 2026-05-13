@@ -357,7 +357,7 @@ When a module adds webapp UI:
 
 - add or update TanStack Router route wiring for global/detail routes;
 - keep route files focused on params/search/metadata and rendering screens;
-- keep screens free of structural intrinsic JSX; use `patterns/*` and `domain/*` components;
+- keep screens free of structural intrinsic JSX; use `patterns/*` and `modules/<module>/components/*` components;
 - keep domain components props-first and storybookable;
 - keep URL/search state in router APIs;
 - cover loading, error, empty, populated, and pending states in tests/stories where relevant;

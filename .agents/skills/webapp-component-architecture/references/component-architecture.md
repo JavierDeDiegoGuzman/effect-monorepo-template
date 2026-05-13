@@ -42,7 +42,7 @@ Questions to ask:
 - is this structure repeated across multiple screens?
 - is the value in the layout recipe rather than domain behavior?
 
-## 3. `components/domain/<feature>/*`
+## 3. `modules/<module>/components/*`
 
 This layer owns:
 - feature-specific UI
@@ -60,7 +60,7 @@ This layer owns:
 - choosing which patterns and feature components to assemble
 - minimal local orchestration for the screen
 
-Screens should be thin. If a screen becomes large because of repeated markup or styling, extract into `patterns/*` or a feature folder.
+Screens should be thin. If a screen becomes large because of repeated markup or styling, extract into `patterns/*` or `modules/<module>/components/*`.
 
 ## shadcn usage policy
 
@@ -141,10 +141,10 @@ Before finishing:
 
 ## Markup and layout ownership
 
-Structural intrinsic JSX (`div`, `section`, `main`, `article`, `header`, `footer`, `aside`, `nav`, `ul`, `ol`, `li`) is owned by `components/ui/*`, `components/patterns/*`, and local `components/domain/<feature>/*` pieces.
+Structural intrinsic JSX (`div`, `section`, `main`, `article`, `header`, `footer`, `aside`, `nav`, `ul`, `ol`, `li`) is owned by `components/ui/*`, `components/patterns/*`, and local `modules/<module>/components/*` pieces.
 
-Screens and routes should compose named pattern/domain components rather than hand-writing structural JSX. If repeated page structure appears in a screen, extract it to `components/patterns/*`. If the structure is feature-specific, extract it to `components/domain/<feature>/*`.
+Screens and routes should compose named pattern/module components rather than hand-writing structural JSX. If repeated page structure appears in a screen, extract it to `components/patterns/*`. If the structure is feature-specific, extract it to `modules/<module>/components/*`.
 
-`components/domain/*` may use local markup for feature cards, lists, and forms, but must not own app-wide geometry or full-page layout.
+`modules/*/components` may use local markup for feature cards, lists, and forms, but must not own app-wide geometry or full-page layout.
 
 Run `pnpm verify:architecture` after webapp architecture changes.

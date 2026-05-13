@@ -62,27 +62,32 @@ Before relating modules in persistence, classify the relationship and choose the
 
 ```txt
 apps/server/src/
-  infra/
-    sql/
-      config.ts
-      Sqlite.ts | Postgres.ts
-      schema.ts | migrations/
-  repositories/
-    UsersRepository.ts
-    ProjectsRepository.ts
-    sql/
-      SqlUsersRepository.ts
-      SqlProjectsRepository.ts
-  services/
-    Users.ts
-    Projects.ts
+  database/
+    Sqlite.ts | Postgres.ts
+    schema.ts | migrations/
+    transactions.ts
+  modules/
+    users/
+      repository.ts
+      repository.sql.ts
+      repository.memory.ts
+      service.ts
+      service.live.ts
+      index.ts
+    projects/
+      repository.ts
+      repository.sql.ts
+      repository.memory.ts
+      service.ts
+      service.live.ts
+      handlers.ts
+      index.ts
   http/
-    handlers/
     middleware/
     server.ts
 ```
 
-Names may vary by project, but the layer responsibilities should remain stable.
+Modules are flat by default. Runtime/platform code stays in concrete top-level folders such as `database`, `http`, `observability`, `layers`, and `test`. Names may vary by project, but the layer responsibilities should remain stable.
 
 ## Documentation expectations
 

@@ -23,7 +23,7 @@ Cover:
 
 Use stories heavily.
 
-### `components/domain/<feature>/*`
+### `modules/<module>/components/*`
 
 Cover:
 

@@ -8,7 +8,7 @@ This template is designed around a small number of rules:
 - clear separation between portable code and runtime-specific code
 - typed clients instead of ad-hoc fetch calls
 - layered backend code with transport handlers, domain services, and repositories
-- a monorepo layout that scales to multiple apps
+- vertical product/domain modules that scale across shared, server, and webapp code
 
 ## Workspace Structure
 
@@ -26,8 +26,8 @@ packages/
 - `packages/shared` must not depend on `apps/server` or `apps/webapp`
 - `apps/server` depends on `packages/shared`
 - `apps/webapp` depends on `packages/shared`
-
-This keeps the contract portable and prevents server-specific or browser-specific details from leaking into shared code.
+- cross-module imports go through the target module's `index.ts`
+- module `internal/` folders are private to that module
 
 Executable architecture checks live at the repo root:
 
@@ -36,110 +36,84 @@ pnpm boundaries
 pnpm verify:architecture
 ```
 
-The webapp checks also enforce component-layer import boundaries, screen/route markup ownership, and the synchronization-hook policy. See [`docs/webapp-architecture.md`](./webapp-architecture.md).
+`pnpm verify:architecture` runs dependency-cruiser plus filesystem/module-layout checks.
 
-## API-First Flow
+## Full-stack module layout
 
-The shared package defines:
-
-- domain schemas
-- typed errors
-- `HttpApi` root
-- endpoint groups
-- auth middleware requirements
-
-The server implements handlers for those endpoints. Protected groups use bearer-token authorization and provide the current user to handlers.
-
-The webapp and HTTP integration tests generate typed clients from the same `HttpApi`. Storybook stories and webapp component tests stay at the React boundary with mocked props/fixtures, so visual and behavioral component coverage does not require the API server.
+Product/domain/capability code uses `modules` consistently:
 
 ```text
-packages/shared
-  -> HttpApi definition
-
-apps/server
-  -> HttpApi handlers
-  -> domain services
-  -> repositories
-  -> SQLite
-
-apps/webapp / apps/server tests
-  -> HttpApiClient consumers
+packages/shared/src/modules/<module>/
+apps/server/src/modules/<module>/
+apps/webapp/src/modules/<module>/
 ```
 
-## Runtime Boundaries
+Runtime/platform code stays outside `modules` under concrete top-level names such as `database`, `http`, `observability`, `layers`, and `test`.
 
-### Shared
+## Shared contract layout
 
-Put in `packages/shared`:
+Shared module files use these responsibilities:
 
-- domain `Schema` models for resources that cross process/client boundaries
-- tagged errors
-- API definitions
-- endpoint-specific request/response schemas beside their API group
-- shared structural validation rules
+- `schema.ts`: primary domain/runtime schemas
+- `contract.ts`: endpoint request/response DTOs
+- `errors.ts`: exported typed errors
+- `api.ts`: `HttpApiGroup` definitions
+- `middleware.ts`: shared middleware contracts when needed
+- `index.ts`: public module API
 
-Do not put in `packages/shared`:
+The API root lives at `packages/shared/src/api.ts`.
 
-- Node-specific code
-- browser-specific code
-- database clients
-- fetch configuration tied to a specific app
+## Server layout
 
-### Server
+Server modules are flat by default:
 
-Put in `apps/server`:
+- `handlers.ts`: transport adaptation only
+- `service.ts`: domain service tag/contract
+- `service.live.ts`: live domain implementation
+- `repository.ts`: repository contract
+- `repository.sql.ts`: SQL implementation
+- `repository.memory.ts`: in-memory/test implementation
+- `*.test.ts`: module-specific tests
+- `index.ts`: public module API
 
-- `src/http`: HTTP server setup, route assembly, handlers, middleware, and HTTP-owned config
-- `src/database`: SQLite client setup and schema initialization
-- `src/observability`: server tracing setup and observability-owned config
-- `src/layers`: production layer composition for repositories, domain services, auth helpers, and server dependencies
-- `src/repositories`: repository folders grouped by resource. Each repository folder contains four files: the service contract (`<Name>Repository.ts`), SQL implementation (`Sql<Name>Repository.ts`), JSON/in-memory implementation for tests (`Json<Name>Repository.ts`), and `index.ts` exports.
-- `src/services`: domain service implementations
-- `src/test`: reusable test layers and fixtures
+Server runtime/platform code remains in:
 
-### Webapp
+- `src/database`: SQLite client, schema, and transaction layers
+- `src/http`: HTTP server assembly and middleware
+- `src/observability`: tracing setup
+- `src/layers`: production layer composition
+- `src/test`: reusable test layers and integration tests
 
-Put in `apps/webapp`:
+## Webapp layout
 
-- React primitives and layout recipes organized under `components/ui` and `components/patterns`
-- feature UI and remote state organized under `features/<feature>`
-- TanStack Router SPA route definitions and app-shell outlet wiring
-- browser-side observability
-- web-specific client configuration
-- Storybook stories for visual component states
-- Vitest/Testing Library component tests for user-visible behavior
+The webapp composes screens from patterns and modules:
 
-Screens are connected composition boundaries and should not own structural markup directly. Route files should render screens, not feature UI.
+```text
+router -> screens -> modules/<module> + patterns + ui
+```
+
+- `src/components/ui/*`: shadcn/ui primitives
+- `src/components/patterns/*`: reusable layout/screen recipes
+- `src/components/screen-parts/*`: screen-specific presentational pieces for non-module surfaces
+- `src/modules/<module>/atoms.ts`: remote/shared state
+- `src/modules/<module>/components/*`: module-specific UI
+- `src/components/screens/*`: thin route-level composition
+
+`dashboard` is a screen/composition surface, not a product module.
 
 ## Current Example
 
-The example app includes:
-
-- auth registration/login and `/auth/me`
-- bearer-token protected projects and todos endpoints
-- users, user-owned projects, and user-owned todos persisted in SQLite
-- global todo listing plus project-scoped todo listing at `/projects/:projectId/todos`
-- project detail UI that shows related todos
+The example app includes auth, users, projects, todos, and system health modules. Users own projects and todos; todos may optionally belong to a project. The project detail UI shows related todos.
 
 The example SQLite file is configured with `SQLITE_FILENAME=./.data/app.db`, relative to the server process directory (`apps/server` when using `pnpm dev`).
 
 ## Recommended Feature Workflow
 
-When adding a new feature:
+When adding a new product module:
 
-1. Define reusable domain schemas in `packages/shared/src/domain`
-2. Define API endpoints and endpoint-specific payload schemas in `packages/shared/src/api`
-3. Implement or extend repository contracts and persistence in `apps/server/src/repositories`
-4. Implement or extend service folders in `apps/server/src/services/<feature>`
-5. Implement handlers in `apps/server/src/http/handlers`
-6. Add webapp feature atoms/components in `apps/webapp/src/features/<feature>` or server integration tests
-7. Update relevant docs and architecture checks
-
-## Why This Structure Works Well
-
-- clients and server stay aligned through the same contract
-- refactors are safer because TypeScript sees both sides
-- HTTP remains real, but the client code stays typed
-- server integration tests can exercise the real API without extra ad-hoc tooling
-- persistence is replaceable behind repository contracts
-- runtime config stays local to the module/layer that consumes it, so missing required config fails the owning layer during startup
+1. Define shared schemas/contracts/errors/API under `packages/shared/src/modules/<module>`.
+2. Implement repositories, services, handlers, and module tests under `apps/server/src/modules/<module>`.
+3. Wire production/test layers from module indexes.
+4. Add atoms and feature components under `apps/webapp/src/modules/<module>`.
+5. Compose route screens from module indexes plus patterns/ui.
+6. Update docs and architecture checks when boundaries change.

@@ -17,7 +17,7 @@ Repository contracts:
 
 SQL implementations:
 
-- [ ] SQL code lives only in `repositories/sql/*` or DB infra
+- [ ] SQL code lives only in `modules/<module>/repository.sql.ts` or DB infra
 - [ ] SQL repositories require `SqlClient.SqlClient`
 - [ ] Row types are local
 - [ ] Mappers are local

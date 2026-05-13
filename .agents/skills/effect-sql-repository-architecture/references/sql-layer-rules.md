@@ -83,14 +83,14 @@ Database schema and migrations belong in infrastructure, not repositories.
 Good:
 
 ```txt
-infra/sql/schema.ts
-infra/sql/migrations/*
+database/schema.ts
+database/migrations/*
 ```
 
 Bad:
 
 ```txt
-repositories/sql/SqlUsersRepository.ts creates tables
+modules/users/repository.sql.ts creates tables
 ```
 
 ## Constraints and indexes
