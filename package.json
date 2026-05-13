@@ -10,7 +10,7 @@
     "build": "pnpm -r build",
     "check": "pnpm -r check",
     "boundaries": "depcruise --config .dependency-cruiser.cjs apps packages",
-    "verify:architecture": "pnpm boundaries && node scripts/check-webapp-architecture.mjs",
+    "verify:architecture": "pnpm boundaries && node scripts/check-webapp-architecture.mjs && node scripts/check-module-layout.mjs",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format --write ."

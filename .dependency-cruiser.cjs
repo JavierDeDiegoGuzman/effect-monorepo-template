@@ -12,20 +12,22 @@ module.exports = {
       severity: "error",
       from: { path: "^apps/webapp/src/components/ui" },
       to: {
-        path: "^apps/webapp/src/(atoms|api|components/(screens|domain)|routes)",
+        path: "^apps/webapp/src/(api|modules|components/screens|router|routes)",
       },
     },
     {
       name: "webapp-patterns-do-not-import-state-or-routes",
       severity: "error",
       from: { path: "^apps/webapp/src/components/patterns" },
-      to: { path: "^apps/webapp/src/(atoms|api|components/screens|routes)" },
+      to: {
+        path: "^apps/webapp/src/(api|modules|components/screens|router|routes)",
+      },
     },
     {
-      name: "webapp-domain-is-props-first",
+      name: "webapp-modules-do-not-import-screens-or-router",
       severity: "error",
-      from: { path: "^apps/webapp/src/components/domain" },
-      to: { path: "^apps/webapp/src/(atoms|api|components/screens|routes)" },
+      from: { path: "^apps/webapp/src/modules" },
+      to: { path: "^apps/webapp/src/(components/screens|router|routes)" },
     },
     {
       name: "webapp-screens-do-not-call-api-directly",
@@ -34,18 +36,20 @@ module.exports = {
       to: { path: "^apps/webapp/src/api" },
     },
     {
-      name: "webapp-routes-stay-thin",
+      name: "server-services-do-not-import-http",
       severity: "error",
-      from: { path: "^apps/webapp/src/routes" },
-      to: {
-        path: "^apps/webapp/src/(atoms|api|components/(domain|patterns/ui|ui))",
+      from: {
+        path: "^apps/server/src/modules/[^/]+/service(\\.live|\\.mock)?\\.ts$",
       },
+      to: { path: "^apps/server/src/http" },
     },
     {
-      name: "webapp-atoms-do-not-import-components",
+      name: "server-repositories-do-not-import-http",
       severity: "error",
-      from: { path: "^apps/webapp/src/atoms" },
-      to: { path: "^apps/webapp/src/components" },
+      from: {
+        path: "^apps/server/src/modules/[^/]+/repository(\\.sql|\\.memory)?\\.ts$",
+      },
+      to: { path: "^apps/server/src/http" },
     },
   ],
   options: {

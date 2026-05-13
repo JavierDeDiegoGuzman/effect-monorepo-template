@@ -11,6 +11,7 @@
       "**",
       "!**/dist",
       "!**/node_modules",
+      "!.agents/references",
       "!**/*.tsbuildinfo",
       "!tmp"
     ]
