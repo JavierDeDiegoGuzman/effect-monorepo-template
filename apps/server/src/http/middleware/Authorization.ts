@@ -1,7 +1,7 @@
 import { Authorization, CurrentUser, Unauthorized } from "@app/shared"
 import { Effect, Layer, Redacted } from "effect"
-import { AuthTokens } from "../../services/auth-tokens/AuthTokens"
-import { Users } from "../../services/users/Users"
+import { AuthTokens } from "../../modules/auth"
+import { Users } from "../../modules/users"
 
 export const AuthorizationLayer = Layer.effect(
   Authorization,

@@ -1,9 +1,9 @@
 import type { Project, Todo, User } from "@app/shared"
 import { Layer } from "effect"
-import { makeJsonProjectsRepositoryLayer } from "../../repositories/projects/JsonProjectsRepository"
-import { makeJsonTodosRepositoryLayer } from "../../repositories/todos/JsonTodosRepository"
-import { JsonTransactionsLayer } from "../../repositories/transactions/JsonTransactions"
-import { makeJsonUsersRepositoryLayer } from "../../repositories/users/JsonUsersRepository"
+import { InMemoryTransactionsLayer } from "../../database/transactions.memory"
+import { makeInMemoryProjectsRepositoryLayer } from "../../modules/projects"
+import { makeInMemoryTodosRepositoryLayer } from "../../modules/todos"
+import { makeInMemoryUsersRepositoryLayer } from "../../modules/users"
 
 type InMemoryRepositorySeed = {
   readonly users?: ReadonlyArray<{
@@ -18,10 +18,10 @@ export const makeInMemoryRepositoriesLayer = (
   seed: InMemoryRepositorySeed = {},
 ) =>
   Layer.mergeAll(
-    makeJsonUsersRepositoryLayer(seed.users),
-    makeJsonProjectsRepositoryLayer(seed.projects),
-    makeJsonTodosRepositoryLayer(seed.todos),
-    JsonTransactionsLayer,
+    makeInMemoryUsersRepositoryLayer(seed.users),
+    makeInMemoryProjectsRepositoryLayer(seed.projects),
+    makeInMemoryTodosRepositoryLayer(seed.todos),
+    InMemoryTransactionsLayer,
   )
 
 export const InMemoryRepositoriesLayer = makeInMemoryRepositoriesLayer()

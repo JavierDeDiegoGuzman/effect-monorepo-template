@@ -1,8 +1,8 @@
 import { Layer } from "effect"
-import { SqlProjectsRepositoryLayer } from "../../repositories/projects/SqlProjectsRepository"
-import { SqlTodosRepositoryLayer } from "../../repositories/todos/SqlTodosRepository"
-import { SqlTransactionsLayer } from "../../repositories/transactions/SqlTransactions"
-import { SqlUsersRepositoryLayer } from "../../repositories/users/SqlUsersRepository"
+import { SqlTransactionsLayer } from "../../database/transactions.sql"
+import { SqlProjectsRepositoryLayer } from "../../modules/projects"
+import { SqlTodosRepositoryLayer } from "../../modules/todos"
+import { SqlUsersRepositoryLayer } from "../../modules/users"
 import { makeTestSqliteLayer, TestSqliteLayer } from "./TestSqliteLayer"
 
 export const makeSqlRepositoriesTestLayer = (options?: {

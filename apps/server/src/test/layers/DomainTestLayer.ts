@@ -1,11 +1,11 @@
 import { Layer } from "effect"
-import type { ProjectsRepository } from "../../repositories/projects/ProjectsRepository"
-import type { TodosRepository } from "../../repositories/todos/TodosRepository"
-import type { Transactions } from "../../repositories/transactions/Transactions"
-import type { UsersRepository } from "../../repositories/users/UsersRepository"
-import { ProjectsLive } from "../../services/projects/ProjectsLive"
-import { TodosLive } from "../../services/todos/TodosLive"
-import { UsersLive } from "../../services/users/UsersLive"
+import type { Transactions } from "../../database/transactions"
+import type { ProjectsRepository } from "../../modules/projects"
+import { ProjectsLive } from "../../modules/projects"
+import type { TodosRepository } from "../../modules/todos"
+import { TodosLive } from "../../modules/todos"
+import type { UsersRepository } from "../../modules/users"
+import { UsersLive } from "../../modules/users"
 import {
   InMemoryRepositoriesLayer,
   makeInMemoryRepositoriesLayer,
