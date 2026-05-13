@@ -1,10 +1,7 @@
 import type { CurrentSession } from "@app/shared"
-import { useAtom } from "@effect/atom-react"
 import { Link } from "@tanstack/react-router"
 import type * as React from "react"
 import { Button } from "@/components/ui/button"
-import { logoutAction } from "@/features/auth/atoms"
-import { SessionSummary } from "@/features/auth/components/SessionSummary"
 import { type AppRoute, pathForRoute } from "@/lib/router"
 import { cn } from "@/lib/utils"
 
@@ -12,6 +9,8 @@ type AppShellProps = {
   readonly route: AppRoute
   readonly session: CurrentSession | null
   readonly children: React.ReactNode
+  readonly sessionSummary?: React.ReactNode
+  readonly onLogout?: () => void
 }
 
 const navItems: ReadonlyArray<{
@@ -31,8 +30,13 @@ const isActive = (current: AppRoute, target: AppRoute) => {
   return current.name === "project" && target.name === "projects"
 }
 
-export function AppShell({ route, session, children }: AppShellProps) {
-  const [, logout] = useAtom(logoutAction, { mode: "promise" })
+export function AppShell({
+  route,
+  session,
+  children,
+  sessionSummary,
+  onLogout,
+}: AppShellProps) {
   const isAuthRoute = route.name === "login" || route.name === "register"
 
   return (
@@ -74,12 +78,12 @@ export function AppShell({ route, session, children }: AppShellProps) {
 
           {session === null || isAuthRoute ? null : (
             <div className="flex shrink-0 items-center gap-3">
-              <SessionSummary session={session} />
+              {sessionSummary}
 
               <Button
                 variant="outline"
                 onClick={() => {
-                  void logout()
+                  onLogout?.()
                 }}
               >
                 Log out

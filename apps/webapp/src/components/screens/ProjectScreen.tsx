@@ -3,17 +3,19 @@ import { useAtom, useAtomValue } from "@effect/atom-react"
 import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
 import * as React from "react"
 import { Screen } from "@/components/patterns/Screen"
-import { projectsQuery } from "@/features/projects/atoms"
-import { ProjectNotFound } from "@/features/projects/components/ProjectNotFound"
-import { ProjectSummary } from "@/features/projects/components/ProjectSummary"
-import { ProjectTodoList } from "@/features/projects/components/ProjectTodoList"
+import { toErrorMessage } from "@/lib/errors"
+import {
+  ProjectNotFound,
+  ProjectSummary,
+  ProjectTodoList,
+  projectsQuery,
+} from "@/modules/projects"
 import {
   createTodoAction,
+  TodoCreateForm,
   todosQuery,
   updateTodoAction,
-} from "@/features/todos/atoms"
-import { TodoCreateForm } from "@/features/todos/components/TodoCreateForm"
-import { toErrorMessage } from "@/lib/errors"
+} from "@/modules/todos"
 
 export function ProjectScreen({ projectId }: { readonly projectId: number }) {
   const projectsState = useAtomValue(projectsQuery)

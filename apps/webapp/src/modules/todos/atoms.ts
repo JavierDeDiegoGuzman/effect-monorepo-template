@@ -4,7 +4,7 @@ import * as Layer from "effect/Layer"
 import * as Atom from "effect/unstable/reactivity/Atom"
 import { ApiClient } from "@/api/client"
 import { ObservabilityLayer } from "@/observability"
-import { currentSessionQuery } from "../auth/atoms"
+import { currentSessionQuery } from "../auth"
 
 const apiRuntime = Atom.runtime(
   Layer.mergeAll(ApiClient.layer, ObservabilityLayer),

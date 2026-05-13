@@ -1,4 +1,5 @@
 import type { CurrentSession } from "@app/shared"
+import { useAtom } from "@effect/atom-react"
 import {
   createHashHistory,
   createRootRouteWithContext,
@@ -16,6 +17,7 @@ import { ProjectsScreen } from "@/components/screens/ProjectsScreen"
 import { RegisterScreen } from "@/components/screens/RegisterScreen"
 import { TodosScreen } from "@/components/screens/TodosScreen"
 import { routeFromPath } from "@/lib/router"
+import { logoutAction, SessionSummary } from "@/modules/auth"
 
 type RouterContext = {
   readonly session: CurrentSession | null
@@ -84,6 +86,7 @@ function RootRoute() {
     select: (state) => state.location.pathname,
   })
   const route = routeFromPath(pathname)
+  const [, logout] = useAtom(logoutAction, { mode: "promise" })
 
   if (session === null && !isPublicPath(pathname)) {
     return <Navigate to="/login" replace />
@@ -94,7 +97,16 @@ function RootRoute() {
   }
 
   return (
-    <AppShell route={route} session={session}>
+    <AppShell
+      route={route}
+      session={session}
+      sessionSummary={
+        session === null ? undefined : <SessionSummary session={session} />
+      }
+      onLogout={() => {
+        void logout()
+      }}
+    >
       <Outlet />
     </AppShell>
   )

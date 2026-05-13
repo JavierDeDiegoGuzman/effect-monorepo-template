@@ -3,18 +3,16 @@ import { useAtom, useAtomValue } from "@effect/atom-react"
 import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
 import * as React from "react"
 import { Screen } from "@/components/patterns/Screen"
-import { projectsQuery } from "@/features/projects/atoms"
+import { toErrorMessage } from "@/lib/errors"
+import { projectsQuery } from "@/modules/projects"
 import {
   createTodoAction,
+  renderTodoProjectMeta,
+  TodoCreateForm,
+  TodoList,
   todosQuery,
   updateTodoAction,
-} from "@/features/todos/atoms"
-import { TodoCreateForm } from "@/features/todos/components/TodoCreateForm"
-import {
-  renderTodoProjectMeta,
-  TodoList,
-} from "@/features/todos/components/TodoList"
-import { toErrorMessage } from "@/lib/errors"
+} from "@/modules/todos"
 
 export function TodosScreen() {
   const todosState = useAtomValue(todosQuery)

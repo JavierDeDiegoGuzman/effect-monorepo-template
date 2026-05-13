@@ -5,10 +5,9 @@ import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
 import * as React from "react"
 import { Screen } from "@/components/patterns/Screen"
 import { Button } from "@/components/ui/button"
-import { registerAction } from "@/features/auth/atoms"
-import { RegisterForm } from "@/features/auth/components/RegisterForm"
 import { toErrorMessage } from "@/lib/errors"
 import { pathForRoute } from "@/lib/router"
+import { RegisterForm, registerAction } from "@/modules/auth"
 
 export function RegisterScreen() {
   const [registerState, register] = useAtom(registerAction, { mode: "promise" })

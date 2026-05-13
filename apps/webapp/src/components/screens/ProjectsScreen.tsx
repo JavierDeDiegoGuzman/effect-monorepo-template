@@ -3,14 +3,14 @@ import { useAtom, useAtomValue } from "@effect/atom-react"
 import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
 import * as React from "react"
 import { Screen } from "@/components/patterns/Screen"
+import { toErrorMessage } from "@/lib/errors"
 import {
   archiveProjectAction,
   createProjectAction,
+  ProjectCreateForm,
+  ProjectList,
   projectsQuery,
-} from "@/features/projects/atoms"
-import { ProjectCreateForm } from "@/features/projects/components/ProjectCreateForm"
-import { ProjectList } from "@/features/projects/components/ProjectList"
-import { toErrorMessage } from "@/lib/errors"
+} from "@/modules/projects"
 
 export function ProjectsScreen() {
   const projectsState = useAtomValue(projectsQuery)

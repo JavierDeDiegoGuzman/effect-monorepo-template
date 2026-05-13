@@ -5,10 +5,9 @@ import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
 import * as React from "react"
 import { Screen } from "@/components/patterns/Screen"
 import { Button } from "@/components/ui/button"
-import { loginAction } from "@/features/auth/atoms"
-import { LoginForm } from "@/features/auth/components/LoginForm"
 import { toErrorMessage } from "@/lib/errors"
 import { pathForRoute } from "@/lib/router"
+import { LoginForm, loginAction } from "@/modules/auth"
 
 export function LoginScreen() {
   const [loginState, login] = useAtom(loginAction, { mode: "promise" })
