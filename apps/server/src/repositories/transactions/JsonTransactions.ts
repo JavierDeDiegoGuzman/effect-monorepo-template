@@ -1,7 +1,7 @@
 import { Layer } from "effect"
-import { Transactions } from "../Transactions"
+import { Transactions } from "./Transactions"
 
-export const InMemoryTransactionsLayer = Layer.succeed(
+export const JsonTransactionsLayer = Layer.succeed(
   Transactions,
   Transactions.of({
     withTransaction: (effect) => effect,

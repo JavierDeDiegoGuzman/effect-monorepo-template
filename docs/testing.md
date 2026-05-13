@@ -17,8 +17,8 @@ The HTTP integration test lives in `apps/server/src/http/HttpIntegration.test.ts
 
 Prefer the smallest test that exercises the behavior you care about:
 
-- domain behavior: test services with in-memory repositories
-- SQL mapping and constraints: test repositories with temporary SQLite
+- domain behavior: test services with JSON/in-memory repository implementations from each `apps/server/src/repositories/<resource>` folder
+- SQL mapping and constraints: test repository SQL implementations with temporary SQLite
 - transport behavior and end-to-end API flows: test the real HTTP server with `HttpApiClient`
 - frontend component behavior: test presentational components with Vitest and Testing Library
 - visual states and component documentation: cover reusable UI in Storybook

@@ -42,7 +42,7 @@ Endpoint-specific request and response schemas, such as register/login payloads 
 - handlers and middleware: `apps/server/src/http/*`
 - runtime layer composition: `apps/server/src/layers/*`
 - services: `apps/server/src/services/<feature>/*`
-- repositories: `apps/server/src/repositories/*`
+- repositories: `apps/server/src/repositories/<resource>/*` (service contract, SQL implementation, JSON/in-memory implementation, and barrel exports per repository)
 - HTTP config: `apps/server/src/infra/http/*`
 - SQLite infrastructure: `apps/server/src/infra/sql/*`
 - observability infrastructure: `apps/server/src/infra/observability/*`

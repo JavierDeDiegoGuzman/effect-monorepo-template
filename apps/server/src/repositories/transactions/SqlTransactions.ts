@@ -1,6 +1,6 @@
 import { Effect, Layer } from "effect"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
-import { Transactions } from "../Transactions"
+import { Transactions } from "./Transactions"
 
 export const SqlTransactionsLayer = Layer.effect(
   Transactions,

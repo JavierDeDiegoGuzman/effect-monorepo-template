@@ -1,8 +1,8 @@
 import { Todo } from "@app/shared"
 import { Effect, Layer, Ref } from "effect"
-import { TodosRepository } from "../TodosRepository"
+import { TodosRepository } from "./TodosRepository"
 
-export const makeInMemoryTodosRepositoryLayer = (
+export const makeJsonTodosRepositoryLayer = (
   initialTodos: ReadonlyArray<Todo> = [],
 ) =>
   Layer.effect(
@@ -15,7 +15,7 @@ export const makeInMemoryTodosRepositoryLayer = (
         new Map(initialTodos.map((todo) => [todo.id, todo])),
       )
 
-      const listByUser = Effect.fn("InMemoryTodosRepository.listByUser")(
+      const listByUser = Effect.fn("JsonTodosRepository.listByUser")(
         function* (userId: number) {
           return Array.from((yield* Ref.get(store)).values()).filter(
             (todo) => todo.userId === userId,
@@ -24,7 +24,7 @@ export const makeInMemoryTodosRepositoryLayer = (
       )
 
       const listByProjectForUser = Effect.fn(
-        "InMemoryTodosRepository.listByProjectForUser",
+        "JsonTodosRepository.listByProjectForUser",
       )(function* (userId: number, projectId: number) {
         return Array.from((yield* Ref.get(store)).values()).filter(
           (todo) => todo.userId === userId && todo.projectId === projectId,
@@ -32,13 +32,13 @@ export const makeInMemoryTodosRepositoryLayer = (
       })
 
       const getByIdForUser = Effect.fn(
-        "InMemoryTodosRepository.getByIdForUser",
+        "JsonTodosRepository.getByIdForUser",
       )(function* (userId: number, id: number) {
         const todo = (yield* Ref.get(store)).get(id)
         return todo !== undefined && todo.userId === userId ? todo : null
       })
 
-      const createForUser = Effect.fn("InMemoryTodosRepository.createForUser")(
+      const createForUser = Effect.fn("JsonTodosRepository.createForUser")(
         function* (input: {
           readonly userId: number
           readonly title: string
@@ -58,7 +58,7 @@ export const makeInMemoryTodosRepositoryLayer = (
       )
 
       const updateCompletedForUser = Effect.fn(
-        "InMemoryTodosRepository.updateCompletedForUser",
+        "JsonTodosRepository.updateCompletedForUser",
       )(function* (input: {
         readonly userId: number
         readonly id: number
@@ -86,4 +86,4 @@ export const makeInMemoryTodosRepositoryLayer = (
     }),
   )
 
-export const InMemoryTodosRepositoryLayer = makeInMemoryTodosRepositoryLayer()
+export const JsonTodosRepositoryLayer = makeJsonTodosRepositoryLayer()

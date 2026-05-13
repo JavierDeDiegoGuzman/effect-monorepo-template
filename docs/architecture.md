@@ -92,7 +92,7 @@ Put in `apps/server`:
 - `src/http`: HTTP server setup, route assembly, handlers, and middleware
 - `src/infra`: runtime infrastructure such as HTTP config, SQLite setup/schema, and observability layers
 - `src/layers`: production layer composition for repositories, domain services, auth helpers, and server dependencies
-- `src/repositories`: repository contracts plus memory/SQL implementations
+- `src/repositories`: repository folders grouped by resource. Each repository folder contains four files: the service contract (`<Name>Repository.ts`), SQL implementation (`Sql<Name>Repository.ts`), JSON/in-memory implementation for tests (`Json<Name>Repository.ts`), and `index.ts` exports.
 - `src/services`: domain service implementations
 - `src/test`: reusable test layers and fixtures
 

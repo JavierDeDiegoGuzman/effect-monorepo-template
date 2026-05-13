@@ -1,7 +1,7 @@
 import { Project } from "@app/shared"
 import { Effect, Layer } from "effect"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
-import { ProjectsRepository } from "../ProjectsRepository"
+import { ProjectsRepository } from "./ProjectsRepository"
 
 type SqliteInsertResult = {
   readonly lastInsertRowid: number | bigint

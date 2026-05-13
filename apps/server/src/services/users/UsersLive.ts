@@ -1,6 +1,6 @@
 import { UserAlreadyExists, UserNotFound } from "@app/shared"
 import { Effect, Layer } from "effect"
-import { UsersRepository } from "../../repositories/UsersRepository"
+import { UsersRepository } from "../../repositories/users/UsersRepository"
 import { type CreateUserServiceInput, Users } from "./Users"
 
 const normalizeEmail = (email: string) => email.trim().toLowerCase()

@@ -4,7 +4,7 @@ import {
   type UpdateTodoInput,
 } from "@app/shared"
 import { Effect, Layer } from "effect"
-import { TodosRepository } from "../../repositories/TodosRepository"
+import { TodosRepository } from "../../repositories/todos/TodosRepository"
 import { Projects } from "../projects/Projects"
 import { Todos } from "./Todos"
 

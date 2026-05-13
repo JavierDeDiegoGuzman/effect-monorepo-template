@@ -1,7 +1,7 @@
 import { assert, describe, it } from "@effect/vitest"
 import { Effect } from "effect"
-import { makeSqlRepositoriesTestLayer } from "../../test/layers/SqlRepositoriesTestLayer"
-import { UsersRepository } from "../UsersRepository"
+import { UsersRepository } from "../../repositories/users/UsersRepository"
+import { makeSqlRepositoriesTestLayer } from "../layers/SqlRepositoriesTestLayer"
 
 describe("SqlUsersRepository", () => {
   it.effect("creates and loads a user from a temporary sqlite database", () =>

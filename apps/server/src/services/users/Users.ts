@@ -1,6 +1,6 @@
 import type { User, UserAlreadyExists, UserNotFound } from "@app/shared"
 import { type Effect, ServiceMap } from "effect"
-import type { UserRecord } from "../../repositories/UsersRepository"
+import type { UserRecord } from "../../repositories/users/UsersRepository"
 
 export interface CreateUserServiceInput {
   readonly name: string

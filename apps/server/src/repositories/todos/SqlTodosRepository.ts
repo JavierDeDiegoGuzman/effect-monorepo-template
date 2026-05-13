@@ -1,7 +1,7 @@
 import { Todo } from "@app/shared"
 import { Effect, Layer } from "effect"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
-import { TodosRepository } from "../TodosRepository"
+import { TodosRepository } from "./TodosRepository"
 
 type SqliteInsertResult = {
   readonly lastInsertRowid: number | bigint

@@ -4,7 +4,7 @@ import {
   type UpdateProjectInput,
 } from "@app/shared"
 import { Effect, Layer } from "effect"
-import { ProjectsRepository } from "../../repositories/ProjectsRepository"
+import { ProjectsRepository } from "../../repositories/projects/ProjectsRepository"
 import { Projects } from "./Projects"
 
 const normalizeName = (name: string) => name.trim()

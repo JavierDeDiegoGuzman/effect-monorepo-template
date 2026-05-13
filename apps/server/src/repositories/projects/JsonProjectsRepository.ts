@@ -1,8 +1,8 @@
 import { Project } from "@app/shared"
 import { Effect, Layer, Ref } from "effect"
-import { ProjectsRepository } from "../ProjectsRepository"
+import { ProjectsRepository } from "./ProjectsRepository"
 
-export const makeInMemoryProjectsRepositoryLayer = (
+export const makeJsonProjectsRepositoryLayer = (
   initialProjects: ReadonlyArray<Project> = [],
 ) =>
   Layer.effect(
@@ -16,7 +16,7 @@ export const makeInMemoryProjectsRepositoryLayer = (
         new Map(initialProjects.map((project) => [project.id, project])),
       )
 
-      const listByUser = Effect.fn("InMemoryProjectsRepository.listByUser")(
+      const listByUser = Effect.fn("JsonProjectsRepository.listByUser")(
         function* (userId: number) {
           return Array.from((yield* Ref.get(store)).values()).filter(
             (project) => project.userId === userId,
@@ -25,7 +25,7 @@ export const makeInMemoryProjectsRepositoryLayer = (
       )
 
       const getByIdForUser = Effect.fn(
-        "InMemoryProjectsRepository.getByIdForUser",
+        "JsonProjectsRepository.getByIdForUser",
       )(function* (userId: number, id: number) {
         const project = (yield* Ref.get(store)).get(id)
         return project !== undefined && project.userId === userId
@@ -34,7 +34,7 @@ export const makeInMemoryProjectsRepositoryLayer = (
       })
 
       const createForUser = Effect.fn(
-        "InMemoryProjectsRepository.createForUser",
+        "JsonProjectsRepository.createForUser",
       )(function* (input: {
         readonly userId: number
         readonly name: string
@@ -53,7 +53,7 @@ export const makeInMemoryProjectsRepositoryLayer = (
       })
 
       const updateForUser = Effect.fn(
-        "InMemoryProjectsRepository.updateForUser",
+        "JsonProjectsRepository.updateForUser",
       )(function* (input: {
         readonly userId: number
         readonly id: number
@@ -77,7 +77,7 @@ export const makeInMemoryProjectsRepositoryLayer = (
       })
 
       const archiveForUser = Effect.fn(
-        "InMemoryProjectsRepository.archiveForUser",
+        "JsonProjectsRepository.archiveForUser",
       )(function* (userId: number, id: number) {
         yield* Ref.update(store, (current) => {
           const project = current.get(id)
@@ -101,5 +101,5 @@ export const makeInMemoryProjectsRepositoryLayer = (
     }),
   )
 
-export const InMemoryProjectsRepositoryLayer =
-  makeInMemoryProjectsRepositoryLayer()
+export const JsonProjectsRepositoryLayer =
+  makeJsonProjectsRepositoryLayer()

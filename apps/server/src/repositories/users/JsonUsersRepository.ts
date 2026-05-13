@@ -1,13 +1,13 @@
 import { User } from "@app/shared"
 import { Effect, Layer, Ref } from "effect"
-import { UsersRepository } from "../UsersRepository"
+import { UsersRepository } from "./UsersRepository"
 
 type UserRecord = {
   readonly user: User
   readonly passwordHash: string
 }
 
-export const makeInMemoryUsersRepositoryLayer = (
+export const makeJsonUsersRepositoryLayer = (
   initialRecords: ReadonlyArray<UserRecord> = [],
 ) =>
   Layer.effect(
@@ -23,14 +23,14 @@ export const makeInMemoryUsersRepositoryLayer = (
         new Map(initialRecords.map((record) => [record.user.id, record])),
       )
 
-      const getById = Effect.fn("InMemoryUsersRepository.getById")(function* (
+      const getById = Effect.fn("JsonUsersRepository.getById")(function* (
         id: number,
       ) {
         return (yield* Ref.get(store)).get(id)?.user ?? null
       })
 
       const getAuthByEmail = Effect.fn(
-        "InMemoryUsersRepository.getAuthByEmail",
+        "JsonUsersRepository.getAuthByEmail",
       )(function* (email: string) {
         const normalized = email.trim().toLowerCase()
         for (const record of (yield* Ref.get(store)).values()) {
@@ -41,7 +41,7 @@ export const makeInMemoryUsersRepositoryLayer = (
         return null
       })
 
-      const create = Effect.fn("InMemoryUsersRepository.create")(
+      const create = Effect.fn("JsonUsersRepository.create")(
         function* (input: {
           readonly name: string
           readonly email: string
@@ -71,4 +71,4 @@ export const makeInMemoryUsersRepositoryLayer = (
     }),
   )
 
-export const InMemoryUsersRepositoryLayer = makeInMemoryUsersRepositoryLayer()
+export const JsonUsersRepositoryLayer = makeJsonUsersRepositoryLayer()
