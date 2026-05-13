@@ -5,23 +5,11 @@ import {
   HttpApiSchema,
   OpenApi,
 } from "effect/unstable/httpapi"
-import { ProjectNotFound } from "../../domain/ProjectErrors"
-import { Todo } from "../../domain/Todo"
-import { TodoNotFound } from "../../domain/TodoErrors"
-import { Authorization } from "../middleware/Authorization"
-
-export class CreateTodoInput extends Schema.Class<CreateTodoInput>(
-  "CreateTodoInput",
-)({
-  title: Schema.String,
-  projectId: Schema.NullOr(Schema.Number),
-}) {}
-
-export class UpdateTodoInput extends Schema.Class<UpdateTodoInput>(
-  "UpdateTodoInput",
-)({
-  completed: Schema.Boolean,
-}) {}
+import { Authorization } from "../auth"
+import { ProjectNotFound } from "../projects"
+import { CreateTodoInput, UpdateTodoInput } from "./contract"
+import { TodoNotFound } from "./errors"
+import { Todo } from "./schema"
 
 export class TodosApi extends HttpApiGroup.make("todos")
   .add(

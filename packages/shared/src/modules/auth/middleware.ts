@@ -1,6 +1,6 @@
 import { Schema, ServiceMap } from "effect"
 import { HttpApiMiddleware, HttpApiSecurity } from "effect/unstable/httpapi"
-import type { User } from "../../domain/User"
+import type { User } from "../users"
 
 export class CurrentUser extends ServiceMap.Service<CurrentUser, User>()(
   "app/Authorization/CurrentUser",
