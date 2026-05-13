@@ -1,3 +1,9 @@
 [submodule ".agents/references/effect-smol"]
 	path = .agents/references/effect-smol
 	url = https://github.com/Effect-TS/effect-smol.git
+[submodule ".agents/references/t3code"]
+	path = .agents/references/t3code
+	url = https://github.com/pingdotgg/t3code.git
+[submodule ".agents/references/opencode"]
+	path = .agents/references/opencode
+	url = https://github.com/sst/opencode.git
