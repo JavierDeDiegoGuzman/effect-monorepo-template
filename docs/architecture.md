@@ -89,8 +89,9 @@ Do not put in `packages/shared`:
 
 Put in `apps/server`:
 
-- `src/http`: HTTP server setup, route assembly, handlers, and middleware
-- `src/infra`: runtime infrastructure such as HTTP config, SQLite setup/schema, and observability layers
+- `src/http`: HTTP server setup, route assembly, handlers, middleware, and HTTP-owned config
+- `src/database`: SQLite client setup and schema initialization
+- `src/observability`: server tracing setup and observability-owned config
 - `src/layers`: production layer composition for repositories, domain services, auth helpers, and server dependencies
 - `src/repositories`: repository folders grouped by resource. Each repository folder contains four files: the service contract (`<Name>Repository.ts`), SQL implementation (`Sql<Name>Repository.ts`), JSON/in-memory implementation for tests (`Json<Name>Repository.ts`), and `index.ts` exports.
 - `src/services`: domain service implementations
@@ -120,7 +121,7 @@ The example app includes:
 - global todo listing plus project-scoped todo listing at `/projects/:projectId/todos`
 - project detail UI that shows related todos
 
-The default SQLite file is `./.data/app.db` relative to the server process directory (`apps/server` when using `pnpm dev`).
+The example SQLite file is configured with `SQLITE_FILENAME=./.data/app.db`, relative to the server process directory (`apps/server` when using `pnpm dev`).
 
 ## Recommended Feature Workflow
 
@@ -141,3 +142,4 @@ When adding a new feature:
 - HTTP remains real, but the client code stays typed
 - server integration tests can exercise the real API without extra ad-hoc tooling
 - persistence is replaceable behind repository contracts
+- runtime config stays local to the module/layer that consumes it, so missing required config fails the owning layer during startup

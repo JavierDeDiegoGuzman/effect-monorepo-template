@@ -1,5 +1,5 @@
 import { Layer } from "effect"
-import { SqliteLayer } from "../infra/sql/Sqlite"
+import { SqliteLayer } from "../database/Sqlite"
 import { SqlProjectsRepositoryLayer } from "../repositories/projects/SqlProjectsRepository"
 import { SqlTodosRepositoryLayer } from "../repositories/todos/SqlTodosRepository"
 import { SqlTransactionsLayer } from "../repositories/transactions/SqlTransactions"

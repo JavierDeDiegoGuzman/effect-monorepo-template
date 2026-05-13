@@ -96,8 +96,8 @@ Copy `.env.example` to `.env` before local development. Keep secrets out of comm
 
 ### Server
 
-- `PORT`: HTTP server port. Defaults to `3001`
-- `SQLITE_FILENAME`: SQLite database file. Defaults to `./.data/app.db` relative to the server process directory
+- `PORT`: required HTTP server port
+- `SQLITE_FILENAME`: required SQLite database file, relative to the server process directory when using a relative path
 - `AUTH_JWT_SECRET`: required signing secret for auth tokens
 - `AUTH_JWT_ISSUER`: required JWT issuer
 - `AUTH_JWT_AUDIENCE`: required JWT audience
@@ -115,13 +115,13 @@ Copy `.env.example` to `.env` before local development. Keep secrets out of comm
 
 ## Current Local Data
 
-The example app persists users, user-owned projects, and user-owned todos in SQLite. With the default `.env.example`, the database file is `apps/server/.data/app.db` when running through `pnpm dev`.
+The example app persists users, user-owned projects, and user-owned todos in SQLite. With the example `SQLITE_FILENAME=./.data/app.db`, the database file is `apps/server/.data/app.db` when running through `pnpm dev`.
 
 ## Common Issues
 
-### Missing auth config
+### Missing server config
 
-If the server fails during startup with missing `AUTH_JWT_*` variables, copy `.env.example` to `.env` or add those values to your existing `.env`.
+If the server fails during startup with missing `PORT`, `SQLITE_FILENAME`, or `AUTH_JWT_*` variables, copy `.env.example` to `.env` or add those values to your existing `.env`.
 
 ### CORS problems in the browser
 

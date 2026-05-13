@@ -1,10 +1,9 @@
 import { createServer } from "node:http"
 import { Api } from "@app/shared"
 import { NodeHttpServer } from "@effect/platform-node"
-import { Effect, Layer } from "effect"
+import { Config, Effect, Layer } from "effect"
 import { HttpRouter } from "effect/unstable/http"
 import { HttpApiBuilder, HttpApiScalar } from "effect/unstable/httpapi"
-import { getHttpServerConfig } from "../infra/http/config"
 import { HttpServerDependenciesLayer } from "../layers/ServerLayers"
 import { AuthApiHandlers, SessionApiHandlers } from "./handlers/Auth"
 import { ProjectsApiHandlers } from "./handlers/Projects"
@@ -43,7 +42,7 @@ const AllRoutes = Layer.mergeAll(ApiRoutes, DocsRoute, CorsLayer)
 
 export const HttpServerLayer = Layer.unwrap(
   Effect.gen(function* () {
-    const { port } = yield* getHttpServerConfig
+    const port = yield* Config.port("PORT")
 
     return HttpRouter.serve(AllRoutes).pipe(
       Layer.provide(NodeHttpServer.layer(createServer, { port })),

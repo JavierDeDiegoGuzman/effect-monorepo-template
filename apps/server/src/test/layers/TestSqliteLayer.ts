@@ -3,7 +3,7 @@ import { SqliteClient } from "@effect/sql-sqlite-node"
 import { Effect, FileSystem, Layer, ServiceMap } from "effect"
 import { Reactivity } from "effect/unstable/reactivity"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
-import { initializeSqliteSchema } from "../../infra/sql/schema"
+import { initializeSqliteSchema } from "../../database/schema"
 
 export const makeTestSqliteLayer = (options?: { readonly seed?: boolean }) =>
   Layer.effectServices(
