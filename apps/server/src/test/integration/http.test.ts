@@ -56,7 +56,6 @@ describe("HTTP integration", () => {
       const created = yield* client.todos.create({
         payload: new CreateTodoInput({
           title: "Exercise typed HTTP integration tests",
-          projectId: null,
         }),
       })
       const after = yield* client.todos.list()

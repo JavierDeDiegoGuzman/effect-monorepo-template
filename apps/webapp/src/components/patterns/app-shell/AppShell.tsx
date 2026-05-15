@@ -19,16 +19,10 @@ const navItems: ReadonlyArray<{
 }> = [
   { label: "Dashboard", route: { name: "dashboard" } },
   { label: "Todos", route: { name: "todos" } },
-  { label: "Projects", route: { name: "projects" } },
 ]
 
-const isActive = (current: AppRoute, target: AppRoute) => {
-  if (current.name === target.name) {
-    return true
-  }
-
-  return current.name === "project" && target.name === "projects"
-}
+const isActive = (current: AppRoute, target: AppRoute) =>
+  current.name === target.name
 
 export function AppShell({
   route,

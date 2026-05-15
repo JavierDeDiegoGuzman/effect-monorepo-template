@@ -32,7 +32,6 @@ export const createTodoAction = apiRuntime.fn(
     ApiClient.use((client) => client.todos.create({ payload: input })).pipe(
       Effect.annotateSpans({
         "todo.title.length": input.title.length,
-        "todo.project.id": input.projectId ?? "none",
       }),
       Effect.withSpan("todos.create", {
         kind: "client",

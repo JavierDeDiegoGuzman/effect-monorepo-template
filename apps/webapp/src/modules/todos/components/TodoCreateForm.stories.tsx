@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { projectOptions } from "@/test/fixtures"
 import { TodoCreateForm } from "./TodoCreateForm"
 
 const meta = {
@@ -10,11 +9,8 @@ const meta = {
   },
   args: {
     title: "",
-    projectId: "none",
-    projectOptions,
     pending: false,
     onTitleChange: () => undefined,
-    onProjectChange: () => undefined,
     onSubmit: (event) => event.preventDefault(),
   },
 } satisfies Meta<typeof TodoCreateForm>
@@ -25,27 +21,23 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
 
-export const WithSelectedProject: Story = {
+export const WithTitle: Story = {
   args: {
     title: "Prepare launch checklist",
-    projectId: projectOptions[0]?.value ?? "none",
   },
 }
 
 export const Pending: Story = {
   args: {
     title: "Prepare launch checklist",
-    projectId: projectOptions[0]?.value ?? "none",
     pending: true,
   },
 }
 
-export const ParentScoped: Story = {
+export const CustomLabels: Story = {
   args: {
-    title: "Review scoped todo UX",
-    projectId: projectOptions[0]?.value ?? "none",
-    titleLabel: "Project todo title",
-    submitLabel: "Add project todo",
-    disableProjectSelect: true,
+    title: "Review todo UX",
+    titleLabel: "Task title",
+    submitLabel: "Add task",
   },
 }

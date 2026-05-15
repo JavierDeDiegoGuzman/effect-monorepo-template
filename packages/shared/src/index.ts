@@ -1,6 +1,5 @@
 export * from "./api"
 export * from "./modules/auth"
-export * from "./modules/projects"
 export * from "./modules/system"
 export * from "./modules/todos"
 export * from "./modules/users"

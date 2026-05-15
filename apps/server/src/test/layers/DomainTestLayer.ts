@@ -1,7 +1,5 @@
 import { Layer } from "effect"
 import type { Transactions } from "../../database/transactions"
-import type { ProjectsRepository } from "../../modules/projects"
-import { ProjectsLive } from "../../modules/projects"
 import type { TodosRepository } from "../../modules/todos"
 import { TodosLive } from "../../modules/todos"
 import type { UsersRepository } from "../../modules/users"
@@ -15,26 +13,11 @@ import {
   SqlRepositoriesTestLayer,
 } from "./SqlRepositoriesTestLayer"
 
-type Repositories =
-  | UsersRepository
-  | ProjectsRepository
-  | TodosRepository
-  | Transactions
+type Repositories = UsersRepository | TodosRepository | Transactions
 
 const makeDomainLayer = <Requirements>(
   repositoriesLayer: Layer.Layer<Repositories, Requirements, never>,
-) => {
-  const coreDomainLayer = Layer.mergeAll(UsersLive, ProjectsLive).pipe(
-    Layer.provide(repositoriesLayer),
-  )
-
-  const todosDomainLayer = TodosLive.pipe(
-    Layer.provideMerge(coreDomainLayer),
-    Layer.provide(repositoriesLayer),
-  )
-
-  return Layer.mergeAll(coreDomainLayer, todosDomainLayer)
-}
+) => Layer.mergeAll(UsersLive, TodosLive).pipe(Layer.provide(repositoriesLayer))
 
 export const InMemoryDomainTestLayer = makeDomainLayer(
   InMemoryRepositoriesLayer,

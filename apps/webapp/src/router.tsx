@@ -12,8 +12,6 @@ import {
 import { AppShell } from "@/components/patterns/app-shell/AppShell"
 import { DashboardScreen } from "@/components/screens/DashboardScreen"
 import { LoginScreen } from "@/components/screens/LoginScreen"
-import { ProjectScreen } from "@/components/screens/ProjectScreen"
-import { ProjectsScreen } from "@/components/screens/ProjectsScreen"
 import { RegisterScreen } from "@/components/screens/RegisterScreen"
 import { TodosScreen } from "@/components/screens/TodosScreen"
 import { routeFromPath } from "@/lib/router"
@@ -53,25 +51,11 @@ const todosRoute = createRoute({
   component: TodosScreen,
 })
 
-const projectsRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/projects",
-  component: ProjectsScreen,
-})
-
-const projectRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/projects/$projectId",
-  component: ProjectRoute,
-})
-
 const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
   registerRoute,
   todosRoute,
-  projectsRoute,
-  projectRoute,
 ])
 
 export const router = createRouter({
@@ -110,11 +94,6 @@ function RootRoute() {
       <Outlet />
     </AppShell>
   )
-}
-
-function ProjectRoute() {
-  const { projectId } = projectRoute.useParams()
-  return <ProjectScreen projectId={Number(projectId)} />
 }
 
 declare module "@tanstack/react-router" {

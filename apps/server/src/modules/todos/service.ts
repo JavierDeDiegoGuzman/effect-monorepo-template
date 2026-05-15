@@ -1,6 +1,5 @@
 import type {
   CreateTodoInput,
-  ProjectNotFound,
   Todo,
   TodoNotFound,
   UpdateTodoInput,
@@ -11,10 +10,6 @@ export class Todos extends ServiceMap.Service<
   Todos,
   {
     readonly listByUser: (userId: number) => Effect.Effect<Array<Todo>>
-    readonly listByProjectForUser: (
-      userId: number,
-      projectId: number,
-    ) => Effect.Effect<Array<Todo>>
     readonly getByIdForUser: (
       userId: number,
       id: number,
@@ -22,7 +17,7 @@ export class Todos extends ServiceMap.Service<
     readonly createForUser: (
       userId: number,
       input: CreateTodoInput,
-    ) => Effect.Effect<Todo, ProjectNotFound>
+    ) => Effect.Effect<Todo>
     readonly updateForUser: (
       userId: number,
       id: number,

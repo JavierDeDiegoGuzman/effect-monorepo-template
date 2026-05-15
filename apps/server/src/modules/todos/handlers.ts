@@ -1,9 +1,4 @@
-import {
-  Api,
-  CurrentUser,
-  type ProjectNotFound,
-  type TodoNotFound,
-} from "@app/shared"
+import { Api, CurrentUser, type TodoNotFound } from "@app/shared"
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
 import { Todos } from "./service"
@@ -23,18 +18,6 @@ export const TodosApiHandlers = HttpApiBuilder.group(
           Effect.annotateSpans({
             "http.route": "/todos",
             "http.method": "GET",
-          }),
-        ),
-      )
-      .handle("listByProject", ({ params }) =>
-        Effect.gen(function* () {
-          const user = yield* CurrentUser
-          return yield* todos.listByProjectForUser(user.id, params.projectId)
-        }).pipe(
-          Effect.annotateSpans({
-            "http.route": "/projects/:projectId/todos",
-            "http.method": "GET",
-            "project.id": params.projectId,
           }),
         ),
       )
@@ -62,11 +45,7 @@ export const TodosApiHandlers = HttpApiBuilder.group(
             "http.route": "/todos",
             "http.method": "POST",
             "todo.title.length": payload.title.length,
-            "todo.project.id": payload.projectId ?? "none",
           }),
-          Effect.catchTag("ProjectNotFound", (error: ProjectNotFound) =>
-            Effect.fail(error),
-          ),
         ),
       )
       .handle("update", ({ params, payload }) =>

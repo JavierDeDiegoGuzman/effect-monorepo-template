@@ -18,26 +18,12 @@ export const initializeSqliteSchema = (options?: { readonly seed?: boolean }) =>
     `
 
     yield* sql`
-      CREATE TABLE IF NOT EXISTS projects (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        name TEXT NOT NULL,
-        description TEXT NOT NULL,
-        archived INTEGER NOT NULL DEFAULT 0,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-        CHECK (archived IN (0, 1))
-      )
-    `
-
-    yield* sql`
       CREATE TABLE IF NOT EXISTS todos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
         title TEXT NOT NULL,
         completed INTEGER NOT NULL DEFAULT 0,
-        project_id INTEGER,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-        FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE SET NULL,
         CHECK (completed IN (0, 1))
       )
     `
@@ -63,17 +49,10 @@ export const initializeSqliteSchema = (options?: { readonly seed?: boolean }) =>
       `
 
       yield* sql`
-        INSERT INTO projects (id, user_id, name, description, archived)
+        INSERT INTO todos (id, user_id, title, completed)
         VALUES
-          (1, 1, ${"Template"}, ${"Base setup and architecture work"}, 0),
-          (2, 2, ${"Website"}, ${"Public web experience"}, 0)
-      `
-
-      yield* sql`
-        INSERT INTO todos (id, user_id, title, completed, project_id)
-        VALUES
-          (1, 1, ${"Learn Effect HttpApi"}, 1, 1),
-          (2, 2, ${"Build the webapp"}, 0, 2)
+          (1, 1, ${"Learn Effect HttpApi"}, 1),
+          (2, 2, ${"Build the webapp"}, 0)
       `
     }).pipe(sql.withTransaction)
   })

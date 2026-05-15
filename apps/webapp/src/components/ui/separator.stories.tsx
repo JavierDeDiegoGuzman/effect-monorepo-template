@@ -31,9 +31,9 @@ export const Vertical: Story = {
     <div className="flex h-6 items-center gap-3 text-sm">
       <span>Overview</span>
       <Separator orientation="vertical" />
-      <span>Projects</span>
-      <Separator orientation="vertical" />
       <span>Todos</span>
+      <Separator orientation="vertical" />
+      <span>Settings</span>
     </div>
   ),
 }

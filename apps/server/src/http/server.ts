@@ -6,7 +6,6 @@ import { HttpRouter } from "effect/unstable/http"
 import { HttpApiBuilder, HttpApiScalar } from "effect/unstable/httpapi"
 import { HttpServerDependenciesLayer } from "../layers/ServerLayers"
 import { AuthApiHandlers, SessionApiHandlers } from "../modules/auth"
-import { ProjectsApiHandlers } from "../modules/projects"
 import { SystemApiHandlers } from "../modules/system"
 import { TodosApiHandlers } from "../modules/todos"
 import { AuthorizationLayer } from "./middleware/Authorization"
@@ -20,7 +19,6 @@ export const makeApiRoutesLayer = (
     Layer.provide([
       AuthApiHandlers.pipe(Layer.provide(dependenciesLayer)),
       SessionApiHandlers,
-      ProjectsApiHandlers.pipe(Layer.provide(dependenciesLayer)),
       TodosApiHandlers.pipe(Layer.provide(dependenciesLayer)),
       SystemApiHandlers,
     ]),

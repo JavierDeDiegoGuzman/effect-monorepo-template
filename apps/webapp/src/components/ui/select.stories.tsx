@@ -26,11 +26,11 @@ export const Placeholder: Story = {
   render: () => (
     <Select>
       <SelectTrigger className="w-[240px]">
-        <SelectValue placeholder="Select a project" />
+        <SelectValue placeholder="Select a status" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="launch">Launch checklist</SelectItem>
-        <SelectItem value="qa">QA hardening</SelectItem>
+        <SelectItem value="open">Open</SelectItem>
+        <SelectItem value="completed">Completed</SelectItem>
       </SelectContent>
     </Select>
   ),
@@ -38,17 +38,17 @@ export const Placeholder: Story = {
 
 export const Selected: Story = {
   render: () => (
-    <Select defaultValue="launch">
+    <Select defaultValue="open">
       <SelectTrigger className="w-[240px]">
-        <SelectValue placeholder="Select a project" />
+        <SelectValue placeholder="Select a status" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectLabel>Projects</SelectLabel>
-          <SelectItem value="launch">Launch checklist</SelectItem>
-          <SelectItem value="qa">QA hardening</SelectItem>
+          <SelectLabel>Statuses</SelectLabel>
+          <SelectItem value="open">Open</SelectItem>
+          <SelectItem value="completed">Completed</SelectItem>
           <SelectSeparator />
-          <SelectItem value="none">No project</SelectItem>
+          <SelectItem value="all">All todos</SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>
@@ -71,12 +71,12 @@ export const Small: Story = {
 
 export const Disabled: Story = {
   render: () => (
-    <Select defaultValue="launch" disabled>
+    <Select defaultValue="open" disabled>
       <SelectTrigger className="w-[240px]">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="launch">Launch checklist</SelectItem>
+        <SelectItem value="open">Open</SelectItem>
       </SelectContent>
     </Select>
   ),

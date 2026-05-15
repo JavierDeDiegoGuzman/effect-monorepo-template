@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { projectFixtures, todoFixtures } from "@/test/fixtures"
-import { renderTodoProjectMeta, TodoList } from "./TodoList"
+import { todoFixtures } from "@/test/fixtures"
+import { TodoList } from "./TodoList"
 
 const meta = {
   title: "Domain/Todos/TodoList",
@@ -20,15 +20,6 @@ type Story = StoryObj<typeof meta>
 export const Populated: Story = {
   args: {
     todos: [todoFixtures.open, todoFixtures.completed],
-  },
-}
-
-export const WithProjectMeta: Story = {
-  args: {
-    todos: [todoFixtures.open, todoFixtures.completed],
-    renderMeta: renderTodoProjectMeta(
-      new Map([[projectFixtures.active.id, projectFixtures.active]]),
-    ),
   },
 }
 

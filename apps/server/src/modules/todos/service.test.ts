@@ -1,62 +1,79 @@
-import { Project } from "@app/shared"
 import { assert, describe, it } from "@effect/vitest"
 import { Effect } from "effect"
-import { makeInMemoryDomainTestLayer } from "../../test/layers/DomainTestLayer"
+import { InMemoryDomainTestLayer } from "../../test/layers/DomainTestLayer"
 import { Todos } from "./service"
 
-const project = new Project({
-  id: 1,
-  userId: 1,
-  name: "Template",
-  description: "Test project",
-  archived: false,
-})
+const assertTodoNotFound = (
+  error: { readonly _tag: string; readonly id: number },
+  id: number,
+) => {
+  assert.strictEqual(error._tag, "TodoNotFound")
+  assert.strictEqual(error.id, id)
+}
 
 describe("Todos domain service", () => {
-  it.effect(
-    "creates a todo when the referenced project belongs to the user",
-    () =>
-      Effect.gen(function* () {
-        const todos = yield* Todos
+  it.effect("creates a trimmed todo for the user", () =>
+    Effect.gen(function* () {
+      const todos = yield* Todos
 
-        const todo = yield* todos.createForUser(1, {
-          title: " Write tests ",
-          projectId: project.id,
-        })
+      const todo = yield* todos.createForUser(1, {
+        title: " Write tests ",
+      })
 
-        assert.strictEqual(todo.title, "Write tests")
-        assert.strictEqual(todo.projectId, project.id)
-        assert.strictEqual(todo.completed, false)
-      }).pipe(
-        Effect.provide(
-          makeInMemoryDomainTestLayer({
-            projects: [project],
-          }),
-        ),
-      ),
+      assert.strictEqual(todo.userId, 1)
+      assert.strictEqual(todo.title, "Write tests")
+      assert.strictEqual(todo.completed, false)
+    }).pipe(Effect.provide(InMemoryDomainTestLayer)),
   )
 
-  it.effect(
-    "fails with ProjectNotFound when the referenced project belongs to another user",
-    () =>
-      Effect.gen(function* () {
-        const todos = yield* Todos
+  it.effect("lists only todos owned by the requested user", () =>
+    Effect.gen(function* () {
+      const todos = yield* Todos
 
-        const error = yield* todos
-          .createForUser(2, {
-            title: "Write tests",
-            projectId: project.id,
-          })
-          .pipe(Effect.flip)
+      const userTodo = yield* todos.createForUser(1, {
+        title: "Visible todo",
+      })
+      yield* todos.createForUser(2, {
+        title: "Other user's todo",
+      })
 
-        assert.strictEqual(error._tag, "ProjectNotFound")
-        assert.strictEqual(error.id, project.id)
-      }).pipe(
-        Effect.provide(
-          makeInMemoryDomainTestLayer({
-            projects: [project],
-          }),
-        ),
-      ),
+      const listed = yield* todos.listByUser(1)
+
+      assert.deepStrictEqual(listed, [userTodo])
+    }).pipe(Effect.provide(InMemoryDomainTestLayer)),
+  )
+
+  it.effect("does not return another user's todo by id", () =>
+    Effect.gen(function* () {
+      const todos = yield* Todos
+
+      const otherUserTodo = yield* todos.createForUser(2, {
+        title: "Private todo",
+      })
+
+      const error = yield* todos
+        .getByIdForUser(1, otherUserTodo.id)
+        .pipe(Effect.flip)
+
+      assertTodoNotFound(error, otherUserTodo.id)
+    }).pipe(Effect.provide(InMemoryDomainTestLayer)),
+  )
+
+  it.effect("does not update another user's todo", () =>
+    Effect.gen(function* () {
+      const todos = yield* Todos
+
+      const otherUserTodo = yield* todos.createForUser(2, {
+        title: "Private todo",
+      })
+
+      const error = yield* todos
+        .updateForUser(1, otherUserTodo.id, { completed: true })
+        .pipe(Effect.flip)
+      const unchanged = yield* todos.getByIdForUser(2, otherUserTodo.id)
+
+      assertTodoNotFound(error, otherUserTodo.id)
+      assert.strictEqual(unchanged.completed, false)
+    }).pipe(Effect.provide(InMemoryDomainTestLayer)),
   )
 })

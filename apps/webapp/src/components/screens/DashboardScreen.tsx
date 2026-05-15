@@ -4,13 +4,11 @@ import { Screen } from "@/components/patterns/Screen"
 import { DashboardSummary } from "@/components/screen-parts/dashboard/DashboardSummary"
 import { toErrorMessage } from "@/lib/errors"
 import { currentSessionQuery } from "@/modules/auth"
-import { projectsQuery } from "@/modules/projects"
 import { todosQuery } from "@/modules/todos"
 
 export function DashboardScreen() {
   const sessionState = useAtomValue(currentSessionQuery)
   const todosState = useAtomValue(todosQuery)
-  const projectsState = useAtomValue(projectsQuery)
 
   return AsyncResult.matchWithError(sessionState, {
     onInitial: () => <DashboardScreenLoading />,
@@ -25,7 +23,7 @@ export function DashboardScreen() {
         return <DashboardScreenError message="No active session" />
       }
 
-      return AsyncResult.matchWithError(projectsState, {
+      return AsyncResult.matchWithError(todosState, {
         onInitial: () => <DashboardScreenLoading />,
         onError: (error) => (
           <DashboardScreenError message={toErrorMessage(error)} />
@@ -33,37 +31,23 @@ export function DashboardScreen() {
         onDefect: (defect) => (
           <DashboardScreenError message={toErrorMessage(defect)} />
         ),
-        onSuccess: ({ value: projects }) =>
-          AsyncResult.matchWithError(todosState, {
-            onInitial: () => <DashboardScreenLoading />,
-            onError: (error) => (
-              <DashboardScreenError message={toErrorMessage(error)} />
-            ),
-            onDefect: (defect) => (
-              <DashboardScreenError message={toErrorMessage(defect)} />
-            ),
-            onSuccess: ({ value: todos }) => (
-              <Screen.Root>
-                <Screen.Header>
-                  <Screen.Title>Dashboard</Screen.Title>
-                  <Screen.Description>
-                    A dashboard that summarizes your current scope before you
-                    move into collection and detail screens.
-                  </Screen.Description>
-                </Screen.Header>
+        onSuccess: ({ value: todos }) => (
+          <Screen.Root>
+            <Screen.Header>
+              <Screen.Title>Dashboard</Screen.Title>
+              <Screen.Description>
+                A dashboard that summarizes your current scope before you move
+                into the todos collection.
+              </Screen.Description>
+            </Screen.Header>
 
-                <Screen.Body>
-                  <Screen.Section>
-                    <DashboardSummary
-                      session={session}
-                      projects={projects}
-                      todos={todos}
-                    />
-                  </Screen.Section>
-                </Screen.Body>
-              </Screen.Root>
-            ),
-          }),
+            <Screen.Body>
+              <Screen.Section>
+                <DashboardSummary session={session} todos={todos} />
+              </Screen.Section>
+            </Screen.Body>
+          </Screen.Root>
+        ),
       })
     },
   })

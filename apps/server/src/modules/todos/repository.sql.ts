@@ -15,7 +15,6 @@ type TodoRow = {
   readonly user_id: number
   readonly title: string
   readonly completed: number
-  readonly project_id: number | null
 }
 
 const toTodo = (row: TodoRow) =>
@@ -24,7 +23,6 @@ const toTodo = (row: TodoRow) =>
     userId: row.user_id,
     title: row.title,
     completed: row.completed === 1,
-    projectId: row.project_id,
   })
 
 export const SqlTodosRepositoryLayer = Layer.effect(
@@ -36,22 +34,9 @@ export const SqlTodosRepositoryLayer = Layer.effect(
       userId: number,
     ) {
       const rows = yield* sql<TodoRow>`
-        SELECT id, user_id, title, completed, project_id
+        SELECT id, user_id, title, completed
         FROM todos
         WHERE user_id = ${userId}
-        ORDER BY id ASC
-      `.pipe(Effect.orDie)
-
-      return rows.map(toTodo)
-    })
-
-    const listByProjectForUser = Effect.fn(
-      "SqlTodosRepository.listByProjectForUser",
-    )(function* (userId: number, projectId: number) {
-      const rows = yield* sql<TodoRow>`
-        SELECT id, user_id, title, completed, project_id
-        FROM todos
-        WHERE user_id = ${userId} AND project_id = ${projectId}
         ORDER BY id ASC
       `.pipe(Effect.orDie)
 
@@ -61,7 +46,7 @@ export const SqlTodosRepositoryLayer = Layer.effect(
     const getByIdForUser = Effect.fn("SqlTodosRepository.getByIdForUser")(
       function* (userId: number, id: number) {
         const rows = yield* sql<TodoRow>`
-        SELECT id, user_id, title, completed, project_id
+        SELECT id, user_id, title, completed
         FROM todos
         WHERE user_id = ${userId} AND id = ${id}
         LIMIT 1
@@ -73,14 +58,10 @@ export const SqlTodosRepositoryLayer = Layer.effect(
     )
 
     const createForUser = Effect.fn("SqlTodosRepository.createForUser")(
-      function* (input: {
-        readonly userId: number
-        readonly title: string
-        readonly projectId: number | null
-      }) {
+      function* (input: { readonly userId: number; readonly title: string }) {
         const result = (yield* sql`
-        INSERT INTO todos (user_id, title, completed, project_id)
-        VALUES (${input.userId}, ${input.title}, 0, ${input.projectId})
+        INSERT INTO todos (user_id, title, completed)
+        VALUES (${input.userId}, ${input.title}, 0)
       `.raw.pipe(Effect.orDie)) as SqliteInsertResult
 
         return yield* getByIdForUser(input.userId, insertedIdFrom(result)).pipe(
@@ -109,7 +90,6 @@ export const SqlTodosRepositoryLayer = Layer.effect(
 
     return TodosRepository.of({
       listByUser,
-      listByProjectForUser,
       getByIdForUser,
       createForUser,
       updateCompletedForUser,

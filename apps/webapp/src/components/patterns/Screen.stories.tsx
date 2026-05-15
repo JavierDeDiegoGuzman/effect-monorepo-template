@@ -58,11 +58,11 @@ export const LoadingState: Story = {
   render: () => (
     <Screen.Root className="max-w-3xl">
       <Screen.Header>
-        <Screen.Title>Projects</Screen.Title>
-        <Screen.Description>Loading the project collection.</Screen.Description>
+        <Screen.Title>Todos</Screen.Title>
+        <Screen.Description>Loading the todo collection.</Screen.Description>
       </Screen.Header>
       <Screen.Body>
-        <Screen.Loading>Loading projects…</Screen.Loading>
+        <Screen.Loading>Loading todos…</Screen.Loading>
       </Screen.Body>
     </Screen.Root>
   ),
@@ -72,15 +72,11 @@ export const EmptyState: Story = {
   render: () => (
     <Screen.Root className="max-w-3xl">
       <Screen.Header>
-        <Screen.Title>Projects</Screen.Title>
-        <Screen.Description>
-          No projects have been created yet.
-        </Screen.Description>
+        <Screen.Title>Todos</Screen.Title>
+        <Screen.Description>No todos have been created yet.</Screen.Description>
       </Screen.Header>
       <Screen.Body>
-        <Screen.Empty>
-          Create a project to start grouping related todos.
-        </Screen.Empty>
+        <Screen.Empty>Create a todo to start tracking your work.</Screen.Empty>
       </Screen.Body>
     </Screen.Root>
   ),

@@ -53,7 +53,7 @@ export const loginAction = apiRuntime.fn(
         kind: "client",
       }),
     ),
-  { reactivityKeys: ["auth", "projects", "todos"] },
+  { reactivityKeys: ["auth", "todos"] },
 )
 
 export const registerAction = apiRuntime.fn(
@@ -64,7 +64,7 @@ export const registerAction = apiRuntime.fn(
         kind: "client",
       }),
     ),
-  { reactivityKeys: ["auth", "projects", "todos"] },
+  { reactivityKeys: ["auth", "todos"] },
 )
 
 export const logoutAction = apiRuntime.fn(
@@ -76,5 +76,5 @@ export const logoutAction = apiRuntime.fn(
         kind: "client",
       }),
     ),
-  { reactivityKeys: ["auth", "projects", "todos"] },
+  { reactivityKeys: ["auth", "todos"] },
 )

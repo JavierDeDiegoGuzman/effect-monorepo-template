@@ -27,7 +27,7 @@ export function LoginScreen() {
       <Screen.Header>
         <Screen.Title>Sign in</Screen.Title>
         <Screen.Description>
-          Access your account and continue working on projects and todos.
+          Access your account and continue working on todos.
         </Screen.Description>
       </Screen.Header>
       <Screen.Body>
@@ -58,7 +58,7 @@ export function LoginScreen() {
           <Screen.SectionHeader>
             <Screen.SectionTitle>New here?</Screen.SectionTitle>
             <Screen.SectionDescription>
-              Creating an account lets you start tracking projects and todos.
+              Creating an account lets you start tracking todos.
             </Screen.SectionDescription>
           </Screen.SectionHeader>
           <Button asChild variant="outline">

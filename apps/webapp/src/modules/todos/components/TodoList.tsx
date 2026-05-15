@@ -1,4 +1,4 @@
-import type { Project, Todo } from "@app/shared"
+import type { Todo } from "@app/shared"
 import type * as React from "react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { cn } from "@/lib/utils"
@@ -20,23 +20,6 @@ export function TodoList(props: {
       ))}
     </ul>
   )
-}
-
-export function renderTodoProjectMeta(
-  projectById: ReadonlyMap<number, Project>,
-) {
-  return (todo: Todo) => {
-    const project =
-      todo.projectId === null ? null : (projectById.get(todo.projectId) ?? null)
-
-    return (
-      <p className="text-xs text-muted-foreground">
-        {project === null
-          ? "No project"
-          : `Project: ${project.name}${project.archived ? " (archived)" : ""}`}
-      </p>
-    )
-  }
 }
 
 function TodoListItem(props: {

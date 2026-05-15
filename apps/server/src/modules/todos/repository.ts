@@ -5,10 +5,6 @@ export class TodosRepository extends ServiceMap.Service<
   TodosRepository,
   {
     readonly listByUser: (userId: number) => Effect.Effect<Array<Todo>>
-    readonly listByProjectForUser: (
-      userId: number,
-      projectId: number,
-    ) => Effect.Effect<Array<Todo>>
     readonly getByIdForUser: (
       userId: number,
       id: number,
@@ -16,7 +12,6 @@ export class TodosRepository extends ServiceMap.Service<
     readonly createForUser: (input: {
       readonly userId: number
       readonly title: string
-      readonly projectId: number | null
     }) => Effect.Effect<Todo>
     readonly updateCompletedForUser: (input: {
       readonly userId: number

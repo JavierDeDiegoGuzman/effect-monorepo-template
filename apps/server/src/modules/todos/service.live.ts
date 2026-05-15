@@ -4,14 +4,12 @@ import {
   type UpdateTodoInput,
 } from "@app/shared"
 import { Effect, Layer } from "effect"
-import { Projects } from "../projects"
 import { TodosRepository } from "./repository"
 import { Todos } from "./service"
 
 export const TodosLive = Layer.effect(
   Todos,
   Effect.gen(function* () {
-    const projects = yield* Projects
     const todosRepository = yield* TodosRepository
 
     const listByUser = Effect.fn("Todos.listByUser")(function* (
@@ -19,12 +17,6 @@ export const TodosLive = Layer.effect(
     ) {
       return yield* todosRepository.listByUser(userId)
     })
-
-    const listByProjectForUser = Effect.fn("Todos.listByProjectForUser")(
-      function* (userId: number, projectId: number) {
-        return yield* todosRepository.listByProjectForUser(userId, projectId)
-      },
-    )
 
     const getByIdForUser = Effect.fn("Todos.getByIdForUser")(function* (
       userId: number,
@@ -47,14 +39,9 @@ export const TodosLive = Layer.effect(
       userId: number,
       input: CreateTodoInput,
     ) {
-      if (input.projectId !== null) {
-        yield* projects.getByIdForUser(userId, input.projectId)
-      }
-
       return yield* todosRepository.createForUser({
         userId,
         title: input.title.trim(),
-        projectId: input.projectId,
       })
     })
 
@@ -76,7 +63,6 @@ export const TodosLive = Layer.effect(
 
     return Todos.of({
       listByUser,
-      listByProjectForUser,
       getByIdForUser,
       createForUser,
       updateForUser,

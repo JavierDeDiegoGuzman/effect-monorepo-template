@@ -1,4 +1,4 @@
-import type { CurrentSession, Project, Todo } from "@app/shared"
+import type { CurrentSession, Todo } from "@app/shared"
 import { Link } from "@tanstack/react-router"
 import { Button } from "@/components/ui/button"
 import {
@@ -12,17 +12,11 @@ import { pathForRoute } from "@/lib/router"
 
 export function DashboardSummary(props: {
   readonly session: CurrentSession
-  readonly projects: ReadonlyArray<Project>
   readonly todos: ReadonlyArray<Todo>
 }) {
   const completedTodos = props.todos.filter((todo) => todo.completed).length
   const pendingTodos = props.todos.length - completedTodos
-  const activeProjects = props.projects.filter(
-    (project) => !project.archived,
-  ).length
-  const archivedProjects = props.projects.length - activeProjects
   const recentTodos = props.todos.slice(0, 3)
-  const recentProjects = props.projects.slice(0, 3)
 
   return (
     <>
@@ -37,33 +31,26 @@ export function DashboardSummary(props: {
           </CardContent>
         </Card>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-3">
           <MetricCard label="Todos" value={props.todos.length} />
           <MetricCard label="Pending" value={pendingTodos} />
           <MetricCard label="Completed" value={completedTodos} />
-          <MetricCard label="Active projects" value={activeProjects} />
-          <MetricCard label="Archived projects" value={archivedProjects} />
         </div>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1.2fr_1fr_1fr]">
+      <div className="grid gap-6 xl:grid-cols-[1.2fr_1fr]">
         <Card className="border-border/60 bg-muted/20">
           <CardHeader>
             <CardTitle>Move from overview to execution</CardTitle>
             <CardDescription>
-              Use the dashboard to orient yourself, then jump into the project
-              and todo collections where the real CRUD work happens.
+              Use the dashboard to orient yourself, then jump into the todos
+              collection where the real CRUD work happens.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-sm text-muted-foreground">
             <div className="flex flex-wrap gap-2">
               <Button asChild variant="outline">
                 <Link to={pathForRoute({ name: "todos" })}>Open todos</Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link to={pathForRoute({ name: "projects" })}>
-                  Open projects
-                </Link>
               </Button>
             </div>
           </CardContent>
@@ -78,19 +65,6 @@ export function DashboardSummary(props: {
                   (todo) => `${todo.completed ? "[x]" : "[ ]"} ${todo.title}`,
                 )
               : ["No todos yet"]
-          }
-        />
-
-        <PreviewCard
-          title="Recent projects"
-          description="Full details live in their dedicated screens."
-          items={
-            recentProjects.length > 0
-              ? recentProjects.map(
-                  (project) =>
-                    `${project.archived ? "[A]" : "[ ]"} ${project.name}`,
-                )
-              : ["No projects yet"]
           }
         />
       </div>

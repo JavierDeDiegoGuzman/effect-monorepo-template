@@ -23,14 +23,6 @@ export const makeInMemoryTodosRepositoryLayer = (
         },
       )
 
-      const listByProjectForUser = Effect.fn(
-        "InMemoryTodosRepository.listByProjectForUser",
-      )(function* (userId: number, projectId: number) {
-        return Array.from((yield* Ref.get(store)).values()).filter(
-          (todo) => todo.userId === userId && todo.projectId === projectId,
-        )
-      })
-
       const getByIdForUser = Effect.fn(
         "InMemoryTodosRepository.getByIdForUser",
       )(function* (userId: number, id: number) {
@@ -39,18 +31,13 @@ export const makeInMemoryTodosRepositoryLayer = (
       })
 
       const createForUser = Effect.fn("InMemoryTodosRepository.createForUser")(
-        function* (input: {
-          readonly userId: number
-          readonly title: string
-          readonly projectId: number | null
-        }) {
+        function* (input: { readonly userId: number; readonly title: string }) {
           const id = yield* Ref.getAndUpdate(nextId, (current) => current + 1)
           const todo = new Todo({
             id,
             userId: input.userId,
             title: input.title,
             completed: false,
-            projectId: input.projectId,
           })
           yield* Ref.update(store, (current) => new Map(current).set(id, todo))
           return todo
@@ -78,7 +65,6 @@ export const makeInMemoryTodosRepositoryLayer = (
 
       return TodosRepository.of({
         listByUser,
-        listByProjectForUser,
         getByIdForUser,
         createForUser,
         updateCompletedForUser,

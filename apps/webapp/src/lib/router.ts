@@ -3,8 +3,6 @@ export type AppRoute =
   | { readonly name: "register" }
   | { readonly name: "dashboard" }
   | { readonly name: "todos" }
-  | { readonly name: "projects" }
-  | { readonly name: "project"; readonly projectId: number }
 
 export const routeFromPath = (path: string): AppRoute => {
   const parts = path.split("/").filter(Boolean)
@@ -25,17 +23,6 @@ export const routeFromPath = (path: string): AppRoute => {
     return { name: "todos" }
   }
 
-  if (parts[0] === "projects" && parts.length === 1) {
-    return { name: "projects" }
-  }
-
-  if (parts[0] === "projects" && parts.length === 2) {
-    const projectId = Number(parts[1])
-    if (Number.isFinite(projectId)) {
-      return { name: "project", projectId }
-    }
-  }
-
   return { name: "dashboard" }
 }
 
@@ -49,9 +36,5 @@ export const pathForRoute = (route: AppRoute): string => {
       return "/"
     case "todos":
       return "/todos"
-    case "projects":
-      return "/projects"
-    case "project":
-      return `/projects/${route.projectId}`
   }
 }
