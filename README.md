@@ -21,7 +21,7 @@ This template includes a small authenticated SaaS-style example, but the real go
 - React + `@effect/atom-react`
 - Storybook for visual component development
 - Vitest + Testing Library for webapp component tests
-- SQLite persistence for auth, user-owned projects, and user-owned todos
+- SQLite persistence for auth, users, and user-owned todos
 - local observability stack with OTLP Collector + Jaeger
 
 ## Repository Layout
@@ -71,9 +71,8 @@ pnpm verify:architecture
 The included example covers:
 
 - registration, login, and bearer-token protected endpoints
-- registration, login, and per-user sessions
-- user-owned projects
-- global todos and project-scoped todos
+- per-user sessions
+- user-owned global todos
 - SQLite persistence under `apps/server/.data` by default
 - typed HTTP integration coverage
 
@@ -147,13 +146,12 @@ pnpm observability:down
 
 To add a new feature or domain:
 
-1. Add schemas and errors in `packages/shared/src/domain`
-2. Add endpoints/groups in `packages/shared/src/api`
-3. Add repositories or extend existing ones in `apps/server/src/repositories`
-4. Add or update domain services in `apps/server/src/services`
-5. Implement handlers in `apps/server/src/http/handlers`
-6. Consume the API from `apps/webapp` or server integration tests
-7. Update docs and executable architecture checks when boundaries change
+1. Add shared schemas, errors, and endpoint groups in `packages/shared/src/modules/<module>` and export them through `packages/shared/src/api.ts` as needed
+2. Add or extend server repositories, domain services, and HTTP handlers inside `apps/server/src/modules/<module>`
+3. Wire repository/domain layers through `apps/server/src/layers/ServerLayers.ts` and test layers when the backend adds services
+4. Add webapp atoms and feature components in `apps/webapp/src/modules/<module>` when the UI consumes the API
+5. Compose route-level screens from the module UI in `apps/webapp/src/components/screens` and update navigation/router wiring as needed
+6. Update docs, tests, and executable architecture checks when boundaries change
 
 ## Documentation
 

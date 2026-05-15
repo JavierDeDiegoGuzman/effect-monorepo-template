@@ -44,10 +44,9 @@ The initial catalog covers:
 - `UI/Breadcrumb`: default and collapsed paths
 - `UI/Separator`: horizontal and vertical orientation
 - `Patterns/Screen`: collection, loading, empty, and error states
-- `Modules/Todos/TodoList`: populated, project metadata, and empty states
-- `Modules/Todos/TodoCreateForm`: default, selected project, pending, and parent-scoped states
-- `Modules/Auth/LoginForm`: empty, filled, and pending states
-- `Modules/Projects/ProjectCreateForm`: empty, filled, and pending states
+- `Domain/Todos/TodoList`: populated and empty states
+- `Domain/Todos/TodoCreateForm`: default, filled, pending, and custom-label states
+- `Domain/Auth/LoginForm`: empty, filled, and pending states
 
 Shared mock fixtures live in `apps/webapp/src/test/fixtures.ts` so stories and component tests can use the same stable data without touching remote APIs.
 

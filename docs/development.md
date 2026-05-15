@@ -115,7 +115,9 @@ Copy `.env.example` to `.env` before local development. Keep secrets out of comm
 
 ## Current Local Data
 
-The example app persists users, user-owned projects, and user-owned todos in SQLite. With the example `SQLITE_FILENAME=./.data/app.db`, the database file is `apps/server/.data/app.db` when running through `pnpm dev`.
+The example app persists users and user-owned todos in SQLite. With the example `SQLITE_FILENAME=./.data/app.db`, the database file is `apps/server/.data/app.db` when running through `pnpm dev`.
+
+If your local database was created before the Projects example module was removed, it may still contain old tables or columns because startup schema setup uses `CREATE TABLE IF NOT EXISTS`. Stop the dev server and delete/reset the local SQLite file, for example `rm apps/server/.data/app.db`, if you need a clean post-cleanup schema.
 
 ## Common Issues
 

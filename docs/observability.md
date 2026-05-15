@@ -70,7 +70,6 @@ Required when browser tracing is enabled:
 Current atom queries/actions create client spans for:
 
 - `auth.me`, `auth.login`, `auth.register`, `auth.logout`
-- `projects.list`, `projects.create`, `projects.update`, `projects.archive`
 - `todos.list`, `todos.create`, `todos.update`
 
 ### Server

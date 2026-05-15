@@ -103,7 +103,7 @@ router -> screens -> modules/<module> + patterns + ui
 
 ## Current Example
 
-The example app includes auth, users, projects, todos, and system health modules. Users own projects and todos; todos may optionally belong to a project. The project detail UI shows related todos.
+The example app includes auth, users, todos, and system health modules. Users own todos, and the webapp exposes a global todo workflow as the main protected product surface.
 
 The example SQLite file is configured with `SQLITE_FILENAME=./.data/app.db`, relative to the server process directory (`apps/server` when using `pnpm dev`).
 

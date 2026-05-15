@@ -23,9 +23,6 @@ Most product endpoints are protected by bearer-token authorization. Register or 
 - `packages/shared/src/modules/auth/middleware.ts`
 - `packages/shared/src/modules/users/schema.ts`
 - `packages/shared/src/modules/users/errors.ts`
-- `packages/shared/src/modules/projects/schema.ts`
-- `packages/shared/src/modules/projects/contract.ts`
-- `packages/shared/src/modules/projects/errors.ts`
 - `packages/shared/src/modules/todos/schema.ts`
 - `packages/shared/src/modules/todos/contract.ts`
 - `packages/shared/src/modules/todos/errors.ts`
@@ -57,23 +54,14 @@ Each module exports its public surface from `index.ts`; root `@app/shared` expor
 - `POST /auth/login` (public)
 - `GET /auth/me` (protected)
 
-### Projects (protected)
-
-- `GET /projects`
-- `GET /projects/:id`
-- `POST /projects`
-- `PATCH /projects/:id`
-- `POST /projects/:id/archive`
-
 ### Todos (protected)
 
 - `GET /todos`
-- `GET /projects/:projectId/todos`
 - `GET /todos/:id`
 - `POST /todos`
 - `PATCH /todos/:id`
 
-Todos can optionally belong to a project owned by the authenticated user. Project-scoped reads use `/projects/:projectId/todos`.
+Todos are global per authenticated user in the current template example.
 
 ## How To Add A New Endpoint
 
