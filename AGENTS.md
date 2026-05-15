@@ -70,6 +70,21 @@ The frontend is organized in layers:
 - Make observability and tests part of the feature, not afterthoughts
 - Keep formatting and linting clean with Biome; avoid mixing broad formatting churn with behavior changes
 
+## Canonical full-stack architecture rules
+
+Detailed policy lives in `docs/architecture.md`, `docs/api.md`, `docs/testing.md`, and `docs/development.md`. These rules are mandatory for new product/runtime work:
+
+- Backend request flow is always `HTTP handler -> Service/use-case Module -> Repository Interface -> Adapter`.
+- Handlers are transport adapters only and must not call repositories directly.
+- Services own product behavior, ID generation, normalization, scope/authorization decisions, repository coordination, and conversion to shared contract models.
+- Repositories are flat query adapters. `repository.ts` owns repository input/record schemas and repository interfaces.
+- Repositories must not generate IDs or contain product logic.
+- Public/persisted entity IDs should be branded UUID strings; creation services generate UUIDs inline with `Random.nextUUIDv4`.
+- SQL adapters must use Effect SQL `SqlSchema` for every persistent operation.
+- Canonical persistence adapters are `memory`, `sqlite`, and `postgres`. JSON and Drizzle are legacy/transitional and must not be extended.
+- Expected client-visible errors live in shared contracts with explicit HTTP status/body definitions. Persistence/internal errors map to a safe shared `InternalServerError`.
+- Canonical e2e tests use a typed client against a fetchable app with a temporary SQLite database and schema reset before each test.
+
 ## Product module model
 
 A new product module should usually be added through the phased product-module process:

@@ -4,7 +4,7 @@
 
 - Node.js 24+
 - `pnpm`
-- Docker, if you want local observability
+- Docker, if you want local observability or local Postgres
 
 ## Install
 
@@ -86,6 +86,25 @@ Build the static Storybook catalog:
 pnpm --filter @app/webapp build-storybook
 ```
 
+## Canonical Local Persistence
+
+Canonical persistence adapters are:
+
+- `memory`: domain/unit tests and ephemeral demos;
+- `sqlite`: local SQL development and programmatic e2e tests;
+- `postgres`: production SQL.
+
+JSON persistence is not canonical and must not be extended. Drizzle is not canonical and is scheduled for removal. Transitional JSON/Drizzle entrypoints or files may exist while the migration is in progress; do not use them as examples for new modules.
+
+SQLite should be the default local SQL path once the migration is complete. Postgres remains the production adapter and can be run locally through Docker for prod-like checks.
+
+Persistence lifecycle should be explicit:
+
+- startup validates required config and expected schema/migration state;
+- setup/migration/reset commands or services own schema changes;
+- normal request handling does not silently create or mutate tables;
+- tests reset/recreate their own temporary SQLite schema.
+
 ## Webapp Routing Notes
 
 The webapp uses TanStack Router in SPA mode with hash history. Route wiring lives in `apps/webapp/src/router.tsx`; routes should define paths/params and render screens. Keep remote data in atoms and keep route URL/search state in router APIs.
@@ -96,8 +115,11 @@ Copy `.env.example` to `.env` before local development. Keep secrets out of comm
 
 ### Server
 
+Canonical variables:
+
 - `PORT`: required HTTP server port
-- `SQLITE_FILENAME`: required SQLite database file, relative to the server process directory when using a relative path
+- `DATABASE_URL`: Postgres connection URL for production/prod-like runs
+- `SQLITE_FILENAME`: SQLite database file for local SQL development or explicit SQLite layers
 - `AUTH_JWT_SECRET`: required signing secret for auth tokens
 - `AUTH_JWT_ISSUER`: required JWT issuer
 - `AUTH_JWT_AUDIENCE`: required JWT audience
@@ -106,6 +128,10 @@ Copy `.env.example` to `.env` before local development. Keep secrets out of comm
 - `OTEL_SERVICE_NAME`: required only when server tracing is enabled
 - `OTEL_SERVICE_VERSION`: required only when server tracing is enabled
 
+Transitional variables during migration:
+
+- `JSON_DB_FILENAME`: legacy JSON database file used by transitional dev code only
+
 ### Webapp
 
 - `VITE_API_URL`: backend base URL. Defaults to `http://localhost:3001`
@@ -113,17 +139,23 @@ Copy `.env.example` to `.env` before local development. Keep secrets out of comm
 - `VITE_OTEL_SERVICE_NAME`: required only when browser tracing is enabled
 - `VITE_OTEL_SERVICE_VERSION`: required only when browser tracing is enabled
 
-## Current Local Data
+## Current Migration Note
 
-The example app persists users and user-owned todos in SQLite. With the example `SQLITE_FILENAME=./.data/app.db`, the database file is `apps/server/.data/app.db` when running through `pnpm dev`.
+The repository may still contain legacy local data behavior while the persistence migration is underway:
 
-If your local database was created before the Projects example module was removed, it may still contain old tables or columns because startup schema setup uses `CREATE TABLE IF NOT EXISTS`. Stop the dev server and delete/reset the local SQLite file, for example `rm apps/server/.data/app.db`, if you need a clean post-cleanup schema.
+- root `pnpm dev` may still start a JSON-backed dev server;
+- production code may still include Drizzle-backed Postgres files;
+- legacy SQLite setup may still use `CREATE TABLE IF NOT EXISTS` behavior.
+
+These are transitional implementation details, not canonical development patterns. New persistence work should target the documented `memory` / `sqlite` / `postgres` adapters with Effect SQL and explicit schema lifecycle.
+
+If your local database contains stale tables or columns from older example modules, stop the server and delete/reset the local database file before rerunning setup.
 
 ## Common Issues
 
 ### Missing server config
 
-If the server fails during startup with missing `PORT`, `SQLITE_FILENAME`, or `AUTH_JWT_*` variables, copy `.env.example` to `.env` or add those values to your existing `.env`.
+If the dev server fails during startup with missing `PORT` or `AUTH_JWT_*` variables, copy `.env.example` to `.env` or add those values to your existing `.env`. If the production server fails, also provide `DATABASE_URL` and make sure Postgres is reachable.
 
 ### CORS problems in the browser
 
