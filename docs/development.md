@@ -94,9 +94,9 @@ Canonical persistence adapters are:
 - `sqlite`: local SQL development and programmatic e2e tests;
 - `postgres`: production SQL.
 
-JSON persistence is not canonical and must not be extended. Drizzle is not canonical and is scheduled for removal. Transitional JSON/Drizzle entrypoints or files may exist while the migration is in progress; do not use them as examples for new modules.
+JSON persistence and Drizzle are removed from the product/runtime template. Do not add JSON or Drizzle adapters for new modules.
 
-SQLite should be the default local SQL path once the migration is complete. Postgres remains the production adapter and can be run locally through Docker for prod-like checks.
+SQLite is the default local SQL path. Postgres remains the production adapter and can be run locally through Docker for prod-like checks.
 
 Persistence lifecycle should be explicit:
 
@@ -128,10 +128,6 @@ Canonical variables:
 - `OTEL_SERVICE_NAME`: required only when server tracing is enabled
 - `OTEL_SERVICE_VERSION`: required only when server tracing is enabled
 
-Transitional variables during migration:
-
-- `JSON_DB_FILENAME`: legacy JSON database file used by transitional dev code only
-
 ### Webapp
 
 - `VITE_API_URL`: backend base URL. Defaults to `http://localhost:3001`
@@ -141,13 +137,7 @@ Transitional variables during migration:
 
 ## Current Migration Note
 
-The repository may still contain legacy local data behavior while the persistence migration is underway:
-
-- root `pnpm dev` may still start a JSON-backed dev server;
-- production code may still include Drizzle-backed Postgres files;
-- legacy SQLite setup may still use `CREATE TABLE IF NOT EXISTS` behavior.
-
-These are transitional implementation details, not canonical development patterns. New persistence work should target the documented `memory` / `sqlite` / `postgres` adapters with Effect SQL and explicit schema lifecycle.
+The product/runtime template now uses only `memory`, `sqlite`, and `postgres` persistence adapters. SQLite is used for local development and programmatic e2e tests; Postgres is used for production/prod-like runs.
 
 If your local database contains stale tables or columns from older example modules, stop the server and delete/reset the local database file before rerunning setup.
 

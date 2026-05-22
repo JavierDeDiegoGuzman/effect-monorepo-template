@@ -36,9 +36,9 @@ Canonical adapters:
 - `repository.sqlite.ts` for SQLite SQL behavior;
 - `repository.postgres.ts` for Postgres SQL behavior.
 
-SQL repository tests should verify that operations go through `SqlSchema` and decode rows into repository record schemas defined in `repository.ts`. SQL failures and decode failures should surface as internal persistence errors, not public API errors.
+SQL repository tests should verify that operations go through `SqlSchema` and decode rows into repository record schemas defined in `repository.ts`. SQL failures and decode failures should surface as internal persistence errors, not public API errors. Transaction rollback behavior is verified against SQL adapters; the memory transaction adapter is a no-op intended for fast domain tests, not rollback simulation.
 
-JSON and Drizzle adapters are transitional legacy code during the migration and should not receive new coverage except where needed to safely remove them.
+JSON and Drizzle adapters are not part of the product/runtime template and should not receive new coverage.
 
 ## Programmatic E2E API Tests
 
@@ -50,12 +50,12 @@ The canonical e2e pattern is Effect-native and programmatic:
 4. Create a typed API client from the shared API contract.
 5. Pass the app's `fetch` implementation into the client with an `apiUrl` such as `http://test`.
 6. Create user/application context through public client calls and helpers, not global DB seeds.
-7. Store auth token state in test-local state, for example a `Ref<string | null>` passed to the client `getAuthToken` effect.
+7. Store session cookie state in test-local state, for example a `Ref<string | null>` used by an injected fetch implementation.
 
 E2E tests should exercise the public contract:
 
 - register/login through auth endpoints;
-- call protected endpoints through Bearer auth;
+- call protected endpoints through the session cookie;
 - assert typed success responses;
 - assert expected shared errors and HTTP status behavior;
 - assert invalid params/body decode as 400-level input failures rather than generic not-found behavior.
@@ -72,13 +72,11 @@ Client options should include:
 - optional injected `fetch`;
 - optional `getAuthToken: Effect.Effect<string | null>`.
 
-The base client only prepends the base URL and injects a Bearer token when available. It must not validate tokens, clear storage, refresh sessions, or own browser lifecycle behavior.
+The base client only prepends the base URL and uses the injected fetch implementation. It must not validate tokens, clear storage, refresh sessions, or own browser lifecycle behavior; browser/web tests provide cookie credentials behavior at the runtime adapter.
 
-## HTTP Integration Tests During Migration
+## HTTP Integration Tests
 
-Some existing tests may still start the real HTTP router on an ephemeral port and use transitional JSON persistence. That pattern is legacy during the migration. New e2e tests should target the fetchable app + typed client + temporary SQLite pattern described above.
-
-If a temporary legacy test remains necessary while refactoring, keep it isolated and remove it when the canonical e2e harness covers the same behavior.
+HTTP integration tests should target the fetchable app + typed client + temporary SQLite pattern described above. A temporary legacy test should only remain when it is explicitly covering migration behavior and should be removed once the canonical e2e harness covers the same behavior.
 
 ## Frontend Component Test Pattern
 

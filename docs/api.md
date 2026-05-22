@@ -6,7 +6,7 @@ This template uses `effect/unstable/httpapi` as the shared contract between serv
 
 The API is defined once in `packages/shared`, implemented in `apps/server`, consumed by clients through a typed API client, and exercised by server e2e tests through that same contract.
 
-Most product endpoints are protected by bearer-token authorization. Register or log in first, then send the returned access token as `Authorization: Bearer <token>`.
+Most product endpoints are protected by the web session cookie. Register or log in first; the server sets an HttpOnly `app_session` cookie, and browser clients send it with subsequent requests.
 
 ## Where Things Live
 
@@ -50,7 +50,7 @@ Canonical client target:
 
 Runtime adapters:
 
-- `apps/webapp/src/api/*`: browser/webapp adapter around the base client, including browser token lifecycle.
+- `apps/webapp/src/api/*`: browser/webapp adapter around the base client, including cookie credentials behavior.
 - `apps/server/src/test/*`: e2e test harness using injected fetch from the fetchable app.
 
 During migration, the webapp may still contain local typed client construction. New work should move toward `packages/api-client`.
@@ -64,8 +64,9 @@ During migration, the webapp may still contain local typed client construction. 
 ### Auth
 
 - `POST /auth/register` (public)
-- `POST /auth/login` (public)
-- `GET /auth/me` (protected)
+- `POST /auth/login` (public; sets session cookie)
+- `POST /auth/logout` (public; clears session cookie)
+- `GET /auth/me` (protected by session cookie)
 
 ### Todos (protected)
 
@@ -130,4 +131,4 @@ Handlers adapt transport only. They must not call repositories directly. Service
 
 Clients are generated from the same `HttpApi` definition that the server implements, giving typed params, payloads, responses, and contract mismatch detection across frontend, tests, and backend.
 
-The base typed client is runtime-neutral. Browser token storage, logout behavior, and UI reaction to 401s belong to the webapp adapter/atoms, not the base client package.
+The base typed client is runtime-neutral. Browser cookie transport, logout behavior, and UI reaction to 401s belong to the webapp adapter/atoms, not the base client package.

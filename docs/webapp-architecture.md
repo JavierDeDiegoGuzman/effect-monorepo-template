@@ -8,7 +8,7 @@ The webapp uses predictable layers so humans and agents know where responsibilit
 - `src/components/patterns/*`: reusable layout recipes, page structure, shell pieces, section patterns, empty/loading/error states.
 - `src/components/screen-parts/*`: screen-specific presentational pieces for non-module composition surfaces such as the dashboard; these may know multiple module types but should not own atoms or router setup.
 - `src/modules/<module>/components/*`: props-first module UI such as forms, lists, summaries, and feature-specific cards.
-- `src/modules/<module>/atoms.ts`: remote/shared module state and mutations backed by the typed API client and Effect observability spans.
+- `src/modules/<module>/atoms.ts`: remote/shared module state and mutations backed by the typed API client and Effect observability spans. Auth atoms invalidate session state; the API client adapter sends browser cookies with requests rather than storing bearer tokens.
 - `src/components/screens/*`: connected screen containers. Screens read atoms, branch on `AsyncResult`, wire actions, and compose patterns/screen-parts/module components.
 - `src/router.tsx`: TanStack Router SPA route tree, auth redirects, route params, and shell outlet wiring.
 

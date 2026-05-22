@@ -57,7 +57,7 @@ HTTP handler -> Service/use-case Module -> Repository Interface -> Adapter
 Responsibilities:
 
 - **HTTP handler**: transport adapter only. It reads params/body/auth context, calls the service, and maps service/internal failures to the shared HTTP contract.
-- **Service/use-case Module**: owns product behavior: ID generation, normalization, auth/scope/ownership rules, expected domain errors, repository coordination, and conversion to shared contract models.
+- **Service/use-case Module**: owns product behavior: ID generation, normalization, auth/scope/ownership rules, expected domain errors, repository coordination, transaction scopes for multi-repository invariants, and conversion to shared contract models.
 - **Repository Interface**: storage-agnostic query port consumed by services. `repository.ts` owns repository input and record schemas.
 - **Repository Adapter**: flat persistence implementation. It translates repository methods to memory/SQL operations and does not contain product logic.
 
@@ -135,7 +135,7 @@ Canonical persistence adapters:
 - `sqlite`: local SQL development and programmatic e2e tests.
 - `postgres`: production SQL.
 
-JSON persistence is not canonical and must not be extended. Drizzle is not canonical and is scheduled for removal. Transitional JSON/Drizzle code may exist while the migration is in progress; do not copy it for new modules or new tests.
+JSON persistence and Drizzle are not part of the product/runtime template. Do not add JSON or Drizzle adapters for new modules or tests.
 
 Persistence lifecycle is explicit infrastructure:
 
@@ -177,7 +177,7 @@ Canonical frontend flow:
 Screen/components -> feature atoms -> ApiClient
 ```
 
-Screens/components should not call the API client directly. Feature atoms own remote state, mutations, invalidation, and frontend use-case/state transitions. The base API client package must not own browser token lifecycle; the webapp adapter/atoms own browser storage, clearing, and UI reaction to auth failures.
+Screens/components should not call the API client directly. Feature atoms own remote state, mutations, invalidation, and frontend use-case/state transitions. The base API client package must not own browser session lifecycle; the webapp adapter/atoms own cookie credentials behavior, logout invalidation, and UI reaction to auth failures.
 
 ## Product Module Checklist
 
@@ -200,4 +200,4 @@ When adding a persisted product module:
 
 ## Migration Note
 
-The current codebase may still contain transitional JSON persistence, Drizzle files, numeric IDs, handlers with direct repository access, or legacy test fixtures. The canonical policy in this document wins for new work. Migration sessions should remove the transitional code and update docs/tests as each layer is converted.
+The current codebase may still contain transitional numeric IDs or legacy fixtures while migrations continue. The canonical policy in this document wins for new work. Migration sessions should remove transitional code and update docs/tests as each layer is converted.
