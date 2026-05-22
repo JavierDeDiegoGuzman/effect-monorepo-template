@@ -1,12 +1,12 @@
 import type { User } from "@app/shared"
-import { type Effect, ServiceMap } from "effect"
+import { Context, type Effect } from "effect"
 
 export type UserRecord = {
   readonly user: User
   readonly passwordHash: string
 }
 
-export class UsersRepository extends ServiceMap.Service<
+export class UsersRepository extends Context.Service<
   UsersRepository,
   {
     readonly getById: (id: number) => Effect.Effect<User | null>

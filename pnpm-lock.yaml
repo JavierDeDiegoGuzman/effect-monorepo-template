@@ -33,14 +33,17 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared
       '@effect/opentelemetry':
-        specifier: 4.0.0-beta.43
-        version: 4.0.0-beta.43(@opentelemetry/api@1.9.1)(@opentelemetry/resources@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-logs@0.211.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-metrics@2.5.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-node@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-web@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/semantic-conventions@1.40.0)(effect@4.0.0-beta.43)
+        specifier: 4.0.0-beta.58
+        version: 4.0.0-beta.58(@opentelemetry/api@1.9.1)(@opentelemetry/resources@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-logs@0.211.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-metrics@2.5.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-node@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-web@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/semantic-conventions@1.40.0)(effect@4.0.0-beta.58)
       '@effect/platform-node':
-        specifier: 4.0.0-beta.43
-        version: 4.0.0-beta.43(effect@4.0.0-beta.43)(ioredis@5.10.1)
+        specifier: 4.0.0-beta.58
+        version: 4.0.0-beta.58(effect@4.0.0-beta.58)(ioredis@5.10.1)
+      '@effect/sql-pg':
+        specifier: 4.0.0-beta.58
+        version: 4.0.0-beta.58(effect@4.0.0-beta.58)
       '@effect/sql-sqlite-node':
-        specifier: 4.0.0-beta.43
-        version: 4.0.0-beta.43(effect@4.0.0-beta.43)
+        specifier: 4.0.0-beta.58
+        version: 4.0.0-beta.58(effect@4.0.0-beta.58)
       '@opentelemetry/api':
         specifier: ^1.9.0
         version: 1.9.1
@@ -56,16 +59,19 @@ importers:
       '@opentelemetry/sdk-trace-node':
         specifier: ^2.5.0
         version: 2.6.1(@opentelemetry/api@1.9.1)
+      drizzle-orm:
+        specifier: 1.0.0-rc.2
+        version: 1.0.0-rc.2(@effect/sql-pg@4.0.0-beta.58(effect@4.0.0-beta.58))(@opentelemetry/api@1.9.1)(better-sqlite3@12.9.0)(effect@4.0.0-beta.58)(pg@8.20.0)
       effect:
-        specifier: 4.0.0-beta.43
-        version: 4.0.0-beta.43
+        specifier: 4.0.0-beta.58
+        version: 4.0.0-beta.58
       jose:
         specifier: ^6.2.2
         version: 6.2.2
     devDependencies:
       '@effect/vitest':
-        specifier: 4.0.0-beta.43
-        version: 4.0.0-beta.43(effect@4.0.0-beta.43)(vitest@4.1.5)
+        specifier: 4.0.0-beta.58
+        version: 4.0.0-beta.58(effect@4.0.0-beta.58)(vitest@4.1.5)
       tsx:
         specifier: ^4.20.5
         version: 4.21.0
@@ -79,11 +85,11 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared
       '@effect/atom-react':
-        specifier: 4.0.0-beta.43
-        version: 4.0.0-beta.43(effect@4.0.0-beta.43)(react@19.2.4)(scheduler@0.27.0)
+        specifier: 4.0.0-beta.58
+        version: 4.0.0-beta.58(effect@4.0.0-beta.58)(react@19.2.4)(scheduler@0.27.0)
       '@effect/opentelemetry':
-        specifier: 4.0.0-beta.43
-        version: 4.0.0-beta.43(@opentelemetry/api@1.9.1)(@opentelemetry/resources@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-logs@0.211.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-metrics@2.5.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-node@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-web@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/semantic-conventions@1.40.0)(effect@4.0.0-beta.43)
+        specifier: 4.0.0-beta.58
+        version: 4.0.0-beta.58(@opentelemetry/api@1.9.1)(@opentelemetry/resources@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-logs@0.211.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-metrics@2.5.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-node@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-web@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/semantic-conventions@1.40.0)(effect@4.0.0-beta.58)
       '@opentelemetry/api':
         specifier: ^1.9.0
         version: 1.9.1
@@ -124,8 +130,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       effect:
-        specifier: 4.0.0-beta.43
-        version: 4.0.0-beta.43
+        specifier: 4.0.0-beta.58
+        version: 4.0.0-beta.58
       lucide-react:
         specifier: ^1.9.0
         version: 1.9.0(react@19.2.4)
@@ -209,8 +215,8 @@ importers:
   packages/shared:
     dependencies:
       effect:
-        specifier: 4.0.0-beta.43
-        version: 4.0.0-beta.43
+        specifier: 4.0.0-beta.58
+        version: 4.0.0-beta.58
 
 packages:
 
@@ -419,15 +425,15 @@ packages:
     resolution: {integrity: sha512-QxULHAm7cNu72w97JUNCBFODFaXpbDg+dP8b/oWFAZ2MTRppA3U00Y2L1HqaS4J6yBqxwa/Y3nMBaxVKbB/NsA==}
     engines: {node: '>=20.19.0'}
 
-  '@effect/atom-react@4.0.0-beta.43':
-    resolution: {integrity: sha512-xSrRbGXuo4d0g4ph66TQST1GNSjtQZrZj8V7OiAQFuzMYcZ0kwRIPUUFwOBtbWHK43/zNENdNWOnlXh/iYM1dw==}
+  '@effect/atom-react@4.0.0-beta.58':
+    resolution: {integrity: sha512-hsOLjUKlBgzAVtaOugqBfXMDdSFJ9B+oPpTVtz5bp9WFoJrRPHzznYPUquzeMsbUA5qm3qGf/mUJClXVj/5HOw==}
     peerDependencies:
-      effect: ^4.0.0-beta.43
+      effect: ^4.0.0-beta.58
       react: ^19.2.4
       scheduler: '*'
 
-  '@effect/opentelemetry@4.0.0-beta.43':
-    resolution: {integrity: sha512-x+wXz9nIq7MQQr5Dtzl9Hkyfp0WYTXZil5Bn0soq/H0V6oJUuDOBuuHkBefibgkI/j5+vETJ6cYtcABsA2WPNw==}
+  '@effect/opentelemetry@4.0.0-beta.58':
+    resolution: {integrity: sha512-QLk86c2BAPErzYflY3bP/JjAiHOOJy/wuhess5jfoanB3SkqtTKEKloo+2YjAEL7051KCNU66wxLk377T/sl9g==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@opentelemetry/api': ^1.9
@@ -438,7 +444,7 @@ packages:
       '@opentelemetry/sdk-trace-node': ^2.0.0
       '@opentelemetry/sdk-trace-web': ^2.0.0
       '@opentelemetry/semantic-conventions': ^1.33.0
-      effect: ^4.0.0-beta.43
+      effect: ^4.0.0-beta.58
     peerDependenciesMeta:
       '@opentelemetry/api':
         optional: true
@@ -455,28 +461,33 @@ packages:
       '@opentelemetry/sdk-trace-web':
         optional: true
 
-  '@effect/platform-node-shared@4.0.0-beta.43':
-    resolution: {integrity: sha512-A9q0GEb61pYcQ06Dr6gXj1nKlDI3KHsar1sk3qb1ZY+kVSR64tBAylI8zGon23KY+NPtTUj/sEIToB7jc3Qt5w==}
+  '@effect/platform-node-shared@4.0.0-beta.66':
+    resolution: {integrity: sha512-+ymrhBnESv/hmn5SKTe2//IY9Ox/hGPeoogEWhW47ZGyhFI5eMYFxdEUBa+3IAV05rrBzrxON9lynu68n0DM7w==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      effect: ^4.0.0-beta.43
+      effect: ^4.0.0-beta.66
 
-  '@effect/platform-node@4.0.0-beta.43':
-    resolution: {integrity: sha512-Uq6E1rjaIpjHauzjwoB2HzAg3battYt2Boy8XO50GoHiWCXKE6WapYZ0/AnaBx5v5qg2sOfqpuiLsUf9ZgxOkA==}
+  '@effect/platform-node@4.0.0-beta.58':
+    resolution: {integrity: sha512-lDgj/RXQTbZQAWg/Mkpy04sB6wlWyuC9SGxdqjgKj2tBZFihrSjf90CfRhlbsy2BMk2WNNgZsebEHSqSWgUifQ==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      effect: ^4.0.0-beta.43
+      effect: ^4.0.0-beta.58
       ioredis: ^5.7.0
 
-  '@effect/sql-sqlite-node@4.0.0-beta.43':
-    resolution: {integrity: sha512-VAMlkL3q7K6XPlCZ0l0BLsxsogUHIupkrMMQGHKbLFjhR/7NFfiI6ugPhExHTdiKZU3tUByYb7/3EcHilkcZpw==}
+  '@effect/sql-pg@4.0.0-beta.58':
+    resolution: {integrity: sha512-PxK5D0fyva3P9r0XIuhoEYG7ihP+ZbB5PLvowUBgxuyqRTg+Egwrt9siyL1/sSr+1Ni3WTRWtyzZ0NKC0kCvqw==}
     peerDependencies:
-      effect: ^4.0.0-beta.43
+      effect: ^4.0.0-beta.58
 
-  '@effect/vitest@4.0.0-beta.43':
-    resolution: {integrity: sha512-XN2LAwiUWPqbV2jrsYYRjrVydQ8MIgwr83MVImtUaOQco4vk43+8OHlXQMRN/u2HnGK29KT+O2yTMMBdk2Q6Sw==}
+  '@effect/sql-sqlite-node@4.0.0-beta.58':
+    resolution: {integrity: sha512-9atmJ6FT/YT8P6HlWgzt3Vl5es+VzMomldMEiMMWjDRA6OkpbmvLKAQs38b6lhwSTb5ORlmmSSRk7cidNXLIpA==}
     peerDependencies:
-      effect: ^4.0.0-beta.43
+      effect: ^4.0.0-beta.58
+
+  '@effect/vitest@4.0.0-beta.58':
+    resolution: {integrity: sha512-smbZFxaznzlvbzsfq8r8lCZy6Ym3aAMv5LxmuZSm2DMcyL07jcg0qOrs7FCGvqneUvCEKkkZ8tkcEporBduH7A==}
+    peerDependencies:
+      effect: ^4.0.0-beta.58
       vitest: ^3.0.0 || ^4.0.0
 
   '@esbuild/aix-ppc64@0.27.7':
@@ -2321,8 +2332,124 @@ packages:
     resolution: {integrity: sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==}
     engines: {node: '>=12'}
 
-  effect@4.0.0-beta.43:
-    resolution: {integrity: sha512-AJYyDimIwJOn87uUz/JzmgDc5GfjxJbXvEbTvNzMa+M3Uer344bLo/O5mMRkqc1vBleA+Ygs4+dbE3QsqOkKTQ==}
+  drizzle-orm@1.0.0-rc.2:
+    resolution: {integrity: sha512-UXYDkbplF5wX0hwxll+80QhEwUvAJLBu+tAK/d4fna18kLE6VuliAzufF/ieDEIJeSnLRYgtmsXD6x1Xuy1kIg==}
+    peerDependencies:
+      '@aws-sdk/client-rds-data': '>=3'
+      '@cloudflare/workers-types': '>=4'
+      '@effect/sql-pg': '>=4.0.0-beta.58 || >=4.0.0'
+      '@electric-sql/pglite': '>=0.2.0'
+      '@libsql/client': '>=0.10.0'
+      '@libsql/client-wasm': '>=0.10.0'
+      '@neondatabase/serverless': '>=0.10.0'
+      '@op-engineering/op-sqlite': '>=2'
+      '@opentelemetry/api': ^1.4.1
+      '@planetscale/database': '>=1.13'
+      '@sinclair/typebox': '>=0.34.8'
+      '@sqlitecloud/drivers': '>=1.0.653'
+      '@tidbcloud/serverless': '*'
+      '@tursodatabase/database': '>=0.2.1'
+      '@tursodatabase/database-common': '>=0.2.1'
+      '@tursodatabase/database-wasm': '>=0.2.1'
+      '@types/better-sqlite3': '*'
+      '@types/mssql': ^9.1.4
+      '@types/pg': '*'
+      '@types/sql.js': '*'
+      '@upstash/redis': '>=1.34.7'
+      '@vercel/postgres': '>=0.8.0'
+      '@xata.io/client': '*'
+      arktype: '>=2.0.0'
+      better-sqlite3: '>=9.3.0'
+      bun-types: '*'
+      effect: '>=4.0.0-beta.58 || >=4.0.0'
+      expo-sqlite: '>=14.0.0'
+      mssql: ^11.0.1
+      mysql2: '>=2'
+      pg: '>=8'
+      postgres: '>=3'
+      sql.js: '>=1'
+      sqlite3: '>=5'
+      typebox: '>=1.0.0'
+      valibot: '>=1.0.0-beta.7'
+      zod: ^3.25.0 || ^4.0.0
+    peerDependenciesMeta:
+      '@aws-sdk/client-rds-data':
+        optional: true
+      '@cloudflare/workers-types':
+        optional: true
+      '@effect/sql-pg':
+        optional: true
+      '@electric-sql/pglite':
+        optional: true
+      '@libsql/client':
+        optional: true
+      '@libsql/client-wasm':
+        optional: true
+      '@neondatabase/serverless':
+        optional: true
+      '@op-engineering/op-sqlite':
+        optional: true
+      '@opentelemetry/api':
+        optional: true
+      '@planetscale/database':
+        optional: true
+      '@sinclair/typebox':
+        optional: true
+      '@sqlitecloud/drivers':
+        optional: true
+      '@tidbcloud/serverless':
+        optional: true
+      '@tursodatabase/database':
+        optional: true
+      '@tursodatabase/database-common':
+        optional: true
+      '@tursodatabase/database-wasm':
+        optional: true
+      '@types/better-sqlite3':
+        optional: true
+      '@types/mssql':
+        optional: true
+      '@types/pg':
+        optional: true
+      '@types/sql.js':
+        optional: true
+      '@upstash/redis':
+        optional: true
+      '@vercel/postgres':
+        optional: true
+      '@xata.io/client':
+        optional: true
+      arktype:
+        optional: true
+      better-sqlite3:
+        optional: true
+      bun-types:
+        optional: true
+      effect:
+        optional: true
+      expo-sqlite:
+        optional: true
+      mssql:
+        optional: true
+      mysql2:
+        optional: true
+      pg:
+        optional: true
+      postgres:
+        optional: true
+      sql.js:
+        optional: true
+      sqlite3:
+        optional: true
+      typebox:
+        optional: true
+      valibot:
+        optional: true
+      zod:
+        optional: true
+
+  effect@4.0.0-beta.58:
+    resolution: {integrity: sha512-ySTFJ4iY54t78lPCAWDQQSdIexhHIxHPXGlk0/hW4vTBTPdfNK7axKzOgfNSxeHMyNcxP43Q7X0SNK0ql206gg==}
 
   electron-to-chromium@1.5.332:
     resolution: {integrity: sha512-7OOtytmh/rINMLwaFTbcMVvYXO3AUm029X0LcyfYk0B557RlPkdpTpnH9+htMlfu5dKwOmT0+Zs2Aw+lnn6TeQ==}
@@ -2765,6 +2892,9 @@ packages:
   node-releases@2.0.37:
     resolution: {integrity: sha512-1h5gKZCF+pO/o3Iqt5Jp7wc9rH3eJJ0+nh/CIoiRwjRxde/hAHyLPXYN4V3CqKAbiZPSeJFSWHmJsbkicta0Eg==}
 
+  obuf@1.1.2:
+    resolution: {integrity: sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==}
+
   obug@2.1.1:
     resolution: {integrity: sha512-uTqF9MuPraAQ+IsnPf366RG4cP9RtUi7MLO1N3KEc+wb0a6yKpeL0lmk2IB1jY5KHPAlTc6T/JRdC/YqxHNwkQ==}
 
@@ -2796,6 +2926,53 @@ packages:
     resolution: {integrity: sha512-//nshmD55c46FuFw26xV/xFAaB5HF9Xdap7HJBBnrKdAd6/GxDBaNA1870O79+9ueg61cZLSVc+OaFlfmObYVQ==}
     engines: {node: '>= 14.16'}
 
+  pg-cloudflare@1.3.0:
+    resolution: {integrity: sha512-6lswVVSztmHiRtD6I8hw4qP/nDm1EJbKMRhf3HCYaqud7frGysPv7FYJ5noZQdhQtN2xJnimfMtvQq21pdbzyQ==}
+
+  pg-connection-string@2.12.0:
+    resolution: {integrity: sha512-U7qg+bpswf3Cs5xLzRqbXbQl85ng0mfSV/J0nnA31MCLgvEaAo7CIhmeyrmJpOr7o+zm0rXK+hNnT5l9RHkCkQ==}
+
+  pg-cursor@2.19.0:
+    resolution: {integrity: sha512-J5cF1MUz7LRJ9emOqF/06QjabMHMZy587rSPF0UuA8rCwKeeYl2co8Pp+6k5UU9YrAYHMzWkLxilfZB0hqsWWw==}
+    peerDependencies:
+      pg: ^8
+
+  pg-int8@1.0.1:
+    resolution: {integrity: sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==}
+    engines: {node: '>=4.0.0'}
+
+  pg-numeric@1.0.2:
+    resolution: {integrity: sha512-BM/Thnrw5jm2kKLE5uJkXqqExRUY/toLHda65XgFTBTFYZyopbKjBe29Ii3RbkvlsMoFwD+tHeGaCjjv0gHlyw==}
+    engines: {node: '>=4'}
+
+  pg-pool@3.13.0:
+    resolution: {integrity: sha512-gB+R+Xud1gLFuRD/QgOIgGOBE2KCQPaPwkzBBGC9oG69pHTkhQeIuejVIk3/cnDyX39av2AxomQiyPT13WKHQA==}
+    peerDependencies:
+      pg: '>=8.0'
+
+  pg-protocol@1.13.0:
+    resolution: {integrity: sha512-zzdvXfS6v89r6v7OcFCHfHlyG/wvry1ALxZo4LqgUoy7W9xhBDMaqOuMiF3qEV45VqsN6rdlcehHrfDtlCPc8w==}
+
+  pg-types@2.2.0:
+    resolution: {integrity: sha512-qTAAlrEsl8s4OiEQY69wDvcMIdQN6wdz5ojQiOy6YRMuynxenON0O5oCpJI6lshc6scgAY8qvJ2On/p+CXY0GA==}
+    engines: {node: '>=4'}
+
+  pg-types@4.1.0:
+    resolution: {integrity: sha512-o2XFanIMy/3+mThw69O8d4n1E5zsLhdO+OPqswezu7Z5ekP4hYDqlDjlmOpYMbzY2Br0ufCwJLdDIXeNVwcWFg==}
+    engines: {node: '>=10'}
+
+  pg@8.20.0:
+    resolution: {integrity: sha512-ldhMxz2r8fl/6QkXnBD3CR9/xg694oT6DZQ2s6c/RI28OjtSOpxnPrUCGOBJ46RCUxcWdx3p6kw/xnDHjKvaRA==}
+    engines: {node: '>= 16.0.0'}
+    peerDependencies:
+      pg-native: '>=3.0.1'
+    peerDependenciesMeta:
+      pg-native:
+        optional: true
+
+  pgpass@1.0.5:
+    resolution: {integrity: sha512-FdW9r/jQZhSeohs1Z3sI1yxFQNFvMcnmfuj4WBMUTxOrAyLMaTcE1aAMBiTlbMNaXvBCQuVi0R7hd8udDSP7ug==}
+
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
@@ -2820,6 +2997,41 @@ packages:
   postcss@8.5.8:
     resolution: {integrity: sha512-OW/rX8O/jXnm82Ey1k44pObPtdblfiuWnrd8X7GJ7emImCOstunGbXUpp7HdBrFQX6rJzn3sPT397Wp5aCwCHg==}
     engines: {node: ^10 || ^12 || >=14}
+
+  postgres-array@2.0.0:
+    resolution: {integrity: sha512-VpZrUqU5A69eQyW2c5CA1jtLecCsN2U/bD6VilrFDWq5+5UIEVO7nazS3TEcHf1zuPYO/sqGvUvW62g86RXZuA==}
+    engines: {node: '>=4'}
+
+  postgres-array@3.0.4:
+    resolution: {integrity: sha512-nAUSGfSDGOaOAEGwqsRY27GPOea7CNipJPOA7lPbdEpx5Kg3qzdP0AaWC5MlhTWV9s4hFX39nomVZ+C4tnGOJQ==}
+    engines: {node: '>=12'}
+
+  postgres-bytea@1.0.1:
+    resolution: {integrity: sha512-5+5HqXnsZPE65IJZSMkZtURARZelel2oXUEO8rH83VS/hxH5vv1uHquPg5wZs8yMAfdv971IU+kcPUczi7NVBQ==}
+    engines: {node: '>=0.10.0'}
+
+  postgres-bytea@3.0.0:
+    resolution: {integrity: sha512-CNd4jim9RFPkObHSjVHlVrxoVQXz7quwNFpz7RY1okNNme49+sVyiTvTRobiLV548Hx/hb1BG+iE7h9493WzFw==}
+    engines: {node: '>= 6'}
+
+  postgres-date@1.0.7:
+    resolution: {integrity: sha512-suDmjLVQg78nMK2UZ454hAG+OAW+HQPZ6n++TNDUX+L0+uUlLywnoxJKDou51Zm+zTCjrCl0Nq6J9C5hP9vK/Q==}
+    engines: {node: '>=0.10.0'}
+
+  postgres-date@2.1.0:
+    resolution: {integrity: sha512-K7Juri8gtgXVcDfZttFKVmhglp7epKb1K4pgrkLxehjqkrgPhfG6OO8LHLkfaqkbpjNRnra018XwAr1yQFWGcA==}
+    engines: {node: '>=12'}
+
+  postgres-interval@1.2.0:
+    resolution: {integrity: sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==}
+    engines: {node: '>=0.10.0'}
+
+  postgres-interval@3.0.0:
+    resolution: {integrity: sha512-BSNDnbyZCXSxgA+1f5UU2GmwhoI0aU5yMxRGO8CdFEcY2BQF9xm/7MqKnYoM1nJDk8nONNWDk9WeSmePFhQdlw==}
+    engines: {node: '>=12'}
+
+  postgres-range@1.1.4:
+    resolution: {integrity: sha512-i/hbxIE9803Alj/6ytL7UHQxRvZkI9O4Sy+J3HGc4F4oo/2eQAjTSNJ0bfxyse3bH0nuVesCk+3IRLaMtG3H6w==}
 
   prebuild-install@7.1.3:
     resolution: {integrity: sha512-8Mf2cbV7x1cXPUILADGI3wuhfqWvtiLA1iclTDbFRZkgRQS0NqsPZphna9V+HyTEadheuPmjaJMsbzKQFOzLug==}
@@ -3050,6 +3262,10 @@ packages:
     resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
     engines: {node: '>=0.10.0'}
 
+  split2@4.2.0:
+    resolution: {integrity: sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg==}
+    engines: {node: '>= 10.x'}
+
   stackback@0.0.2:
     resolution: {integrity: sha512-1XMJE5fQo1jGH6Y/7ebnwPOBEkIEnT4QF32d5R1+VXdXveM0IBMJt8zfaxX1P3QhVwrYe+576+jkANtSS2mBbw==}
 
@@ -3163,8 +3379,9 @@ packages:
     resolution: {integrity: sha512-JIXCerhudr/N6OWLwLF1HVsTTUo7ry6qHa5eWZEkiMuxsIiAACL55tGLfqfHfoH7QaMQUW8fngD7u7TxWexYQg==}
     hasBin: true
 
-  toml@3.0.0:
-    resolution: {integrity: sha512-y/mWCZinnvxjTKYhJ+pYxwD0mRLVvOtdS2Awbgxln6iEnt4rk0yBxeSBHkGJcPucRiG0e55mwWp+g/05rsrd6w==}
+  toml@4.1.1:
+    resolution: {integrity: sha512-EBJnVBr3dTXdA89WVFoAIPUqkBjxPMwRqsfuo1r240tKFHXv3zgca4+NJib/h6TyvGF7vOawz0jGuryJCdNHrw==}
+    engines: {node: '>=20'}
 
   totalist@3.0.1:
     resolution: {integrity: sha512-sf4i37nQ2LBx4m3wB74y+ubopq6W/dIzXg0FDGjsYnZHVa1Da8FH853wlL2gtUhg+xJXjfk3kUZS3BRoQeoQBQ==}
@@ -3213,13 +3430,13 @@ packages:
   undici-types@7.18.2:
     resolution: {integrity: sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w==}
 
-  undici@7.24.7:
-    resolution: {integrity: sha512-H/nlJ/h0ggGC+uRL3ovD+G0i4bqhvsDOpbDv7At5eFLlj2b41L8QliGbnl2H7SnDiYhENphh1tQFJZf+MyfLsQ==}
-    engines: {node: '>=20.18.1'}
-
   undici@7.25.0:
     resolution: {integrity: sha512-xXnp4kTyor2Zq+J1FfPI6Eq3ew5h6Vl0F/8d9XU5zZQf1tX9s2Su1/3PiMmUANFULpmksxkClamIZcaUqryHsQ==}
     engines: {node: '>=20.18.1'}
+
+  undici@8.3.0:
+    resolution: {integrity: sha512-TkUDgb6tl7KOGZ+7e8E3d2FYgUQgF6z5YypqjWmixVQSQERFcVrVg0ySADm2LVLRh5ljAaHTCR5Fmz3Q34rB7Q==}
+    engines: {node: '>=22.19.0'}
 
   unplugin@2.3.11:
     resolution: {integrity: sha512-5uKD0nqiYVzlmCRs01Fhs2BdkEgBS3SAVP6ndrBsuK42iC2+JHyxM05Rm9G8+5mkmRtzMZGY8Ct5+mliZxU/Ww==}
@@ -3407,6 +3624,10 @@ packages:
 
   xmlchars@2.2.0:
     resolution: {integrity: sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==}
+
+  xtend@4.0.2:
+    resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
+    engines: {node: '>=0.4'}
 
   y18n@5.0.8:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
@@ -3633,16 +3854,16 @@ snapshots:
 
   '@csstools/css-tokenizer@4.0.0': {}
 
-  '@effect/atom-react@4.0.0-beta.43(effect@4.0.0-beta.43)(react@19.2.4)(scheduler@0.27.0)':
+  '@effect/atom-react@4.0.0-beta.58(effect@4.0.0-beta.58)(react@19.2.4)(scheduler@0.27.0)':
     dependencies:
-      effect: 4.0.0-beta.43
+      effect: 4.0.0-beta.58
       react: 19.2.4
       scheduler: 0.27.0
 
-  '@effect/opentelemetry@4.0.0-beta.43(@opentelemetry/api@1.9.1)(@opentelemetry/resources@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-logs@0.211.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-metrics@2.5.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-node@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-web@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/semantic-conventions@1.40.0)(effect@4.0.0-beta.43)':
+  '@effect/opentelemetry@4.0.0-beta.58(@opentelemetry/api@1.9.1)(@opentelemetry/resources@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-logs@0.211.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-metrics@2.5.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-node@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-web@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/semantic-conventions@1.40.0)(effect@4.0.0-beta.58)':
     dependencies:
       '@opentelemetry/semantic-conventions': 1.40.0
-      effect: 4.0.0-beta.43
+      effect: 4.0.0-beta.58
     optionalDependencies:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/resources': 2.6.1(@opentelemetry/api@1.9.1)
@@ -3652,34 +3873,45 @@ snapshots:
       '@opentelemetry/sdk-trace-node': 2.6.1(@opentelemetry/api@1.9.1)
       '@opentelemetry/sdk-trace-web': 2.6.1(@opentelemetry/api@1.9.1)
 
-  '@effect/platform-node-shared@4.0.0-beta.43(effect@4.0.0-beta.43)':
+  '@effect/platform-node-shared@4.0.0-beta.66(effect@4.0.0-beta.58)':
     dependencies:
       '@types/ws': 8.18.1
-      effect: 4.0.0-beta.43
+      effect: 4.0.0-beta.58
       ws: 8.20.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
 
-  '@effect/platform-node@4.0.0-beta.43(effect@4.0.0-beta.43)(ioredis@5.10.1)':
+  '@effect/platform-node@4.0.0-beta.58(effect@4.0.0-beta.58)(ioredis@5.10.1)':
     dependencies:
-      '@effect/platform-node-shared': 4.0.0-beta.43(effect@4.0.0-beta.43)
-      effect: 4.0.0-beta.43
+      '@effect/platform-node-shared': 4.0.0-beta.66(effect@4.0.0-beta.58)
+      effect: 4.0.0-beta.58
       ioredis: 5.10.1
       mime: 4.1.0
-      undici: 7.24.7
+      undici: 8.3.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
 
-  '@effect/sql-sqlite-node@4.0.0-beta.43(effect@4.0.0-beta.43)':
+  '@effect/sql-pg@4.0.0-beta.58(effect@4.0.0-beta.58)':
+    dependencies:
+      effect: 4.0.0-beta.58
+      pg: 8.20.0
+      pg-connection-string: 2.12.0
+      pg-cursor: 2.19.0(pg@8.20.0)
+      pg-pool: 3.13.0(pg@8.20.0)
+      pg-types: 4.1.0
+    transitivePeerDependencies:
+      - pg-native
+
+  '@effect/sql-sqlite-node@4.0.0-beta.58(effect@4.0.0-beta.58)':
     dependencies:
       better-sqlite3: 12.9.0
-      effect: 4.0.0-beta.43
+      effect: 4.0.0-beta.58
 
-  '@effect/vitest@4.0.0-beta.43(effect@4.0.0-beta.43)(vitest@4.1.5)':
+  '@effect/vitest@4.0.0-beta.58(effect@4.0.0-beta.58)(vitest@4.1.5)':
     dependencies:
-      effect: 4.0.0-beta.43
+      effect: 4.0.0-beta.58
       vitest: 4.1.5(@opentelemetry/api@1.9.1)(@types/node@25.5.2)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.1)(vite@7.3.2(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))
 
   '@esbuild/aix-ppc64@0.27.7':
@@ -5465,7 +5697,15 @@ snapshots:
 
   dotenv@17.4.2: {}
 
-  effect@4.0.0-beta.43:
+  drizzle-orm@1.0.0-rc.2(@effect/sql-pg@4.0.0-beta.58(effect@4.0.0-beta.58))(@opentelemetry/api@1.9.1)(better-sqlite3@12.9.0)(effect@4.0.0-beta.58)(pg@8.20.0):
+    optionalDependencies:
+      '@effect/sql-pg': 4.0.0-beta.58(effect@4.0.0-beta.58)
+      '@opentelemetry/api': 1.9.1
+      better-sqlite3: 12.9.0
+      effect: 4.0.0-beta.58
+      pg: 8.20.0
+
+  effect@4.0.0-beta.58:
     dependencies:
       '@standard-schema/spec': 1.1.0
       fast-check: 4.6.0
@@ -5474,7 +5714,7 @@ snapshots:
       kubernetes-types: 1.30.0
       msgpackr: 1.11.9
       multipasta: 0.2.7
-      toml: 3.0.0
+      toml: 4.1.1
       uuid: 13.0.0
       yaml: 2.8.3
 
@@ -5861,6 +6101,8 @@ snapshots:
 
   node-releases@2.0.37: {}
 
+  obuf@1.1.2: {}
+
   obug@2.1.1: {}
 
   once@1.4.0:
@@ -5891,6 +6133,57 @@ snapshots:
 
   pathval@2.0.1: {}
 
+  pg-cloudflare@1.3.0:
+    optional: true
+
+  pg-connection-string@2.12.0: {}
+
+  pg-cursor@2.19.0(pg@8.20.0):
+    dependencies:
+      pg: 8.20.0
+
+  pg-int8@1.0.1: {}
+
+  pg-numeric@1.0.2: {}
+
+  pg-pool@3.13.0(pg@8.20.0):
+    dependencies:
+      pg: 8.20.0
+
+  pg-protocol@1.13.0: {}
+
+  pg-types@2.2.0:
+    dependencies:
+      pg-int8: 1.0.1
+      postgres-array: 2.0.0
+      postgres-bytea: 1.0.1
+      postgres-date: 1.0.7
+      postgres-interval: 1.2.0
+
+  pg-types@4.1.0:
+    dependencies:
+      pg-int8: 1.0.1
+      pg-numeric: 1.0.2
+      postgres-array: 3.0.4
+      postgres-bytea: 3.0.0
+      postgres-date: 2.1.0
+      postgres-interval: 3.0.0
+      postgres-range: 1.1.4
+
+  pg@8.20.0:
+    dependencies:
+      pg-connection-string: 2.12.0
+      pg-pool: 3.13.0(pg@8.20.0)
+      pg-protocol: 1.13.0
+      pg-types: 2.2.0
+      pgpass: 1.0.5
+    optionalDependencies:
+      pg-cloudflare: 1.3.0
+
+  pgpass@1.0.5:
+    dependencies:
+      split2: 4.2.0
+
   picocolors@1.1.1: {}
 
   picomatch@4.0.4: {}
@@ -5910,6 +6203,28 @@ snapshots:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
+
+  postgres-array@2.0.0: {}
+
+  postgres-array@3.0.4: {}
+
+  postgres-bytea@1.0.1: {}
+
+  postgres-bytea@3.0.0:
+    dependencies:
+      obuf: 1.1.2
+
+  postgres-date@1.0.7: {}
+
+  postgres-date@2.1.0: {}
+
+  postgres-interval@1.2.0:
+    dependencies:
+      xtend: 4.0.2
+
+  postgres-interval@3.0.0: {}
+
+  postgres-range@1.1.4: {}
 
   prebuild-install@7.1.3:
     dependencies:
@@ -6225,6 +6540,8 @@ snapshots:
 
   source-map@0.6.1: {}
 
+  split2@4.2.0: {}
+
   stackback@0.0.2: {}
 
   standard-as-callback@2.1.0: {}
@@ -6333,7 +6650,7 @@ snapshots:
     dependencies:
       tldts-core: 7.0.29
 
-  toml@3.0.0: {}
+  toml@4.1.1: {}
 
   totalist@3.0.1: {}
 
@@ -6379,9 +6696,9 @@ snapshots:
 
   undici-types@7.18.2: {}
 
-  undici@7.24.7: {}
-
   undici@7.25.0: {}
+
+  undici@8.3.0: {}
 
   unplugin@2.3.11:
     dependencies:
@@ -6511,6 +6828,8 @@ snapshots:
   xml-name-validator@5.0.0: {}
 
   xmlchars@2.2.0: {}
+
+  xtend@4.0.2: {}
 
   y18n@5.0.8: {}
 

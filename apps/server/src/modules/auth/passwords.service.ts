@@ -1,6 +1,6 @@
-import { type Effect, ServiceMap } from "effect"
+import { Context, type Effect } from "effect"
 
-export class Passwords extends ServiceMap.Service<
+export class Passwords extends Context.Service<
   Passwords,
   {
     readonly hash: (password: string) => Effect.Effect<string>

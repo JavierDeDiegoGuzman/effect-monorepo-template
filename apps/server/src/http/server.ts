@@ -25,8 +25,6 @@ export const makeApiRoutesLayer = (
     Layer.provide(AuthorizationLayer.pipe(Layer.provide(dependenciesLayer))),
   )
 
-const ApiRoutes = makeApiRoutesLayer()
-
 const DocsRoute = HttpApiScalar.layer(Api, {
   path: "/docs",
 })
@@ -36,14 +34,24 @@ const CorsLayer = HttpRouter.cors({
   allowedMethods: ["GET", "POST", "PATCH", "OPTIONS"],
 })
 
-const AllRoutes = Layer.mergeAll(ApiRoutes, DocsRoute, CorsLayer)
+export const makeHttpServerLayer = (
+  dependenciesLayer = HttpServerDependenciesLayer,
+) => {
+  const allRoutes = Layer.mergeAll(
+    makeApiRoutesLayer(dependenciesLayer),
+    DocsRoute,
+    CorsLayer,
+  )
 
-export const HttpServerLayer = Layer.unwrap(
-  Effect.gen(function* () {
-    const port = yield* Config.port("PORT")
+  return Layer.unwrap(
+    Effect.gen(function* () {
+      const port = yield* Config.port("PORT")
 
-    return HttpRouter.serve(AllRoutes).pipe(
-      Layer.provide(NodeHttpServer.layer(createServer, { port })),
-    )
-  }),
-)
+      return HttpRouter.serve(allRoutes).pipe(
+        Layer.provide(NodeHttpServer.layer(createServer, { port })),
+      )
+    }),
+  )
+}
+
+export const HttpServerLayer = makeHttpServerLayer()

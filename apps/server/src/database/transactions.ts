@@ -1,6 +1,6 @@
-import { type Effect, ServiceMap } from "effect"
+import { Context, type Effect } from "effect"
 
-export class Transactions extends ServiceMap.Service<
+export class Transactions extends Context.Service<
   Transactions,
   {
     readonly withTransaction: <A, E, R>(

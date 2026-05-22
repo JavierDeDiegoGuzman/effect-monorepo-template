@@ -1,4 +1,4 @@
-import { type Effect, Schema, ServiceMap } from "effect"
+import { Context, type Effect, Schema } from "effect"
 
 export class InvalidAuthToken extends Schema.TaggedErrorClass<InvalidAuthToken>()(
   "InvalidAuthToken",
@@ -7,7 +7,7 @@ export class InvalidAuthToken extends Schema.TaggedErrorClass<InvalidAuthToken>(
   },
 ) {}
 
-export class AuthTokens extends ServiceMap.Service<
+export class AuthTokens extends Context.Service<
   AuthTokens,
   {
     readonly sign: (userId: number) => Effect.Effect<string>

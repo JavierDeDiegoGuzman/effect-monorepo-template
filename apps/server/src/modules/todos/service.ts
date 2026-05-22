@@ -4,9 +4,9 @@ import type {
   TodoNotFound,
   UpdateTodoInput,
 } from "@app/shared"
-import { type Effect, ServiceMap } from "effect"
+import { Context, type Effect } from "effect"
 
-export class Todos extends ServiceMap.Service<
+export class Todos extends Context.Service<
   Todos,
   {
     readonly listByUser: (userId: number) => Effect.Effect<Array<Todo>>

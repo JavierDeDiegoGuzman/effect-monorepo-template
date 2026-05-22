@@ -1,7 +1,7 @@
 import type { Todo } from "@app/shared"
-import { type Effect, ServiceMap } from "effect"
+import { Context, type Effect } from "effect"
 
-export class TodosRepository extends ServiceMap.Service<
+export class TodosRepository extends Context.Service<
   TodosRepository,
   {
     readonly listByUser: (userId: number) => Effect.Effect<Array<Todo>>

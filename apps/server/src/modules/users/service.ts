@@ -1,5 +1,5 @@
 import type { User, UserAlreadyExists, UserNotFound } from "@app/shared"
-import { type Effect, ServiceMap } from "effect"
+import { Context, type Effect } from "effect"
 import type { UserRecord } from "./repository"
 
 export interface CreateUserServiceInput {
@@ -8,7 +8,7 @@ export interface CreateUserServiceInput {
   readonly passwordHash: string
 }
 
-export class Users extends ServiceMap.Service<
+export class Users extends Context.Service<
   Users,
   {
     readonly getById: (id: number) => Effect.Effect<User, UserNotFound>

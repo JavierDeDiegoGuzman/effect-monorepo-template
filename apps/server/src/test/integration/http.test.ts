@@ -2,17 +2,31 @@ import { Api, Authorization, CreateTodoInput, RegisterInput } from "@app/shared"
 import { NodeHttpServer } from "@effect/platform-node"
 import { assert, describe, it } from "@effect/vitest"
 import { ConfigProvider, Effect, Layer } from "effect"
-import { HttpClientRequest, HttpRouter } from "effect/unstable/http"
+import {
+  FetchHttpClient,
+  HttpClientRequest,
+  HttpRouter,
+} from "effect/unstable/http"
 import { HttpApiClient, HttpApiMiddleware } from "effect/unstable/httpapi"
 import { makeApiRoutesLayer } from "../../http/server"
 import { makeHttpServerDependenciesLayer } from "../../layers/ServerLayers"
-import { makeTestSqliteLayer } from "../layers/TestSqliteLayer"
+import { makeJsonRepositoriesTestLayer } from "../layers/JsonRepositoriesTestLayer"
 
 const testConfigProvider = ConfigProvider.fromUnknown({
   AUTH_JWT_SECRET: "integration-test-secret-at-least-32-chars",
   AUTH_JWT_ISSUER: "app-test",
   AUTH_JWT_AUDIENCE: "app-test",
 })
+
+const fetchWithoutContentLength: typeof fetch = (input, init) => {
+  if (init?.headers === undefined) {
+    return fetch(input, init)
+  }
+
+  const headers = new Headers(init.headers)
+  headers.delete("content-length")
+  return fetch(input, { ...init, headers })
+}
 
 const makeAuthorizationClientLayer = (token?: string) =>
   HttpApiMiddleware.layerClient(
@@ -28,7 +42,9 @@ const makeAuthorizationClientLayer = (token?: string) =>
 
 const TestApiLive = HttpRouter.serve(
   makeApiRoutesLayer(
-    makeHttpServerDependenciesLayer(makeTestSqliteLayer({ seed: false })),
+    makeHttpServerDependenciesLayer(
+      makeJsonRepositoriesTestLayer({ seed: false }),
+    ),
   ),
   { disableListenLog: true, disableLogger: true },
 ).pipe(Layer.provideMerge(NodeHttpServer.layerTest))
@@ -64,6 +80,7 @@ describe("HTTP integration", () => {
       assert.deepInclude([...after], created)
     }).pipe(
       Effect.provide(TestApiLive),
+      Effect.provideService(FetchHttpClient.Fetch, fetchWithoutContentLength),
       Effect.provideService(ConfigProvider.ConfigProvider, testConfigProvider),
     ),
   )

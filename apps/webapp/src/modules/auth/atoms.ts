@@ -11,7 +11,7 @@ import {
 } from "@/lib/auth-storage"
 import { ObservabilityLayer } from "@/observability"
 
-const apiRuntime = Atom.runtime(
+const apiRuntime = Atom.runtime<ApiClient, never>(
   Layer.mergeAll(ApiClient.layer, ObservabilityLayer),
 )
 

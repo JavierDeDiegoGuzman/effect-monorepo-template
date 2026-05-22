@@ -1,5 +1,5 @@
 import { Api, Authorization } from "@app/shared"
-import { Effect, flow, Layer, ServiceMap } from "effect"
+import { Context, Effect, flow, Layer } from "effect"
 import {
   FetchHttpClient,
   HttpClient,
@@ -12,6 +12,16 @@ import {
   readAuthToken,
 } from "../lib/auth-storage"
 import { apiClientConfig } from "./config"
+
+const fetchWithoutContentLength: typeof fetch = (input, init) => {
+  if (init?.headers === undefined) {
+    return fetch(input, init)
+  }
+
+  const headers = new Headers(init.headers)
+  headers.delete("content-length")
+  return fetch(input, { ...init, headers })
+}
 
 const AuthorizationClient = HttpApiMiddleware.layerClient(
   Authorization,
@@ -31,7 +41,7 @@ const AuthorizationClient = HttpApiMiddleware.layerClient(
   }),
 )
 
-export class ApiClient extends ServiceMap.Service<
+export class ApiClient extends Context.Service<
   ApiClient,
   HttpApiClient.ForApi<typeof Api>
 >()("app/ApiClient") {
@@ -48,5 +58,8 @@ export class ApiClient extends ServiceMap.Service<
   ).pipe(
     Layer.provide(AuthorizationClient),
     Layer.provide(FetchHttpClient.layer),
+    Layer.provide(
+      Layer.succeed(FetchHttpClient.Fetch, fetchWithoutContentLength),
+    ),
   )
 }

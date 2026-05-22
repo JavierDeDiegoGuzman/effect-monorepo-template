@@ -6,7 +6,7 @@ import { ApiClient } from "@/api/client"
 import { ObservabilityLayer } from "@/observability"
 import { currentSessionQuery } from "../auth"
 
-const apiRuntime = Atom.runtime(
+const apiRuntime = Atom.runtime<ApiClient, never>(
   Layer.mergeAll(ApiClient.layer, ObservabilityLayer),
 )
 

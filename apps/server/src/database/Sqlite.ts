@@ -1,7 +1,7 @@
 import { dirname } from "node:path"
 import { NodeFileSystem } from "@effect/platform-node"
 import { SqliteClient } from "@effect/sql-sqlite-node"
-import { Config, Effect, FileSystem, Layer, ServiceMap } from "effect"
+import { Config, Context, Effect, FileSystem, Layer } from "effect"
 import { Reactivity } from "effect/unstable/reactivity"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
 import { initializeSqliteSchema } from "./schema"
@@ -18,12 +18,12 @@ const make = Effect.gen(function* () {
     Effect.provideService(SqlClient.SqlClient, client),
   )
 
-  return ServiceMap.make(SqliteClient.SqliteClient, client).pipe(
-    ServiceMap.add(SqlClient.SqlClient, client),
+  return Context.make(SqliteClient.SqliteClient, client).pipe(
+    Context.add(SqlClient.SqlClient, client),
   )
 })
 
-export const SqliteLayer = Layer.effectServices(make).pipe(
+export const SqliteLayer = Layer.effectContext(make).pipe(
   Layer.provide(Reactivity.layer),
   Layer.provide(NodeFileSystem.layer),
 )
