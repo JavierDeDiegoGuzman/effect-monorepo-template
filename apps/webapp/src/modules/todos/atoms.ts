@@ -1,14 +1,9 @@
 import type { CreateTodoInput, UpdateTodoInput } from "@app/shared"
 import { Effect } from "effect"
-import * as Layer from "effect/Layer"
 import * as Atom from "effect/unstable/reactivity/Atom"
 import { ApiClient } from "@/api/client"
-import { ObservabilityLayer } from "@/observability"
+import { apiRuntime } from "@/lib/runtime"
 import { currentSessionQuery } from "../auth"
-
-const apiRuntime = Atom.runtime<ApiClient, never>(
-  Layer.mergeAll(ApiClient.layer, ObservabilityLayer),
-)
 
 export const todosQuery = apiRuntime
   .atom((get) =>

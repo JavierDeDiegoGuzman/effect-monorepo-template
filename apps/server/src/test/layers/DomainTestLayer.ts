@@ -1,5 +1,6 @@
 import { Layer } from "effect"
 import type { Transactions } from "../../database/transactions"
+import type { AuthCredentialsRepository } from "../../modules/auth"
 import type { TodosRepository } from "../../modules/todos"
 import { TodosLive } from "../../modules/todos"
 import type { UsersRepository } from "../../modules/users"
@@ -13,7 +14,11 @@ import {
   SqlRepositoriesTestLayer,
 } from "./SqlRepositoriesTestLayer"
 
-type Repositories = UsersRepository | TodosRepository | Transactions
+type Repositories =
+  | UsersRepository
+  | TodosRepository
+  | AuthCredentialsRepository
+  | Transactions
 
 const makeDomainLayer = <Requirements>(
   repositoriesLayer: Layer.Layer<Repositories, Requirements, never>,

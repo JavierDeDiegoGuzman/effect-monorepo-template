@@ -3,38 +3,25 @@ import {
   AuthSession,
   CurrentSession,
   CurrentUser,
-  InvalidCredentials,
+  LogoutSuccess,
 } from "@app/shared"
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
-import { Users } from "../users"
-import { Passwords } from "./passwords.service"
-import { AuthTokens } from "./tokens.service"
+import { AuthService } from "./service"
+import { AuthSessionCookies } from "./session-cookie"
 
 export const AuthApiHandlers = HttpApiBuilder.group(
   Api,
   "auth",
   Effect.fn(function* (handlers) {
-    const authTokens = yield* AuthTokens
-    const passwords = yield* Passwords
-    const users = yield* Users
+    const auth = yield* AuthService
+    const sessionCookies = yield* AuthSessionCookies
 
     return handlers
       .handle("register", ({ payload }) =>
-        Effect.gen(function* () {
-          const passwordHash = yield* passwords.hash(payload.password)
-          const user = yield* users.create({
-            name: payload.name,
-            email: payload.email,
-            passwordHash,
-          })
-          const token = yield* authTokens.sign(user.id)
-
-          return new AuthSession({
-            token,
-            user,
-          })
-        }).pipe(
+        auth.register(payload).pipe(
+          Effect.tap((session) => sessionCookies.set(session.token)),
+          Effect.map(({ user }) => new AuthSession({ user })),
           Effect.annotateSpans({
             "http.route": "/auth/register",
             "http.method": "POST",
@@ -43,35 +30,22 @@ export const AuthApiHandlers = HttpApiBuilder.group(
         ),
       )
       .handle("login", ({ payload }) =>
-        Effect.gen(function* () {
-          const authRecord = yield* users.getAuthByEmail(payload.email)
-          if (authRecord === null) {
-            return yield* new InvalidCredentials({
-              message: "Invalid email or password",
-            })
-          }
-
-          const validPassword = yield* passwords.verify(
-            payload.password,
-            authRecord.passwordHash,
-          )
-          if (!validPassword) {
-            return yield* new InvalidCredentials({
-              message: "Invalid email or password",
-            })
-          }
-
-          const token = yield* authTokens.sign(authRecord.user.id)
-
-          return new AuthSession({
-            token,
-            user: authRecord.user,
-          })
-        }).pipe(
+        auth.login(payload).pipe(
+          Effect.tap((session) => sessionCookies.set(session.token)),
+          Effect.map(({ user }) => new AuthSession({ user })),
           Effect.annotateSpans({
             "http.route": "/auth/login",
             "http.method": "POST",
             "auth.email": payload.email.trim().toLowerCase(),
+          }),
+        ),
+      )
+      .handle("logout", () =>
+        sessionCookies.clear.pipe(
+          Effect.as(new LogoutSuccess({ success: true })),
+          Effect.annotateSpans({
+            "http.route": "/auth/logout",
+            "http.method": "POST",
           }),
         ),
       )

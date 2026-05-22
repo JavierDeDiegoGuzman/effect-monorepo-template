@@ -32,6 +32,7 @@ const DocsRoute = HttpApiScalar.layer(Api, {
 const CorsLayer = HttpRouter.cors({
   allowedOrigins: ["http://localhost:5173"],
   allowedMethods: ["GET", "POST", "PATCH", "OPTIONS"],
+  credentials: true,
 })
 
 export const makeHttpServerLayer = (

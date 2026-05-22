@@ -4,6 +4,7 @@ import {
   AuthSession,
   CurrentSession,
   LoginInput,
+  LogoutSuccess,
   RegisterInput,
 } from "./contract"
 import { InvalidCredentials } from "./errors"
@@ -20,6 +21,9 @@ export class AuthApi extends HttpApiGroup.make("auth")
       payload: LoginInput,
       success: AuthSession,
       error: InvalidCredentials,
+    }),
+    HttpApiEndpoint.post("logout", "/auth/logout", {
+      success: LogoutSuccess,
     }),
   )
   .annotateMerge(

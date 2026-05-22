@@ -1,7 +1,5 @@
 export * from "./handlers"
 export * from "./repository"
-export * from "./repository.drizzle.postgres"
-export * from "./repository.json"
 export * from "./repository.memory"
 export * from "./repository.postgres"
 export * from "./repository.sql"

@@ -2,6 +2,8 @@ import { Context, Schema } from "effect"
 import { HttpApiMiddleware, HttpApiSecurity } from "effect/unstable/httpapi"
 import type { User } from "../users"
 
+export const authSessionCookieName = "app_session"
+
 export class CurrentUser extends Context.Service<CurrentUser, User>()(
   "app/Authorization/CurrentUser",
 ) {}
@@ -21,9 +23,12 @@ export class Authorization extends HttpApiMiddleware.Service<
     requires: never
   }
 >()("app/Authorization", {
-  requiredForClient: true,
+  requiredForClient: false,
   security: {
-    bearer: HttpApiSecurity.bearer,
+    session: HttpApiSecurity.apiKey({
+      key: authSessionCookieName,
+      in: "cookie",
+    }),
   },
   error: Unauthorized,
 }) {}

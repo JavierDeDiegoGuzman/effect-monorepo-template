@@ -1,6 +1,7 @@
 import type { Todo, User } from "@app/shared"
 import { Layer } from "effect"
 import { InMemoryTransactionsLayer } from "../../database/transactions.memory"
+import { makeInMemoryAuthCredentialsRepositoryLayer } from "../../modules/auth"
 import { makeInMemoryTodosRepositoryLayer } from "../../modules/todos"
 import { makeInMemoryUsersRepositoryLayer } from "../../modules/users"
 
@@ -16,7 +17,13 @@ export const makeInMemoryRepositoriesLayer = (
   seed: InMemoryRepositorySeed = {},
 ) =>
   Layer.mergeAll(
-    makeInMemoryUsersRepositoryLayer(seed.users),
+    makeInMemoryUsersRepositoryLayer(seed.users?.map((record) => record.user)),
+    makeInMemoryAuthCredentialsRepositoryLayer(
+      seed.users?.map((record) => ({
+        userId: record.user.id,
+        passwordHash: record.passwordHash,
+      })),
+    ),
     makeInMemoryTodosRepositoryLayer(seed.todos),
     InMemoryTransactionsLayer,
   )

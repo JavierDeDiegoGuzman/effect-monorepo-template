@@ -12,8 +12,15 @@ export const initializeSqliteSchema = (options?: { readonly seed?: boolean }) =>
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         email TEXT NOT NULL UNIQUE,
-        name TEXT NOT NULL,
-        password_hash TEXT NOT NULL
+        name TEXT NOT NULL
+      )
+    `
+
+    yield* sql`
+      CREATE TABLE IF NOT EXISTS auth_credentials (
+        user_id INTEGER PRIMARY KEY,
+        password_hash TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
     `
 
@@ -42,10 +49,17 @@ export const initializeSqliteSchema = (options?: { readonly seed?: boolean }) =>
 
     yield* Effect.gen(function* () {
       yield* sql`
-        INSERT INTO users (id, name, email, password_hash)
+        INSERT INTO users (id, name, email)
         VALUES
-          (1, ${"Alice"}, ${"alice@example.com"}, ${"seed:alice"}),
-          (2, ${"Bob"}, ${"bob@example.com"}, ${"seed:bob"})
+          (1, ${"Alice"}, ${"alice@example.com"}),
+          (2, ${"Bob"}, ${"bob@example.com"})
+      `
+
+      yield* sql`
+        INSERT INTO auth_credentials (user_id, password_hash)
+        VALUES
+          (1, ${"seed:alice"}),
+          (2, ${"seed:bob"})
       `
 
       yield* sql`

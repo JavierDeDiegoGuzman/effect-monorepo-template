@@ -1,37 +1,27 @@
 import { Authorization, CurrentUser, Unauthorized } from "@app/shared"
 import { Effect, Layer, Redacted } from "effect"
-import { AuthTokens } from "../../modules/auth"
-import { Users } from "../../modules/users"
+import { AuthService } from "../../modules/auth"
 
 export const AuthorizationLayer = Layer.effect(
   Authorization,
   Effect.gen(function* () {
-    const authTokens = yield* AuthTokens
-    const users = yield* Users
+    const auth = yield* AuthService
 
     return Authorization.of({
-      bearer: Effect.fn(function* (httpEffect, { credential }) {
+      session: Effect.fn(function* (httpEffect, { credential }) {
         const token = Redacted.value(credential)
+        if (token.length === 0) {
+          return yield* new Unauthorized({
+            message: "Missing or invalid session cookie",
+          })
+        }
 
-        const verified = yield* authTokens.verify(token).pipe(
-          Effect.mapError(
-            () =>
-              new Unauthorized({
-                message: "Missing or invalid bearer token",
-              }),
-          ),
+        const session = yield* auth.verifySession(token)
+        return yield* Effect.provideService(
+          httpEffect,
+          CurrentUser,
+          session.user,
         )
-
-        const user = yield* users.getById(verified.userId).pipe(
-          Effect.mapError(
-            () =>
-              new Unauthorized({
-                message: "Missing or invalid bearer token",
-              }),
-          ),
-        )
-
-        return yield* Effect.provideService(httpEffect, CurrentUser, user)
       }),
     })
   }),

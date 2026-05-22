@@ -4,36 +4,31 @@ import { makeSqlRepositoriesTestLayer } from "../../test/layers/SqlRepositoriesT
 import { UsersRepository } from "./repository"
 
 describe("SqlUsersRepository", () => {
-  it.effect("creates and loads a user from a temporary sqlite database", () =>
+  it.effect("creates and reads users by id and email", () =>
     Effect.gen(function* () {
       const usersRepository = yield* UsersRepository
 
-      const user = yield* usersRepository.create({
+      const created = yield* usersRepository.create({
         name: "Alice",
         email: "alice@example.com",
-        passwordHash: "hash:alice",
       })
 
-      const loaded = yield* usersRepository.getById(user.id)
-      const authRecord =
-        yield* usersRepository.getAuthByEmail("alice@example.com")
+      const byId = yield* usersRepository.getById(created.id)
+      const byEmail = yield* usersRepository.findByEmail("alice@example.com")
 
-      assert.deepStrictEqual(loaded, user)
-      assert.deepStrictEqual(authRecord, {
-        user,
-        passwordHash: "hash:alice",
-      })
-    }).pipe(Effect.provide(makeSqlRepositoriesTestLayer())),
+      assert.deepStrictEqual(byId, created)
+      assert.deepStrictEqual(byEmail, created)
+    }).pipe(Effect.provide(makeSqlRepositoriesTestLayer({ seed: false }))),
   )
 
-  it.effect("can use seeded sqlite data", () =>
+  it.effect("reads seeded users without credential data", () =>
     Effect.gen(function* () {
       const usersRepository = yield* UsersRepository
 
-      const alice = yield* usersRepository.getAuthByEmail("alice@example.com")
+      const alice = yield* usersRepository.findByEmail("alice@example.com")
 
-      assert.strictEqual(alice?.user.name, "Alice")
-      assert.strictEqual(alice?.passwordHash, "seed:alice")
+      assert.strictEqual(alice?.name, "Alice")
+      assert.strictEqual(alice?.email, "alice@example.com")
     }).pipe(Effect.provide(makeSqlRepositoriesTestLayer({ seed: true }))),
   )
 })

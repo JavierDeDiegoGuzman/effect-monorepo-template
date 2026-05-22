@@ -1,45 +1,18 @@
-import { Api, Authorization } from "@app/shared"
-import { Context, Effect, flow, Layer } from "effect"
+import { Api } from "@app/shared"
+import { Context, flow, Layer } from "effect"
 import {
   FetchHttpClient,
   HttpClient,
   HttpClientRequest,
 } from "effect/unstable/http"
-import { HttpApiClient, HttpApiMiddleware } from "effect/unstable/httpapi"
-import {
-  clearAuthToken,
-  isProbablyJwt,
-  readAuthToken,
-} from "../lib/auth-storage"
+import { HttpApiClient } from "effect/unstable/httpapi"
 import { apiClientConfig } from "./config"
 
 const fetchWithoutContentLength: typeof fetch = (input, init) => {
-  if (init?.headers === undefined) {
-    return fetch(input, init)
-  }
-
-  const headers = new Headers(init.headers)
+  const headers = new Headers(init?.headers)
   headers.delete("content-length")
-  return fetch(input, { ...init, headers })
+  return fetch(input, { ...init, headers, credentials: "include" })
 }
-
-const AuthorizationClient = HttpApiMiddleware.layerClient(
-  Authorization,
-  Effect.fn(function* ({ next, request }) {
-    const token = readAuthToken()
-
-    if (token === null) {
-      return yield* next(request)
-    }
-
-    if (!isProbablyJwt(token)) {
-      clearAuthToken()
-      return yield* next(request)
-    }
-
-    return yield* next(HttpClientRequest.bearerToken(request, token))
-  }),
-)
 
 export class ApiClient extends Context.Service<
   ApiClient,
@@ -56,7 +29,6 @@ export class ApiClient extends Context.Service<
         ),
     }),
   ).pipe(
-    Layer.provide(AuthorizationClient),
     Layer.provide(FetchHttpClient.layer),
     Layer.provide(
       Layer.succeed(FetchHttpClient.Fetch, fetchWithoutContentLength),

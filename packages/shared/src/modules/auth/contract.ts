@@ -21,6 +21,11 @@ export class CurrentSession extends Schema.Class<CurrentSession>(
 }) {}
 
 export class AuthSession extends Schema.Class<AuthSession>("AuthSession")({
-  token: Schema.String,
   user: User,
 }) {}
+
+export class LogoutSuccess extends Schema.Class<LogoutSuccess>("LogoutSuccess")(
+  {
+    success: Schema.Boolean,
+  },
+) {}

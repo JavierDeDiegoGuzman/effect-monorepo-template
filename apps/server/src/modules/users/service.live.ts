@@ -18,17 +18,17 @@ export const UsersLive = Layer.effect(
       return user
     })
 
-    const getAuthByEmail = Effect.fn("Users.getAuthByEmail")(function* (
+    const findByEmail = Effect.fn("Users.findByEmail")(function* (
       email: string,
     ) {
-      return yield* usersRepository.getAuthByEmail(normalizeEmail(email))
+      return yield* usersRepository.findByEmail(normalizeEmail(email))
     })
 
     const create = Effect.fn("Users.create")(function* (
       input: CreateUserServiceInput,
     ) {
       const email = normalizeEmail(input.email)
-      const existing = yield* usersRepository.getAuthByEmail(email)
+      const existing = yield* usersRepository.findByEmail(email)
 
       if (existing !== null) {
         return yield* new UserAlreadyExists({ email })
@@ -37,13 +37,12 @@ export const UsersLive = Layer.effect(
       return yield* usersRepository.create({
         name: input.name.trim(),
         email,
-        passwordHash: input.passwordHash,
       })
     })
 
     return Users.of({
       getById,
-      getAuthByEmail,
+      findByEmail,
       create,
     })
   }),

@@ -1,18 +1,16 @@
 import type { User, UserAlreadyExists, UserNotFound } from "@app/shared"
 import { Context, type Effect } from "effect"
-import type { UserRecord } from "./repository"
 
 export interface CreateUserServiceInput {
   readonly name: string
   readonly email: string
-  readonly passwordHash: string
 }
 
 export class Users extends Context.Service<
   Users,
   {
     readonly getById: (id: number) => Effect.Effect<User, UserNotFound>
-    readonly getAuthByEmail: (email: string) => Effect.Effect<UserRecord | null>
+    readonly findByEmail: (email: string) => Effect.Effect<User | null>
     readonly create: (
       input: CreateUserServiceInput,
     ) => Effect.Effect<User, UserAlreadyExists>

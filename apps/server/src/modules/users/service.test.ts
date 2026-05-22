@@ -17,7 +17,6 @@ describe("Users domain service", () => {
         const user = yield* users.create({
           name: " Alice ",
           email: "ALICE@example.com",
-          passwordHash: "hash:alice",
         })
 
         assert.strictEqual(user.name, "Alice")
@@ -34,14 +33,12 @@ describe("Users domain service", () => {
         yield* users.create({
           name: "Alice",
           email: "alice@example.com",
-          passwordHash: "hash:alice",
         })
 
         const error = yield* users
           .create({
             name: "Alice Again",
             email: "ALICE@example.com",
-            passwordHash: "hash:again",
           })
           .pipe(Effect.flip)
 
