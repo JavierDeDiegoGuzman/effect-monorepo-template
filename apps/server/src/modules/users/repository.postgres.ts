@@ -1,6 +1,7 @@
 import { User } from "@app/shared"
 import { Effect, Layer } from "effect"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
+import { RepositoryError } from "../../errors/repository"
 import { UsersRepository } from "./repository"
 
 type UserRow = {
@@ -16,6 +17,9 @@ const toUser = (row: UserRow) =>
     name: row.name,
   })
 
+const repositoryError = (operation: string) =>
+  new RepositoryError({ repository: "UsersRepository", operation })
+
 export const PostgresUsersRepositoryLayer = Layer.effect(
   UsersRepository,
   Effect.gen(function* () {
@@ -24,12 +28,14 @@ export const PostgresUsersRepositoryLayer = Layer.effect(
     const getById = Effect.fn("PostgresUsersRepository.getById")(function* (
       id: number,
     ) {
+      yield* Effect.annotateCurrentSpan({ "user.id": id })
+
       const rows = yield* sql<UserRow>`
         SELECT id, email, name
         FROM users
         WHERE id = ${id}
         LIMIT 1
-      `.pipe(Effect.orDie)
+      `.pipe(Effect.mapError(() => repositoryError("getById")))
 
       const row = rows[0]
       return row === undefined ? null : toUser(row)
@@ -42,7 +48,7 @@ export const PostgresUsersRepositoryLayer = Layer.effect(
           FROM users
           WHERE email = ${email}
           LIMIT 1
-        `.pipe(Effect.orDie)
+        `.pipe(Effect.mapError(() => repositoryError("findByEmail")))
 
         const row = rows[0]
         return row === undefined ? null : toUser(row)
@@ -55,11 +61,11 @@ export const PostgresUsersRepositoryLayer = Layer.effect(
           INSERT INTO users (name, email)
           VALUES (${input.name}, ${input.email})
           RETURNING id, email, name
-        `.pipe(Effect.orDie)
+        `.pipe(Effect.mapError(() => repositoryError("create")))
 
         const row = rows[0]
         return row === undefined
-          ? yield* Effect.die("Inserted user not returned")
+          ? yield* Effect.fail(repositoryError("create.returning"))
           : toUser(row)
       },
     )

@@ -1,4 +1,9 @@
-import { Api, CreateTodoInput, RegisterInput } from "@app/shared"
+import {
+  Api,
+  CreateTodoInput,
+  RegisterInput,
+  UpdateTodoInput,
+} from "@app/shared"
 import { NodeHttpServer } from "@effect/platform-node"
 import { assert, describe, it } from "@effect/vitest"
 import { ConfigProvider, Effect, Layer, Ref } from "effect"
@@ -44,36 +49,146 @@ const TestApiLive = HttpRouter.serve(
   { disableListenLog: true, disableLogger: true },
 ).pipe(Layer.provideMerge(NodeHttpServer.layerTest))
 
+const withTestApi = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
+  effect.pipe(
+    Effect.provide(TestApiLive),
+    Effect.provideService(ConfigProvider.ConfigProvider, testConfigProvider),
+  )
+
+const withCookieJar = <A, E, R>(
+  cookieRef: Ref.Ref<string | null>,
+  effect: Effect.Effect<A, E, R>,
+) =>
+  effect.pipe(
+    Effect.provideService(FetchHttpClient.Fetch, makeCookieJarFetch(cookieRef)),
+  )
+
+const register = (client: HttpApiClient.ForApi<typeof Api>, email: string) =>
+  client.auth.register({
+    payload: new RegisterInput({
+      name: "Integration Tester",
+      email,
+      password: "correct horse battery staple",
+    }),
+  })
+
+const assertTodoNotFound = (error: unknown, expectedId: number) => {
+  assert.strictEqual((error as { readonly _tag?: string })._tag, "TodoNotFound")
+  assert.strictEqual((error as { readonly id?: number }).id, expectedId)
+  assert.strictEqual(
+    (error as { readonly message?: string }).message,
+    "Todo not found",
+  )
+}
+
 describe("HTTP integration", () => {
   it.effect("creates a todo through the typed HTTP client and lists it", () =>
-    Effect.gen(function* () {
-      const client = yield* HttpApiClient.make(Api)
+    withTestApi(
+      Effect.gen(function* () {
+        const cookieRef = yield* Ref.make<string | null>(null)
+        const client = yield* HttpApiClient.make(Api)
 
-      yield* client.auth.register({
-        payload: new RegisterInput({
-          name: "Integration Tester",
-          email: "integration@example.com",
-          password: "correct horse battery staple",
-        }),
-      })
+        yield* withCookieJar(
+          cookieRef,
+          register(client, "integration@example.com"),
+        )
 
-      const before = yield* client.todos.list()
-      const created = yield* client.todos.create({
-        payload: new CreateTodoInput({
-          title: "Exercise typed HTTP integration tests",
-        }),
-      })
-      const after = yield* client.todos.list()
+        const before = yield* withCookieJar(cookieRef, client.todos.list())
+        const created = yield* withCookieJar(
+          cookieRef,
+          client.todos.create({
+            payload: new CreateTodoInput({
+              title: "Exercise typed HTTP integration tests",
+            }),
+          }),
+        )
+        const after = yield* withCookieJar(cookieRef, client.todos.list())
 
-      assert.strictEqual(before.length, 0)
-      assert.deepInclude([...after], created)
-    }).pipe(
-      Effect.provide(TestApiLive),
-      Effect.provideServiceEffect(
-        FetchHttpClient.Fetch,
-        Ref.make<string | null>(null).pipe(Effect.map(makeCookieJarFetch)),
-      ),
-      Effect.provideService(ConfigProvider.ConfigProvider, testConfigProvider),
+        assert.strictEqual(before.length, 0)
+        assert.deepInclude([...after], created)
+      }),
+    ),
+  )
+
+  it.effect("returns TodoNotFound for a missing todo", () =>
+    withTestApi(
+      Effect.gen(function* () {
+        const cookieRef = yield* Ref.make<string | null>(null)
+        const client = yield* HttpApiClient.make(Api)
+
+        yield* withCookieJar(
+          cookieRef,
+          register(client, "missing-todo@example.com"),
+        )
+
+        const getError = yield* withCookieJar(
+          cookieRef,
+          client.todos.getById({ params: { id: 999 } }).pipe(Effect.flip),
+        )
+        const updateError = yield* withCookieJar(
+          cookieRef,
+          client.todos
+            .update({
+              params: { id: 999 },
+              payload: new UpdateTodoInput({ completed: true }),
+            })
+            .pipe(Effect.flip),
+        )
+
+        assertTodoNotFound(getError, 999)
+        assertTodoNotFound(updateError, 999)
+      }),
+    ),
+  )
+
+  it.effect("returns TodoNotFound instead of leaking another user's todo", () =>
+    withTestApi(
+      Effect.gen(function* () {
+        const aliceCookies = yield* Ref.make<string | null>(null)
+        const bobCookies = yield* Ref.make<string | null>(null)
+        const client = yield* HttpApiClient.make(Api)
+
+        yield* withCookieJar(
+          aliceCookies,
+          register(client, "alice@example.com"),
+        )
+        const aliceTodo = yield* withCookieJar(
+          aliceCookies,
+          client.todos.create({
+            payload: new CreateTodoInput({
+              title: "Alice private todo",
+            }),
+          }),
+        )
+
+        yield* withCookieJar(bobCookies, register(client, "bob@example.com"))
+
+        const getError = yield* withCookieJar(
+          bobCookies,
+          client.todos
+            .getById({ params: { id: aliceTodo.id } })
+            .pipe(Effect.flip),
+        )
+        const updateError = yield* withCookieJar(
+          bobCookies,
+          client.todos
+            .update({
+              params: { id: aliceTodo.id },
+              payload: new UpdateTodoInput({ completed: true }),
+            })
+            .pipe(Effect.flip),
+        )
+        const unchanged = yield* withCookieJar(
+          aliceCookies,
+          client.todos.getById({
+            params: { id: aliceTodo.id },
+          }),
+        )
+
+        assertTodoNotFound(getError, aliceTodo.id)
+        assertTodoNotFound(updateError, aliceTodo.id)
+        assert.strictEqual(unchanged.completed, false)
+      }),
     ),
   )
 })

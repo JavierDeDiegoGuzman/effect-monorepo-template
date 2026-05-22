@@ -1,6 +1,7 @@
 import { Authorization, CurrentUser, Unauthorized } from "@app/shared"
 import { Effect, Layer, Redacted } from "effect"
 import { AuthService } from "../../modules/auth"
+import { withHttpErrorMapping } from "../errors"
 
 export const AuthorizationLayer = Layer.effect(
   Authorization,
@@ -11,12 +12,10 @@ export const AuthorizationLayer = Layer.effect(
       session: Effect.fn(function* (httpEffect, { credential }) {
         const token = Redacted.value(credential)
         if (token.length === 0) {
-          return yield* new Unauthorized({
-            message: "Missing or invalid session cookie",
-          })
+          return yield* new Unauthorized()
         }
 
-        const session = yield* auth.verifySession(token)
+        const session = yield* withHttpErrorMapping(auth.verifySession(token))
         return yield* Effect.provideService(
           httpEffect,
           CurrentUser,

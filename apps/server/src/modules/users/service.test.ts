@@ -43,7 +43,14 @@ describe("Users domain service", () => {
           .pipe(Effect.flip)
 
         assert.strictEqual(error._tag, "UserAlreadyExists")
-        assert.strictEqual(error.email, "alice@example.com")
+        assert.strictEqual(
+          (error as { readonly email?: string }).email,
+          "alice@example.com",
+        )
+        assert.strictEqual(
+          (error as { readonly message?: string }).message,
+          "User already exists",
+        )
       }).pipe(Effect.provide(makeUsersDomainTestLayer())),
   )
 })

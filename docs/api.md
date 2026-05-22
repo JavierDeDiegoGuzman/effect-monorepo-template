@@ -93,17 +93,21 @@ Invalid ID params should fail request decoding as 400-level input errors. They s
 
 ## Public Error Policy
 
-Expected client-visible failures are shared contract errors. They live in module `errors.ts` files and are declared on endpoints with explicit HTTP statuses and safe response bodies.
+Expected client-visible failures are shared contract errors. Module-specific errors live in module `errors.ts` files. Cross-cutting public errors such as `InternalServerError` live in `packages/shared/src/errors.ts`. Endpoint `api.ts` files declare every public error with explicit HTTP statuses and safe response bodies.
+
+If a client or UI should branch on an error, render custom copy for it, retry it differently, redirect because of it, or show an inline validation state for it, the error must be a shared typed contract error. Do not use generic `Error`, string failures, ad-hoc `Effect.fail` values, or `Effect.orDie` for user-manageable failures.
+
+Public domain error messages are fixed with schema constructor defaults. Call sites construct errors with semantic data only, for example `new TodoNotFound({ id })`; they do not choose user-facing copy. Structural validation errors remain the built-in Effect HttpApi/schema validation errors and do not guarantee fixed user-facing messages.
 
 Examples:
 
-- `TodoNotFound` -> 404
-- `UserAlreadyExists` -> conflict status chosen by the auth contract
-- `InvalidCredentials` -> auth failure status chosen by the auth contract
-- `Unauthorized` -> 401
-- `InternalServerError` -> 500 safe generic body
+- `TodoNotFound` -> 404 with fixed message and a JSON body containing the missing `id`
+- `UserAlreadyExists` -> 409 with fixed message and the conflicting normalized `email`
+- `InvalidCredentials` -> 401 with fixed generic message
+- `Unauthorized` -> 401 with fixed generic message
+- `InternalServerError` -> 500 with fixed safe generic message
 
-Persistence, SQL, decode, and other internal server failures are not exposed directly. Handlers map them to the shared safe `InternalServerError` unless a service has intentionally converted the situation into an expected domain error.
+Repository failures use the server-only `RepositoryError` and are not exposed directly. Services propagate repository failures alongside expected domain errors. Handlers use the HTTP error mapping seam to convert `RepositoryError` and unexpected defects to the shared safe `InternalServerError` unless a service has intentionally converted the situation into an expected domain error.
 
 ## Backend Implementation Rule
 

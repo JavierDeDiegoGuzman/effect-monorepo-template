@@ -58,7 +58,9 @@ E2E tests should exercise the public contract:
 - call protected endpoints through the session cookie;
 - assert typed success responses;
 - assert expected shared errors and HTTP status behavior;
-- assert invalid params/body decode as 400-level input failures rather than generic not-found behavior.
+- assert UI-manageable failures as shared typed contract errors with fixed public messages, not generic `Error`, string failures, ad-hoc failures, or defects;
+- assert repository/operational failures through the HTTP mapping seam as safe `InternalServerError` responses when they are intentionally simulated;
+- assert invalid params/body decode as built-in 400-level input failures rather than generic not-found behavior.
 
 A real network listener with an ephemeral port is reserved for transport-specific behavior tests, not the default e2e path.
 

@@ -1,4 +1,6 @@
+import { Schema } from "effect"
 import { HttpApiEndpoint, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
+import { InternalServerError } from "../../errors"
 import { UserAlreadyExists } from "../users"
 import {
   AuthSession,
@@ -15,15 +17,16 @@ export class AuthApi extends HttpApiGroup.make("auth")
     HttpApiEndpoint.post("register", "/auth/register", {
       payload: RegisterInput,
       success: AuthSession,
-      error: UserAlreadyExists,
+      error: Schema.Union([UserAlreadyExists, InternalServerError]),
     }),
     HttpApiEndpoint.post("login", "/auth/login", {
       payload: LoginInput,
       success: AuthSession,
-      error: InvalidCredentials,
+      error: Schema.Union([InvalidCredentials, InternalServerError]),
     }),
     HttpApiEndpoint.post("logout", "/auth/logout", {
       success: LogoutSuccess,
+      error: InternalServerError,
     }),
   )
   .annotateMerge(
@@ -37,7 +40,7 @@ export class SessionApi extends HttpApiGroup.make("session")
   .add(
     HttpApiEndpoint.get("me", "/auth/me", {
       success: CurrentSession,
-      error: Unauthorized,
+      error: Schema.Union([Unauthorized, InternalServerError]),
     }),
   )
   .middleware(Authorization)

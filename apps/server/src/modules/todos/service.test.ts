@@ -4,11 +4,15 @@ import { InMemoryDomainTestLayer } from "../../test/layers/DomainTestLayer"
 import { Todos } from "./service"
 
 const assertTodoNotFound = (
-  error: { readonly _tag: string; readonly id: number },
+  error: { readonly _tag: string; readonly id?: number },
   id: number,
 ) => {
   assert.strictEqual(error._tag, "TodoNotFound")
   assert.strictEqual(error.id, id)
+  assert.strictEqual(
+    (error as { readonly message?: string }).message,
+    "Todo not found",
+  )
 }
 
 describe("Todos domain service", () => {

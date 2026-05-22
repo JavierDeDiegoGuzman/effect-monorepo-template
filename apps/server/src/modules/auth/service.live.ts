@@ -7,8 +7,7 @@ import { Passwords } from "./passwords.service"
 import { AuthService } from "./service"
 import { AuthTokens } from "./tokens.service"
 
-const invalidCredentials = () =>
-  new InvalidCredentials({ message: "Invalid email or password" })
+const invalidCredentials = () => new InvalidCredentials()
 
 export const AuthLive = Layer.effect(
   AuthService,
@@ -73,23 +72,21 @@ export const AuthLive = Layer.effect(
     const verifySession = Effect.fn("Auth.verifySession")(function* (
       token: string,
     ) {
-      const verified = yield* authTokens.verify(token).pipe(
-        Effect.mapError(
-          () =>
-            new Unauthorized({
-              message: "Missing or invalid session cookie",
-            }),
-        ),
-      )
+      const verified = yield* authTokens
+        .verify(token)
+        .pipe(
+          Effect.catchTag("InvalidAuthToken", () =>
+            Effect.fail(new Unauthorized()),
+          ),
+        )
 
-      const user = yield* users.getById(verified.userId).pipe(
-        Effect.mapError(
-          () =>
-            new Unauthorized({
-              message: "Missing or invalid session cookie",
-            }),
-        ),
-      )
+      const user = yield* users
+        .getById(verified.userId)
+        .pipe(
+          Effect.catchTag("UserNotFound", () =>
+            Effect.fail(new Unauthorized()),
+          ),
+        )
 
       return Object.assign(new AuthSession({ user }), { token })
     })

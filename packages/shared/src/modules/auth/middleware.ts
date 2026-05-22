@@ -1,5 +1,6 @@
-import { Context, Schema } from "effect"
+import { Context, Effect, Schema } from "effect"
 import { HttpApiMiddleware, HttpApiSecurity } from "effect/unstable/httpapi"
+import { InternalServerError } from "../../errors"
 import type { User } from "../users"
 
 export const authSessionCookieName = "app_session"
@@ -11,7 +12,9 @@ export class CurrentUser extends Context.Service<CurrentUser, User>()(
 export class Unauthorized extends Schema.TaggedErrorClass<Unauthorized>()(
   "Unauthorized",
   {
-    message: Schema.String,
+    message: Schema.String.pipe(
+      Schema.withConstructorDefault(Effect.succeed("Authentication required")),
+    ),
   },
   { httpApiStatus: 401 },
 ) {}
@@ -30,5 +33,5 @@ export class Authorization extends HttpApiMiddleware.Service<
       in: "cookie",
     }),
   },
-  error: Unauthorized,
+  error: Schema.Union([Unauthorized, InternalServerError]),
 }) {}

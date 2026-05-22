@@ -1,4 +1,5 @@
 export * from "./api"
+export * from "./errors"
 export * from "./modules/auth"
 export * from "./modules/system"
 export * from "./modules/todos"

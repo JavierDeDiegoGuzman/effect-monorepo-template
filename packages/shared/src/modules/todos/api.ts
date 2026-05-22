@@ -1,10 +1,6 @@
 import { Schema } from "effect"
-import {
-  HttpApiEndpoint,
-  HttpApiGroup,
-  HttpApiSchema,
-  OpenApi,
-} from "effect/unstable/httpapi"
+import { HttpApiEndpoint, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
+import { InternalServerError } from "../../errors"
 import { Authorization } from "../auth"
 import { CreateTodoInput, UpdateTodoInput } from "./contract"
 import { TodoNotFound } from "./errors"
@@ -14,21 +10,19 @@ export class TodosApi extends HttpApiGroup.make("todos")
   .add(
     HttpApiEndpoint.get("list", "/todos", {
       success: Schema.Array(Todo),
+      error: InternalServerError,
     }),
     HttpApiEndpoint.get("getById", "/todos/:id", {
       params: {
         id: Schema.NumberFromString,
       },
       success: Todo,
-      error: TodoNotFound.pipe(
-        HttpApiSchema.asNoContent({
-          decode: () => new TodoNotFound({ id: -1 }),
-        }),
-      ),
+      error: Schema.Union([TodoNotFound, InternalServerError]),
     }),
     HttpApiEndpoint.post("create", "/todos", {
       payload: CreateTodoInput,
       success: Todo,
+      error: InternalServerError,
     }),
     HttpApiEndpoint.patch("update", "/todos/:id", {
       params: {
@@ -36,11 +30,7 @@ export class TodosApi extends HttpApiGroup.make("todos")
       },
       payload: UpdateTodoInput,
       success: Todo,
-      error: TodoNotFound.pipe(
-        HttpApiSchema.asNoContent({
-          decode: () => new TodoNotFound({ id: -1 }),
-        }),
-      ),
+      error: Schema.Union([TodoNotFound, InternalServerError]),
     }),
   )
   .middleware(Authorization)

@@ -1,6 +1,7 @@
 import { User } from "@app/shared"
 import { Effect, Layer } from "effect"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
+import { RepositoryError } from "../../errors/repository"
 import { UsersRepository } from "./repository"
 
 type SqliteInsertResult = {
@@ -23,6 +24,9 @@ const toUser = (row: UserRow) =>
     name: row.name,
   })
 
+const repositoryError = (operation: string) =>
+  new RepositoryError({ repository: "UsersRepository", operation })
+
 export const SqlUsersRepositoryLayer = Layer.effect(
   UsersRepository,
   Effect.gen(function* () {
@@ -31,12 +35,14 @@ export const SqlUsersRepositoryLayer = Layer.effect(
     const getById = Effect.fn("SqlUsersRepository.getById")(function* (
       id: number,
     ) {
+      yield* Effect.annotateCurrentSpan({ "user.id": id })
+
       const rows = yield* sql<UserRow>`
         SELECT id, email, name
         FROM users
         WHERE id = ${id}
         LIMIT 1
-      `.pipe(Effect.orDie)
+      `.pipe(Effect.mapError(() => repositoryError("getById")))
 
       const row = rows[0]
       return row === undefined ? null : toUser(row)
@@ -50,7 +56,7 @@ export const SqlUsersRepositoryLayer = Layer.effect(
         FROM users
         WHERE email = ${email}
         LIMIT 1
-      `.pipe(Effect.orDie)
+      `.pipe(Effect.mapError(() => repositoryError("findByEmail")))
 
       const row = rows[0]
       return row === undefined ? null : toUser(row)
@@ -63,12 +69,14 @@ export const SqlUsersRepositoryLayer = Layer.effect(
       const result = (yield* sql`
         INSERT INTO users (name, email)
         VALUES (${input.name}, ${input.email})
-      `.raw.pipe(Effect.orDie)) as SqliteInsertResult
+      `.raw.pipe(
+        Effect.mapError(() => repositoryError("create")),
+      )) as SqliteInsertResult
 
       return yield* getById(insertedIdFrom(result)).pipe(
         Effect.flatMap((user) =>
           user === null
-            ? Effect.die("Inserted user not found")
+            ? Effect.fail(repositoryError("create.readBack"))
             : Effect.succeed(user),
         ),
       )

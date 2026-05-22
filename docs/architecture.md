@@ -148,10 +148,13 @@ Persistence lifecycle is explicit infrastructure:
 
 Errors are split into expected public errors and internal errors:
 
-- Expected client-visible failures live in shared module `errors.ts` files and are declared in `api.ts` with explicit HTTP status/body contracts.
-- Invalid route params/body payloads should fail contract decoding as 400-level input errors, not fall through to not-found behavior.
-- Persistence errors are internal server concerns by default.
-- Handlers map unexpected/persistence/internal failures to a shared safe `InternalServerError` contract.
+- Expected client-visible failures live in shared module `errors.ts` files or cross-cutting `packages/shared/src/errors.ts` and are declared in `api.ts` with explicit HTTP status/body contracts.
+- If a client or UI should branch on an error, render custom copy for it, retry it differently, redirect because of it, or show an inline validation state for it, the error must be a shared typed contract error.
+- Do not use generic `Error`, string failures, ad-hoc `Effect.fail` values, or `Effect.orDie` for user-manageable failures.
+- Public domain error messages are fixed with schema constructor defaults; call sites pass semantic fields such as `id` or `email`, not user-facing copy.
+- Invalid route params/body payloads should fail contract decoding as 400-level input errors, not fall through to not-found behavior. Structural validation errors use Effect HttpApi/schema validation and do not guarantee fixed user-facing messages.
+- Repository adapters surface server-only `RepositoryError` for operational failures instead of dying. Services propagate `RepositoryError` alongside expected domain errors.
+- Handlers use the HTTP error mapping seam to convert `RepositoryError` and unexpected defects to the shared safe `InternalServerError` contract.
 - Services may map repository results to expected domain errors when the product semantics are known, for example `TodoNotFound` for a scoped todo update that affects no row.
 
 ## Webapp Layout
