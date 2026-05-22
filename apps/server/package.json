@@ -20,7 +20,6 @@
     "@opentelemetry/exporter-trace-otlp-http": "^0.211.0",
     "@opentelemetry/sdk-trace-base": "^2.5.0",
     "@opentelemetry/sdk-trace-node": "^2.5.0",
-    "drizzle-orm": "1.0.0-rc.2",
     "effect": "4.0.0-beta.58",
     "jose": "^6.2.2"
   },
