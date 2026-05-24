@@ -1,5 +1,5 @@
-import { UserAlreadyExists, UserNotFound } from "@app/shared"
-import { Effect, Layer } from "effect"
+import { makeUserId, UserAlreadyExists, UserNotFound } from "@app/shared"
+import { Effect, Layer, Random } from "effect"
 import { UsersRepository } from "./repository"
 import { type CreateUserServiceInput, Users } from "./service"
 
@@ -10,7 +10,7 @@ export const UsersLive = Layer.effect(
   Effect.gen(function* () {
     const usersRepository = yield* UsersRepository
 
-    const getById = Effect.fn("Users.getById")(function* (id: number) {
+    const getById = Effect.fn("Users.getById")(function* (id) {
       const user = yield* usersRepository.getById(id)
       if (user === null) {
         return yield* new UserNotFound({ id })
@@ -34,7 +34,10 @@ export const UsersLive = Layer.effect(
         return yield* new UserAlreadyExists({ email })
       }
 
+      const id = makeUserId(yield* Random.nextUUIDv4)
+
       return yield* usersRepository.create({
+        id,
         name: input.name.trim(),
         email,
       })

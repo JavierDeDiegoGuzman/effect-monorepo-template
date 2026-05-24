@@ -1,9 +1,10 @@
 import { Effect, Schema } from "effect"
+import { UserId } from "./schema"
 
 export class UserNotFound extends Schema.TaggedErrorClass<UserNotFound>()(
   "UserNotFound",
   {
-    id: Schema.Number,
+    id: UserId,
     message: Schema.String.pipe(
       Schema.withConstructorDefault(Effect.succeed("User not found")),
     ),

@@ -1,9 +1,10 @@
 import { Effect, Schema } from "effect"
+import { TodoId } from "./schema"
 
 export class TodoNotFound extends Schema.TaggedErrorClass<TodoNotFound>()(
   "TodoNotFound",
   {
-    id: Schema.Number,
+    id: TodoId,
     message: Schema.String.pipe(
       Schema.withConstructorDefault(Effect.succeed("Todo not found")),
     ),

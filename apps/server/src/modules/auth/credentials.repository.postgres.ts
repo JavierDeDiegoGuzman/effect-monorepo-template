@@ -13,7 +13,7 @@ export const PostgresAuthCredentialsRepositoryLayer = Layer.effect(
 
     const findPasswordHashByUserId = Effect.fn(
       "PostgresAuthCredentialsRepository.findPasswordHashByUserId",
-    )(function* (userId: number) {
+    )(function* (userId) {
       yield* Effect.annotateCurrentSpan({ "user.id": userId })
 
       const rows = yield* sql<{ readonly password_hash: string }>`
@@ -28,10 +28,7 @@ export const PostgresAuthCredentialsRepositoryLayer = Layer.effect(
 
     const createPasswordCredential = Effect.fn(
       "PostgresAuthCredentialsRepository.createPasswordCredential",
-    )(function* (input: {
-      readonly userId: number
-      readonly passwordHash: string
-    }) {
+    )(function* (input) {
       yield* Effect.annotateCurrentSpan({ "user.id": input.userId })
 
       yield* sql`

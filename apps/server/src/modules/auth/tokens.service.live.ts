@@ -1,3 +1,4 @@
+import { makeUserId, type UserId } from "@app/shared"
 import { Config, Effect, Layer } from "effect"
 import { jwtVerify, SignJWT } from "jose"
 import { AuthTokens, InvalidAuthToken } from "./tokens.service"
@@ -15,6 +16,11 @@ const authTokenConfig = Effect.gen(function* () {
 
 const makeSecret = (secret: string) => new TextEncoder().encode(secret)
 
+const invalidAuthToken = (error: unknown) =>
+  new InvalidAuthToken({
+    message: `Failed to verify auth token: ${String(error)}`,
+  })
+
 export const AuthTokensLive = Layer.unwrap(
   Effect.gen(function* () {
     const config = yield* authTokenConfig
@@ -23,12 +29,12 @@ export const AuthTokensLive = Layer.unwrap(
     return Layer.succeed(
       AuthTokens,
       AuthTokens.of({
-        sign: (userId: number) =>
+        sign: (userId: UserId) =>
           Effect.tryPromise({
             try: async () =>
               new SignJWT({})
                 .setProtectedHeader({ alg: "HS256" })
-                .setSubject(String(userId))
+                .setSubject(userId)
                 .setIssuer(config.issuer)
                 .setAudience(config.audience)
                 .setIssuedAt()
@@ -44,16 +50,9 @@ export const AuthTokensLive = Layer.unwrap(
                 issuer: config.issuer,
                 audience: config.audience,
               })
-              const userId = Number(verified.payload.sub)
-              if (!Number.isFinite(userId)) {
-                throw new Error("Token subject is not a valid user id")
-              }
-              return { userId }
+              return { userId: makeUserId(verified.payload.sub) }
             },
-            catch: (error) =>
-              new InvalidAuthToken({
-                message: `Failed to verify auth token: ${String(error)}`,
-              }),
+            catch: invalidAuthToken,
           }),
       }),
     )

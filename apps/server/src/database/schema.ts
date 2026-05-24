@@ -1,6 +1,13 @@
 import { Effect } from "effect"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
 
+const seedIds = {
+  alice: "00000000-0000-4000-8000-000000000001",
+  bob: "00000000-0000-4000-8000-000000000002",
+  aliceTodo: "00000000-0000-4000-8000-000000000101",
+  bobTodo: "00000000-0000-4000-8000-000000000102",
+} as const
+
 export const initializeSqliteSchema = (options?: { readonly seed?: boolean }) =>
   Effect.gen(function* () {
     const sql = yield* SqlClient.SqlClient
@@ -10,7 +17,7 @@ export const initializeSqliteSchema = (options?: { readonly seed?: boolean }) =>
 
     yield* sql`
       CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id TEXT PRIMARY KEY,
         email TEXT NOT NULL UNIQUE,
         name TEXT NOT NULL
       )
@@ -18,7 +25,7 @@ export const initializeSqliteSchema = (options?: { readonly seed?: boolean }) =>
 
     yield* sql`
       CREATE TABLE IF NOT EXISTS auth_credentials (
-        user_id INTEGER PRIMARY KEY,
+        user_id TEXT PRIMARY KEY,
         password_hash TEXT NOT NULL,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
@@ -26,8 +33,8 @@ export const initializeSqliteSchema = (options?: { readonly seed?: boolean }) =>
 
     yield* sql`
       CREATE TABLE IF NOT EXISTS todos (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
         title TEXT NOT NULL,
         completed INTEGER NOT NULL DEFAULT 0,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -51,22 +58,22 @@ export const initializeSqliteSchema = (options?: { readonly seed?: boolean }) =>
       yield* sql`
         INSERT INTO users (id, name, email)
         VALUES
-          (1, ${"Alice"}, ${"alice@example.com"}),
-          (2, ${"Bob"}, ${"bob@example.com"})
+          (${seedIds.alice}, ${"Alice"}, ${"alice@example.com"}),
+          (${seedIds.bob}, ${"Bob"}, ${"bob@example.com"})
       `
 
       yield* sql`
         INSERT INTO auth_credentials (user_id, password_hash)
         VALUES
-          (1, ${"seed:alice"}),
-          (2, ${"seed:bob"})
+          (${seedIds.alice}, ${"seed:alice"}),
+          (${seedIds.bob}, ${"seed:bob"})
       `
 
       yield* sql`
         INSERT INTO todos (id, user_id, title, completed)
         VALUES
-          (1, 1, ${"Learn Effect HttpApi"}, 1),
-          (2, 2, ${"Build the webapp"}, 0)
+          (${seedIds.aliceTodo}, ${seedIds.alice}, ${"Learn Effect HttpApi"}, 1),
+          (${seedIds.bobTodo}, ${seedIds.bob}, ${"Build the webapp"}, 0)
       `
     }).pipe(sql.withTransaction)
   })

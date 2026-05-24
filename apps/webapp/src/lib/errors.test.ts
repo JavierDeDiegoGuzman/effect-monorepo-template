@@ -1,6 +1,7 @@
 import {
   InternalServerError,
   InvalidCredentials,
+  makeTodoId,
   TodoNotFound,
 } from "@app/shared"
 import { assert, describe, it } from "vitest"
@@ -13,7 +14,11 @@ describe("toErrorMessage", () => {
       "Invalid email or password",
     )
     assert.strictEqual(
-      toErrorMessage(new TodoNotFound({ id: 123 })),
+      toErrorMessage(
+        new TodoNotFound({
+          id: makeTodoId("00000000-0000-4000-8000-000000000999"),
+        }),
+      ),
       "Todo not found",
     )
     assert.strictEqual(

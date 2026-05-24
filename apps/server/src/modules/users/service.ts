@@ -1,4 +1,4 @@
-import type { User, UserAlreadyExists, UserNotFound } from "@app/shared"
+import type { User, UserAlreadyExists, UserId, UserNotFound } from "@app/shared"
 import { Context, type Effect } from "effect"
 import type { RepositoryError } from "../../errors/repository"
 
@@ -11,7 +11,7 @@ export class Users extends Context.Service<
   Users,
   {
     readonly getById: (
-      id: number,
+      id: UserId,
     ) => Effect.Effect<User, UserNotFound | RepositoryError>
     readonly findByEmail: (
       email: string,

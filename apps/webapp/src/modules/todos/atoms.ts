@@ -1,4 +1,4 @@
-import type { CreateTodoInput, UpdateTodoInput } from "@app/shared"
+import type { CreateTodoInput, TodoId, UpdateTodoInput } from "@app/shared"
 import { Effect } from "effect"
 import * as Atom from "effect/unstable/reactivity/Atom"
 import { ApiClient } from "@/api/client"
@@ -36,7 +36,7 @@ export const createTodoAction = apiRuntime.fn(
 )
 
 export const updateTodoAction = apiRuntime.fn(
-  ({ id, input }: { readonly id: number; readonly input: UpdateTodoInput }) =>
+  ({ id, input }: { readonly id: TodoId; readonly input: UpdateTodoInput }) =>
     ApiClient.use((client) =>
       client.todos.update({ params: { id }, payload: input }),
     ).pipe(

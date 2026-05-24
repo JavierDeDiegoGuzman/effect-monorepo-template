@@ -2,6 +2,7 @@ import {
   Api,
   CreateTodoInput,
   LoginInput,
+  makeTodoId,
   RegisterInput,
   UpdateTodoInput,
 } from "@app/shared"
@@ -84,7 +85,9 @@ const assertPublicError = (
   )
 }
 
-const assertTodoNotFound = (error: unknown, expectedId: number) => {
+const missingTodoId = makeTodoId("00000000-0000-4000-8000-000000000999")
+
+const assertTodoNotFound = (error: unknown, expectedId: unknown) => {
   assertPublicError(error, {
     tag: "TodoNotFound",
     message: "Todo not found",
@@ -159,20 +162,22 @@ describe("HTTP integration", () => {
 
         const getError = yield* withCookieJar(
           cookieRef,
-          client.todos.getById({ params: { id: 999 } }).pipe(Effect.flip),
+          client.todos
+            .getById({ params: { id: missingTodoId } })
+            .pipe(Effect.flip),
         )
         const updateError = yield* withCookieJar(
           cookieRef,
           client.todos
             .update({
-              params: { id: 999 },
+              params: { id: missingTodoId },
               payload: new UpdateTodoInput({ completed: true }),
             })
             .pipe(Effect.flip),
         )
 
-        assertTodoNotFound(getError, 999)
-        assertTodoNotFound(updateError, 999)
+        assertTodoNotFound(getError, missingTodoId)
+        assertTodoNotFound(updateError, missingTodoId)
       }),
     ),
   )

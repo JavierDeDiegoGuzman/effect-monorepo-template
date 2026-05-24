@@ -1,3 +1,4 @@
+import { makeUserId } from "@app/shared"
 import { assert, describe, it } from "@effect/vitest"
 import { Effect } from "effect"
 import { makeSqlRepositoriesTestLayer } from "../../test/layers/SqlRepositoriesTestLayer"
@@ -7,8 +8,10 @@ describe("SqlUsersRepository", () => {
   it.effect("creates and reads users by id and email", () =>
     Effect.gen(function* () {
       const usersRepository = yield* UsersRepository
+      const id = makeUserId("00000000-0000-4000-8000-000000000201")
 
       const created = yield* usersRepository.create({
+        id,
         name: "Alice",
         email: "alice@example.com",
       })

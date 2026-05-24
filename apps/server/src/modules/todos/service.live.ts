@@ -1,9 +1,10 @@
 import {
   type CreateTodoInput,
+  makeTodoId,
   TodoNotFound,
   type UpdateTodoInput,
 } from "@app/shared"
-import { Effect, Layer } from "effect"
+import { Effect, Layer, Random } from "effect"
 import { TodosRepository } from "./repository"
 import { Todos } from "./service"
 
@@ -12,42 +13,42 @@ export const TodosLive = Layer.effect(
   Effect.gen(function* () {
     const todosRepository = yield* TodosRepository
 
-    const listByUser = Effect.fn("Todos.listByUser")(function* (
-      userId: number,
-    ) {
+    const listByUser = Effect.fn("Todos.listByUser")(function* (userId) {
       return yield* todosRepository.listByUser(userId)
     })
 
-    const getByIdForUser = Effect.fn("Todos.getByIdForUser")(function* (
-      userId: number,
-      id: number,
-    ) {
-      yield* Effect.annotateCurrentSpan({
-        "user.id": userId,
-        "todo.id": id,
-      })
+    const getByIdForUser = Effect.fn("Todos.getByIdForUser")(
+      function* (userId, id) {
+        yield* Effect.annotateCurrentSpan({
+          "user.id": userId,
+          "todo.id": id,
+        })
 
-      const todo = yield* todosRepository.getByIdForUser(userId, id)
-      if (todo === null) {
-        return yield* new TodoNotFound({ id })
-      }
+        const todo = yield* todosRepository.getByIdForUser(userId, id)
+        if (todo === null) {
+          return yield* new TodoNotFound({ id })
+        }
 
-      return todo
-    })
+        return todo
+      },
+    )
 
     const createForUser = Effect.fn("Todos.createForUser")(function* (
-      userId: number,
+      userId,
       input: CreateTodoInput,
     ) {
+      const id = makeTodoId(yield* Random.nextUUIDv4)
+
       return yield* todosRepository.createForUser({
+        id,
         userId,
         title: input.title.trim(),
       })
     })
 
     const updateForUser = Effect.fn("Todos.updateForUser")(function* (
-      userId: number,
-      id: number,
+      userId,
+      id,
       input: UpdateTodoInput,
     ) {
       yield* getByIdForUser(userId, id)

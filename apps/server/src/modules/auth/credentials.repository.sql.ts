@@ -13,7 +13,7 @@ export const SqlAuthCredentialsRepositoryLayer = Layer.effect(
 
     const findPasswordHashByUserId = Effect.fn(
       "SqlAuthCredentialsRepository.findPasswordHashByUserId",
-    )(function* (userId: number) {
+    )(function* (userId) {
       yield* Effect.annotateCurrentSpan({ "user.id": userId })
 
       const rows = yield* sql<{ readonly password_hash: string }>`
@@ -28,10 +28,7 @@ export const SqlAuthCredentialsRepositoryLayer = Layer.effect(
 
     const createPasswordCredential = Effect.fn(
       "SqlAuthCredentialsRepository.createPasswordCredential",
-    )(function* (input: {
-      readonly userId: number
-      readonly passwordHash: string
-    }) {
+    )(function* (input) {
       yield* Effect.annotateCurrentSpan({ "user.id": input.userId })
 
       yield* sql`

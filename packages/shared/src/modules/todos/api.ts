@@ -4,7 +4,7 @@ import { InternalServerError } from "../../errors"
 import { Authorization } from "../auth"
 import { CreateTodoInput, UpdateTodoInput } from "./contract"
 import { TodoNotFound } from "./errors"
-import { Todo } from "./schema"
+import { Todo, TodoId } from "./schema"
 
 export class TodosApi extends HttpApiGroup.make("todos")
   .add(
@@ -14,7 +14,7 @@ export class TodosApi extends HttpApiGroup.make("todos")
     }),
     HttpApiEndpoint.get("getById", "/todos/:id", {
       params: {
-        id: Schema.NumberFromString,
+        id: TodoId,
       },
       success: Todo,
       error: Schema.Union([TodoNotFound, InternalServerError]),
@@ -26,7 +26,7 @@ export class TodosApi extends HttpApiGroup.make("todos")
     }),
     HttpApiEndpoint.patch("update", "/todos/:id", {
       params: {
-        id: Schema.NumberFromString,
+        id: TodoId,
       },
       payload: UpdateTodoInput,
       success: Todo,

@@ -1,20 +1,20 @@
-import { Todo } from "@app/shared"
+import { makeTodoId, makeUserId, Todo } from "@app/shared"
 import { Effect, Layer } from "effect"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
 import { RepositoryError } from "../../errors/repository"
 import { TodosRepository } from "./repository"
 
 type TodoRow = {
-  readonly id: number
-  readonly user_id: number
+  readonly id: string
+  readonly user_id: string
   readonly title: string
   readonly completed: boolean
 }
 
 const toTodo = (row: TodoRow) =>
   new Todo({
-    id: row.id,
-    userId: row.user_id,
+    id: makeTodoId(row.id),
+    userId: makeUserId(row.user_id),
     title: row.title,
     completed: row.completed,
   })
@@ -28,7 +28,7 @@ export const PostgresTodosRepositoryLayer = Layer.effect(
     const sql = yield* SqlClient.SqlClient
 
     const listByUser = Effect.fn("PostgresTodosRepository.listByUser")(
-      function* (userId: number) {
+      function* (userId) {
         yield* Effect.annotateCurrentSpan({ "user.id": userId })
 
         const rows = yield* sql<TodoRow>`
@@ -43,7 +43,7 @@ export const PostgresTodosRepositoryLayer = Layer.effect(
     )
 
     const getByIdForUser = Effect.fn("PostgresTodosRepository.getByIdForUser")(
-      function* (userId: number, id: number) {
+      function* (userId, id) {
         yield* Effect.annotateCurrentSpan({ "user.id": userId, "todo.id": id })
 
         const rows = yield* sql<TodoRow>`
@@ -59,12 +59,12 @@ export const PostgresTodosRepositoryLayer = Layer.effect(
     )
 
     const createForUser = Effect.fn("PostgresTodosRepository.createForUser")(
-      function* (input: { readonly userId: number; readonly title: string }) {
+      function* (input) {
         yield* Effect.annotateCurrentSpan({ "user.id": input.userId })
 
         const rows = yield* sql<TodoRow>`
-          INSERT INTO todos (user_id, title, completed)
-          VALUES (${input.userId}, ${input.title}, FALSE)
+          INSERT INTO todos (id, user_id, title, completed)
+          VALUES (${input.id}, ${input.userId}, ${input.title}, FALSE)
           RETURNING id, user_id, title, completed
         `.pipe(Effect.mapError(() => repositoryError("createForUser")))
 
@@ -77,11 +77,7 @@ export const PostgresTodosRepositoryLayer = Layer.effect(
 
     const updateCompletedForUser = Effect.fn(
       "PostgresTodosRepository.updateCompletedForUser",
-    )(function* (input: {
-      readonly userId: number
-      readonly id: number
-      readonly completed: boolean
-    }) {
+    )(function* (input) {
       yield* Effect.annotateCurrentSpan({
         "user.id": input.userId,
         "todo.id": input.id,

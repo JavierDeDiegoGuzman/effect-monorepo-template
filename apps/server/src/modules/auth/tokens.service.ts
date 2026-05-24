@@ -1,3 +1,4 @@
+import type { UserId } from "@app/shared"
 import { Context, type Effect, Schema } from "effect"
 
 export class InvalidAuthToken extends Schema.TaggedErrorClass<InvalidAuthToken>()(
@@ -10,9 +11,9 @@ export class InvalidAuthToken extends Schema.TaggedErrorClass<InvalidAuthToken>(
 export class AuthTokens extends Context.Service<
   AuthTokens,
   {
-    readonly sign: (userId: number) => Effect.Effect<string>
+    readonly sign: (userId: UserId) => Effect.Effect<string>
     readonly verify: (
       token: string,
-    ) => Effect.Effect<{ readonly userId: number }, InvalidAuthToken>
+    ) => Effect.Effect<{ readonly userId: UserId }, InvalidAuthToken>
   }
 >()("app/AuthTokens") {}

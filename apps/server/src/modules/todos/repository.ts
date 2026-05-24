@@ -1,4 +1,4 @@
-import type { Todo } from "@app/shared"
+import type { Todo, TodoId, UserId } from "@app/shared"
 import { Context, type Effect } from "effect"
 import type { RepositoryError } from "../../errors/repository"
 
@@ -6,19 +6,20 @@ export class TodosRepository extends Context.Service<
   TodosRepository,
   {
     readonly listByUser: (
-      userId: number,
+      userId: UserId,
     ) => Effect.Effect<Array<Todo>, RepositoryError>
     readonly getByIdForUser: (
-      userId: number,
-      id: number,
+      userId: UserId,
+      id: TodoId,
     ) => Effect.Effect<Todo | null, RepositoryError>
     readonly createForUser: (input: {
-      readonly userId: number
+      readonly id: TodoId
+      readonly userId: UserId
       readonly title: string
     }) => Effect.Effect<Todo, RepositoryError>
     readonly updateCompletedForUser: (input: {
-      readonly userId: number
-      readonly id: number
+      readonly userId: UserId
+      readonly id: TodoId
       readonly completed: boolean
     }) => Effect.Effect<void, RepositoryError>
   }
