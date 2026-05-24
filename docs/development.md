@@ -106,12 +106,16 @@ JSON persistence and Drizzle are removed from the product/runtime template. Do n
 
 SQLite is the default local SQL path. Postgres remains the production adapter and can be run locally through Docker for prod-like checks. Programmatic smoke tests create isolated temporary SQLite databases through the server test layers.
 
-Persistence lifecycle should be explicit:
+Persistence lifecycle is migration-based:
 
-- startup validates required config and expected schema/migration state;
-- setup/migration/reset commands or services own schema changes;
+- startup validates required config and runs pending Effect SQL migrations before repositories are used;
+- schema migrations live under `apps/server/src/database/migrations/*` and are registered in `apps/server/src/database/migrations.ts`;
+- completed migrations are tracked in `effect_sql_migrations`;
+- demo seed data lives in `apps/server/src/database/seed.ts`, separate from schema migrations;
 - normal request handling does not silently create or mutate tables;
-- tests reset/recreate their own temporary SQLite schema.
+- tests create temporary SQLite databases and run the same migration runner.
+
+See [`database.md`](./database.md) for the migration workflow.
 
 ## Webapp Routing Notes
 
@@ -147,7 +151,7 @@ Canonical variables:
 
 The product/runtime template now uses only `memory`, `sqlite`, and `postgres` persistence adapters. SQLite is used for local development and programmatic e2e tests; Postgres is used for production/prod-like runs.
 
-If your local database contains stale tables or columns from older example modules, stop the server and delete/reset the local database file before rerunning setup.
+If your local database contains stale tables or columns from older example modules, stop the server and delete/reset the local database file before rerunning setup. The next startup will run pending migrations again for the fresh database.
 
 ## Common Issues
 

@@ -104,7 +104,7 @@ Server modules are flat by default:
 
 Server runtime/platform code remains in:
 
-- `src/database` or `src/persistence`: persistence infrastructure, SQL clients, migrations/schema lifecycle, and transaction layers.
+- `src/database` or `src/persistence`: persistence infrastructure, SQL clients, Effect SQL migrations, seed data, and transaction layers.
 - `src/http`: HTTP server assembly and middleware.
 - `src/observability`: tracing setup.
 - `src/layers`: application layer composition.
@@ -150,10 +150,12 @@ JSON persistence and Drizzle are not part of the product/runtime template. Do no
 
 Persistence lifecycle is explicit infrastructure:
 
-- runtime startup validates required configuration and schema/migration state;
-- migrations/setup/reset live in database/persistence infrastructure, not request handlers;
+- runtime startup validates required configuration and runs pending Effect SQL schema migrations before repositories are used;
+- migrations live in `apps/server/src/database/migrations/*` and are registered in `apps/server/src/database/migrations.ts`;
+- the migrator records completed migrations in `effect_sql_migrations`;
+- demo seed data lives outside migrations in `apps/server/src/database/seed.ts`;
 - normal request handling must not silently create or mutate application schema;
-- e2e tests reset/recreate the SQLite schema before each test.
+- e2e tests create temporary SQLite databases and run the same migration runner before each test layer.
 
 ## Error Policy
 
@@ -203,7 +205,7 @@ When adding a persisted product module:
 3. Implement the memory adapter for unit/domain tests.
 4. Implement the SQLite adapter with `SqlSchema` for every operation.
 5. Implement the Postgres adapter with `SqlSchema` for every operation.
-6. Add/extend SQL migrations/schema lifecycle for SQLite and Postgres.
+6. Add/extend numbered Effect SQL migrations for SQLite and Postgres syntax, and keep seed/backfill logic separate from schema migrations.
 7. Add the service/use-case Module.
 8. Add HTTP handlers that call the service only.
 9. Add backend tests: domain/unit tests with memory and e2e tests through the typed client.
@@ -215,4 +217,4 @@ When adding a persisted product module:
 
 ## Migration Note
 
-The current codebase may still contain transitional numeric IDs or legacy fixtures while migrations continue. The canonical policy in this document wins for new work. Migration sessions should remove transitional code and update docs/tests as each layer is converted.
+The current codebase may still contain transitional numeric IDs or legacy fixtures while migrations continue. The canonical policy in this document wins for new work. Migration sessions should remove transitional code and update docs/tests as each layer is converted. See [`database.md`](./database.md) for the concrete migration workflow.

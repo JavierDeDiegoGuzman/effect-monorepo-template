@@ -39,7 +39,7 @@ Root `@app/shared` exports the API root and module indexes.
 - product handlers/services/repositories: `apps/server/src/modules/<module>/*`
 - HTTP server setup and middleware: `apps/server/src/http/*`
 - runtime layer composition: `apps/server/src/layers/*`
-- SQL clients/schema lifecycle: `apps/server/src/database/*` or `apps/server/src/persistence/*`
+- SQL clients, Effect SQL migrations, and demo seed lifecycle: `apps/server/src/database/*` or `apps/server/src/persistence/*`
 - observability setup/config: `apps/server/src/observability/*`
 
 ### Clients
@@ -121,11 +121,12 @@ Handlers adapt transport only. They must not call repositories directly. Service
 2. Export the public contract from the module `index.ts` and root `packages/shared/src/index.ts` if needed.
 3. Define repository inputs/records and the repository interface in `apps/server/src/modules/<module>/repository.ts` if persistence is needed.
 4. Implement memory, SQLite, and Postgres repository adapters as needed.
-5. Implement or extend the service/use-case module.
-6. Implement handlers that call the service only.
-7. Wire production and test layers through module indexes.
-8. Consume the contract from webapp atoms or e2e tests through the typed API client.
-9. Update docs and architecture checks when module boundaries change.
+5. Add numbered Effect SQL migrations under `apps/server/src/database/migrations/*` for schema changes, keeping demo seed data separate.
+6. Implement or extend the service/use-case module.
+7. Implement handlers that call the service only.
+8. Wire production and test layers through module indexes.
+9. Consume the contract from webapp atoms or e2e tests through the typed API client.
+10. Update docs and architecture checks when module boundaries change.
 
 ## Why Typed Clients Matter Here
 

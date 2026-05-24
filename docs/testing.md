@@ -16,7 +16,7 @@ Server test layers under `apps/server/src/test/layers/*` are thin test-facing ad
 ## Test Layer Composition
 
 - Use `makeInMemoryRepositoriesLayer(seed)` for fast domain tests with seeded users, credentials, or todos.
-- Use `makeSqliteRepositoryLayer(makeTestSqliteLayer(...))` through `makeSqlRepositoriesTestLayer(...)` for SQL-backed repository and e2e tests.
+- Use `makeSqliteRepositoryLayer(makeTestSqliteLayer(...))` through `makeSqlRepositoriesTestLayer(...)` for SQL-backed repository and e2e tests. `makeTestSqliteLayer` runs the shared migration runner by default and only seeds when explicitly requested.
 - Use `makeProductDomainLayer(...)` for product domain tests that only need product services such as Users and Todos.
 - Use full HTTP dependencies through `makeHttpServerDependenciesLayer(...)` for in-process e2e/smoke tests that exercise auth/session middleware and handlers.
 - Do not assemble `UsersLive`, `TodosLive`, auth credentials, transactions, and repository adapters ad hoc in individual tests.
@@ -56,11 +56,19 @@ The canonical e2e pattern is Effect-native and programmatic:
 
 1. Build the real HTTP route layer in-process without opening a network listener.
 2. Use a temporary SQLite database per suite/file.
-3. Reset or recreate schema before each test.
+3. Run the shared Effect SQL migration runner for that temporary database before using repositories.
 4. Convert the route layer to a web `Request -> Response` handler with `HttpRouter.toWebHandler(...)` when the test should avoid TCP entirely.
 5. Create a typed API client from the shared API contract.
 6. Inject a local `FetchHttpClient.Fetch` implementation that calls the web handler directly, using a placeholder base URL such as `http://app.test`.
 7. Create user/application context through public client calls and helpers, not global DB seeds.
+
+## Migration Tests
+
+Database migration tests target `apps/server/src/database/migrations.ts` directly with a temporary SQLite layer.
+
+Use `makeTestSqliteLayer({ migrate: false })` when the test needs to start from an empty database and call `runMigrations()` or `runMigrations({ toMigrationInclusive: n })` manually. Assert migration rows through `effect_sql_migrations` and inspect SQLite catalog tables such as `PRAGMA table_info(...)` or `PRAGMA index_list(...)` for schema behavior.
+
+Seed behavior is tested separately through `seedDemoData`; schema migrations must not depend on demo fixtures.
 8. Store session cookie state in test-local state, for example a `Ref<string | null>` used by the injected fetch implementation.
 
 E2E tests should exercise the public contract:

@@ -82,6 +82,7 @@ Domain and repository operations add predictable Effect span names through `Effe
 - `Users.getById`, `Users.findByEmail`, `Users.create`
 - `Todos.listByUser`, `Todos.getByIdForUser`, `Todos.createForUser`, `Todos.updateForUser`
 - SQL repository operations such as `SqlUsersRepository.create` and `SqlTodosRepository.updateCompletedForUser`
+- migration spans emitted by the Effect SQL migrator, named like `Migrator 1_initial`
 
 Safe annotations include stable internal/public IDs, boolean flags, and input lengths such as `todo.title.length`. Raw emails, passwords, tokens, and todo titles are not emitted as span attributes.
 

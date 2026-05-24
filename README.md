@@ -22,6 +22,7 @@ This template includes a small authenticated SaaS-style example, but the real go
 - Storybook for visual component development
 - Vitest + Testing Library for webapp component tests
 - SQLite persistence for auth, users, and user-owned todos
+- Effect SQL schema migrations with separated demo seed data
 - local observability stack with OTLP Collector + Jaeger
 
 ## Repository Layout
@@ -38,6 +39,7 @@ docs/
   api.md
   architecture.md
   development.md
+  database.md
   observability.md
   storybook.md
   testing.md
@@ -157,6 +159,7 @@ To add a new feature or domain:
 
 - [`docs/architecture.md`](./docs/architecture.md)
 - [`docs/development.md`](./docs/development.md)
+- [`docs/database.md`](./docs/database.md)
 - [`docs/api.md`](./docs/api.md)
 - [`docs/observability.md`](./docs/observability.md)
 - [`docs/testing.md`](./docs/testing.md)

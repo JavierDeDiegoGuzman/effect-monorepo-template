@@ -1,0 +1,90 @@
+# Database and Migrations
+
+The server uses Effect SQL for database access and `effect/unstable/sql/Migrator` for schema migrations.
+
+## Runtime adapters
+
+Canonical adapters:
+
+- `memory`: fast domain tests and ephemeral demos, no SQL schema;
+- `sqlite`: local development and programmatic e2e tests;
+- `postgres`: production and prod-like runs.
+
+SQL runtime setup lives in `apps/server/src/database`:
+
+```txt
+apps/server/src/database/
+  Sqlite.ts              # SQLite client layer, migrations, optional demo seed
+  Postgres.ts            # Postgres client layer and migrations
+  migrations.ts          # migration registry and runner
+  migrations/*.ts        # numbered schema migrations
+  seed.ts                # demo seed data, separate from migrations
+```
+
+Repositories do not create or mutate schema. They assume the database layer has run migrations before repository layers are built.
+
+## Schema migrations
+
+Schema changes are versioned Effects under `apps/server/src/database/migrations` and registered in `apps/server/src/database/migrations.ts`.
+
+Current migration registry shape:
+
+```ts
+export const migrationEntries = [
+  [1, "initial", Migration001Initial],
+] as const
+```
+
+Migration keys become `effect_sql_migrations` rows such as `1_initial`. The migrator creates the tracking table and runs only pending migrations.
+
+### Adding a migration
+
+1. Add a numbered file, for example `apps/server/src/database/migrations/002_add_projects.ts`.
+2. Export a default `Effect` that requires `SqlClient.SqlClient`.
+3. Use `sql.onDialectOrElse` when SQLite and Postgres syntax differs.
+4. Register the migration in `migrationEntries` with the next numeric ID.
+5. Add or update SQL repository tests and migration tests when behavior or compatibility matters.
+6. Update docs if the persistence model, local setup, or module relationship changes.
+
+Example:
+
+```ts
+import { Effect } from "effect"
+import * as SqlClient from "effect/unstable/sql/SqlClient"
+
+export default Effect.gen(function* () {
+  const sql = yield* SqlClient.SqlClient
+
+  yield* sql.onDialectOrElse({
+    pg: () => sql`ALTER TABLE todos ADD COLUMN due_at TIMESTAMPTZ`,
+    orElse: () => sql`ALTER TABLE todos ADD COLUMN due_at TEXT`,
+  })
+})
+```
+
+Migrations should be forward-only and safe to run once. If a migration may be re-entered after a partial local/manual change, guard it with catalog checks such as `PRAGMA table_info(...)` for SQLite or the appropriate Postgres catalog query.
+
+## Demo seed data
+
+Demo data is intentionally separate from schema migrations in `apps/server/src/database/seed.ts`.
+
+SQLite local development runs migrations and then seeds demo data by default. Tests opt into seeding explicitly through `makeTestSqliteLayer({ seed: true })`; the default test database is unseeded.
+
+Do not put demo rows, fixtures, or backfills in schema migrations unless those rows are required reference data for every environment.
+
+## Testing migrations
+
+Migration tests live next to database infrastructure. The canonical pattern is:
+
+1. create a temporary SQLite database with `makeTestSqliteLayer({ migrate: false })`;
+2. call `runMigrations()` or `runMigrations({ toMigrationInclusive: n })`;
+3. inspect schema/catalog/data through `SqlClient.SqlClient`;
+4. verify idempotence or partial-migration compatibility when relevant.
+
+The migrator records completed migrations in `effect_sql_migrations`. Tests can assert against that table for migration ordering and names.
+
+## Data migrations
+
+Use schema migrations for structural changes: tables, columns, indexes, constraints.
+
+Use a separate data-migration service/table for long-running or resumable backfills once the template needs one. Data migrations should record completion by stable name and be safe to resume. Do not hide long-running data rewrites inside request handlers or repository methods.
