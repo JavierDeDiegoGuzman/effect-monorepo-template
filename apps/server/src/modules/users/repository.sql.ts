@@ -1,7 +1,12 @@
 import { makeUserId, User } from "@app/shared"
 import { Effect, Layer } from "effect"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
-import { RepositoryError } from "../../errors/repository"
+import {
+  makeRepositoryError,
+  mapRepositoryError,
+  oneOrNull,
+  requireReadBack,
+} from "../../database/sqlRepositoryHelpers"
 import { UsersRepository } from "./repository"
 
 type UserRow = {
@@ -17,8 +22,7 @@ const toUser = (row: UserRow) =>
     name: row.name,
   })
 
-const repositoryError = (operation: string) =>
-  new RepositoryError({ repository: "UsersRepository", operation })
+const repositoryError = makeRepositoryError("UsersRepository")
 
 export const SqlUsersRepositoryLayer = Layer.effect(
   UsersRepository,
@@ -33,10 +37,9 @@ export const SqlUsersRepositoryLayer = Layer.effect(
         FROM users
         WHERE id = ${id}
         LIMIT 1
-      `.pipe(Effect.mapError(() => repositoryError("getById")))
+      `.pipe(mapRepositoryError("UsersRepository", "getById"))
 
-      const row = rows[0]
-      return row === undefined ? null : toUser(row)
+      return oneOrNull(rows, toUser)
     })
 
     const findByEmail = Effect.fn("SqlUsersRepository.findByEmail")(function* (
@@ -47,23 +50,20 @@ export const SqlUsersRepositoryLayer = Layer.effect(
         FROM users
         WHERE email = ${email}
         LIMIT 1
-      `.pipe(Effect.mapError(() => repositoryError("findByEmail")))
+      `.pipe(mapRepositoryError("UsersRepository", "findByEmail"))
 
-      const row = rows[0]
-      return row === undefined ? null : toUser(row)
+      return oneOrNull(rows, toUser)
     })
 
     const create = Effect.fn("SqlUsersRepository.create")(function* (input) {
       yield* sql`
         INSERT INTO users (id, name, email)
         VALUES (${input.id}, ${input.name}, ${input.email})
-      `.pipe(Effect.mapError(() => repositoryError("create")))
+      `.pipe(mapRepositoryError("UsersRepository", "create"))
 
       return yield* getById(input.id).pipe(
         Effect.flatMap((user) =>
-          user === null
-            ? Effect.fail(repositoryError("create.readBack"))
-            : Effect.succeed(user),
+          requireReadBack(user, repositoryError("create.readBack")),
         ),
       )
     })

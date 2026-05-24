@@ -1,7 +1,12 @@
 import { makeTodoId, makeUserId, Todo } from "@app/shared"
 import { Effect, Layer } from "effect"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
-import { RepositoryError } from "../../errors/repository"
+import {
+  makeRepositoryError,
+  mapRepositoryError,
+  oneOrNull,
+  requireReadBack,
+} from "../../database/sqlRepositoryHelpers"
 import { TodosRepository } from "./repository"
 
 type TodoRow = {
@@ -19,8 +24,7 @@ const toTodo = (row: TodoRow) =>
     completed: row.completed === 1,
   })
 
-const repositoryError = (operation: string) =>
-  new RepositoryError({ repository: "TodosRepository", operation })
+const repositoryError = makeRepositoryError("TodosRepository")
 
 export const SqlTodosRepositoryLayer = Layer.effect(
   TodosRepository,
@@ -36,7 +40,7 @@ export const SqlTodosRepositoryLayer = Layer.effect(
         FROM todos
         WHERE user_id = ${userId}
         ORDER BY id ASC
-      `.pipe(Effect.mapError(() => repositoryError("listByUser")))
+      `.pipe(mapRepositoryError("TodosRepository", "listByUser"))
 
         return rows.map(toTodo)
       },
@@ -51,10 +55,9 @@ export const SqlTodosRepositoryLayer = Layer.effect(
         FROM todos
         WHERE user_id = ${userId} AND id = ${id}
         LIMIT 1
-      `.pipe(Effect.mapError(() => repositoryError("getByIdForUser")))
+      `.pipe(mapRepositoryError("TodosRepository", "getByIdForUser"))
 
-        const row = rows[0]
-        return row === undefined ? null : toTodo(row)
+        return oneOrNull(rows, toTodo)
       },
     )
 
@@ -65,13 +68,11 @@ export const SqlTodosRepositoryLayer = Layer.effect(
         yield* sql`
         INSERT INTO todos (id, user_id, title, completed)
         VALUES (${input.id}, ${input.userId}, ${input.title}, 0)
-      `.pipe(Effect.mapError(() => repositoryError("createForUser")))
+      `.pipe(mapRepositoryError("TodosRepository", "createForUser"))
 
         return yield* getByIdForUser(input.userId, input.id).pipe(
           Effect.flatMap((todo) =>
-            todo === null
-              ? Effect.fail(repositoryError("createForUser.readBack"))
-              : Effect.succeed(todo),
+            requireReadBack(todo, repositoryError("createForUser.readBack")),
           ),
         )
       },
@@ -90,7 +91,7 @@ export const SqlTodosRepositoryLayer = Layer.effect(
         UPDATE todos
         SET completed = ${input.completed ? 1 : 0}
         WHERE user_id = ${input.userId} AND id = ${input.id}
-      `.pipe(Effect.mapError(() => repositoryError("updateCompletedForUser")))
+      `.pipe(mapRepositoryError("TodosRepository", "updateCompletedForUser"))
     })
 
     return TodosRepository.of({

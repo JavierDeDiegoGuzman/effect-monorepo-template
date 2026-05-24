@@ -1,10 +1,10 @@
 import { Effect, Layer } from "effect"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
-import { RepositoryError } from "../../errors/repository"
+import {
+  firstColumnOrNull,
+  mapRepositoryError,
+} from "../../database/sqlRepositoryHelpers"
 import { AuthCredentialsRepository } from "./credentials.repository"
-
-const repositoryError = (operation: string) =>
-  new RepositoryError({ repository: "AuthCredentialsRepository", operation })
 
 export const PostgresAuthCredentialsRepositoryLayer = Layer.effect(
   AuthCredentialsRepository,
@@ -21,9 +21,14 @@ export const PostgresAuthCredentialsRepositoryLayer = Layer.effect(
         FROM auth_credentials
         WHERE user_id = ${userId}
         LIMIT 1
-      `.pipe(Effect.mapError(() => repositoryError("findPasswordHashByUserId")))
+      `.pipe(
+        mapRepositoryError(
+          "AuthCredentialsRepository",
+          "findPasswordHashByUserId",
+        ),
+      )
 
-      return rows[0]?.password_hash ?? null
+      return firstColumnOrNull(rows, "password_hash")
     })
 
     const createPasswordCredential = Effect.fn(
@@ -34,7 +39,12 @@ export const PostgresAuthCredentialsRepositoryLayer = Layer.effect(
       yield* sql`
         INSERT INTO auth_credentials (user_id, password_hash)
         VALUES (${input.userId}, ${input.passwordHash})
-      `.pipe(Effect.mapError(() => repositoryError("createPasswordCredential")))
+      `.pipe(
+        mapRepositoryError(
+          "AuthCredentialsRepository",
+          "createPasswordCredential",
+        ),
+      )
     })
 
     return AuthCredentialsRepository.of({

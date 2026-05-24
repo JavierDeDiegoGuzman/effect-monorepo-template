@@ -46,7 +46,7 @@ Canonical adapters:
 - `repository.sqlite.ts` for SQLite SQL behavior;
 - `repository.postgres.ts` for Postgres SQL behavior.
 
-SQL repository tests should verify that operations go through `SqlSchema` and decode rows into repository record schemas defined in `repository.ts`. SQL failures and decode failures should surface as internal persistence errors, not public API errors. Transaction rollback behavior is verified against SQL adapters; the memory transaction adapter is a no-op intended for fast domain tests, not rollback simulation.
+SQL repository tests should verify that operations go through `SqlSchema` and decode rows into repository record schemas defined in `repository.ts`. They should also cover persistence mapping, read-back behavior, and internal error mapping through shared SQL repository helpers where applicable. SQL failures and decode failures should surface as internal persistence errors, not public API errors. Transaction rollback behavior is verified against SQL adapters; the memory transaction adapter is a no-op intended for fast domain tests, not rollback simulation.
 
 JSON and Drizzle adapters are not part of the product/runtime template and should not receive new coverage.
 

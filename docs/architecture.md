@@ -134,6 +134,7 @@ Rules:
 - Repository methods accept/return repository types, not HTTP DTOs or UI models.
 - Memory, SQLite, and Postgres adapters implement the same repository interface.
 - SQL adapters must use `SqlSchema` for every persistent operation, including writes that return no domain row.
+- SQL adapters should keep persistence mechanics such as SQL failure mapping, optional row selection, and read-back checks behind repository/helper modules instead of repeating them at call sites.
 - SQL queries should alias columns to match repository schemas directly.
 - Repositories surface internal persistence errors; services/handlers decide whether those become expected domain errors or safe `InternalServerError` responses.
 - Repositories never generate IDs. Creation services generate IDs before calling repositories.

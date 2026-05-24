@@ -1,7 +1,12 @@
 import { makeTodoId, makeUserId, Todo } from "@app/shared"
 import { Effect, Layer } from "effect"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
-import { RepositoryError } from "../../errors/repository"
+import {
+  makeRepositoryError,
+  mapRepositoryError,
+  oneOrNull,
+  requireReadBack,
+} from "../../database/sqlRepositoryHelpers"
 import { TodosRepository } from "./repository"
 
 type TodoRow = {
@@ -19,8 +24,7 @@ const toTodo = (row: TodoRow) =>
     completed: row.completed,
   })
 
-const repositoryError = (operation: string) =>
-  new RepositoryError({ repository: "TodosRepository", operation })
+const repositoryError = makeRepositoryError("TodosRepository")
 
 export const PostgresTodosRepositoryLayer = Layer.effect(
   TodosRepository,
@@ -36,7 +40,7 @@ export const PostgresTodosRepositoryLayer = Layer.effect(
           FROM todos
           WHERE user_id = ${userId}
           ORDER BY id ASC
-        `.pipe(Effect.mapError(() => repositoryError("listByUser")))
+        `.pipe(mapRepositoryError("TodosRepository", "listByUser"))
 
         return rows.map(toTodo)
       },
@@ -51,10 +55,9 @@ export const PostgresTodosRepositoryLayer = Layer.effect(
         FROM todos
         WHERE user_id = ${userId} AND id = ${id}
         LIMIT 1
-      `.pipe(Effect.mapError(() => repositoryError("getByIdForUser")))
+      `.pipe(mapRepositoryError("TodosRepository", "getByIdForUser"))
 
-        const row = rows[0]
-        return row === undefined ? null : toTodo(row)
+        return oneOrNull(rows, toTodo)
       },
     )
 
@@ -66,12 +69,12 @@ export const PostgresTodosRepositoryLayer = Layer.effect(
           INSERT INTO todos (id, user_id, title, completed)
           VALUES (${input.id}, ${input.userId}, ${input.title}, FALSE)
           RETURNING id, user_id, title, completed
-        `.pipe(Effect.mapError(() => repositoryError("createForUser")))
+        `.pipe(mapRepositoryError("TodosRepository", "createForUser"))
 
-        const row = rows[0]
-        return row === undefined
-          ? yield* Effect.fail(repositoryError("createForUser.returning"))
-          : toTodo(row)
+        return yield* requireReadBack(
+          oneOrNull(rows, toTodo),
+          repositoryError("createForUser.returning"),
+        )
       },
     )
 
@@ -88,7 +91,7 @@ export const PostgresTodosRepositoryLayer = Layer.effect(
         UPDATE todos
         SET completed = ${input.completed}
         WHERE user_id = ${input.userId} AND id = ${input.id}
-      `.pipe(Effect.mapError(() => repositoryError("updateCompletedForUser")))
+      `.pipe(mapRepositoryError("TodosRepository", "updateCompletedForUser"))
     })
 
     return TodosRepository.of({

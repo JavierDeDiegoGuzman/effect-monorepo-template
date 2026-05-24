@@ -1,7 +1,12 @@
 import { makeUserId, User } from "@app/shared"
 import { Effect, Layer } from "effect"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
-import { RepositoryError } from "../../errors/repository"
+import {
+  makeRepositoryError,
+  mapRepositoryError,
+  oneOrNull,
+  requireReadBack,
+} from "../../database/sqlRepositoryHelpers"
 import { UsersRepository } from "./repository"
 
 type UserRow = {
@@ -17,8 +22,7 @@ const toUser = (row: UserRow) =>
     name: row.name,
   })
 
-const repositoryError = (operation: string) =>
-  new RepositoryError({ repository: "UsersRepository", operation })
+const repositoryError = makeRepositoryError("UsersRepository")
 
 export const PostgresUsersRepositoryLayer = Layer.effect(
   UsersRepository,
@@ -34,10 +38,9 @@ export const PostgresUsersRepositoryLayer = Layer.effect(
         FROM users
         WHERE id = ${id}
         LIMIT 1
-      `.pipe(Effect.mapError(() => repositoryError("getById")))
+      `.pipe(mapRepositoryError("UsersRepository", "getById"))
 
-        const row = rows[0]
-        return row === undefined ? null : toUser(row)
+        return oneOrNull(rows, toUser)
       },
     )
 
@@ -48,10 +51,9 @@ export const PostgresUsersRepositoryLayer = Layer.effect(
           FROM users
           WHERE email = ${email}
           LIMIT 1
-        `.pipe(Effect.mapError(() => repositoryError("findByEmail")))
+        `.pipe(mapRepositoryError("UsersRepository", "findByEmail"))
 
-        const row = rows[0]
-        return row === undefined ? null : toUser(row)
+        return oneOrNull(rows, toUser)
       },
     )
 
@@ -61,12 +63,12 @@ export const PostgresUsersRepositoryLayer = Layer.effect(
           INSERT INTO users (id, name, email)
           VALUES (${input.id}, ${input.name}, ${input.email})
           RETURNING id, email, name
-        `.pipe(Effect.mapError(() => repositoryError("create")))
+        `.pipe(mapRepositoryError("UsersRepository", "create"))
 
-        const row = rows[0]
-        return row === undefined
-          ? yield* Effect.fail(repositoryError("create.returning"))
-          : toUser(row)
+        return yield* requireReadBack(
+          oneOrNull(rows, toUser),
+          repositoryError("create.returning"),
+        )
       },
     )
 
