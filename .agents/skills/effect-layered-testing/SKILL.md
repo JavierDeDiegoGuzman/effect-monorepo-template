@@ -39,7 +39,7 @@ Read the references in order:
    - handler tests: handlers + domain dependencies, usually mocked unless testing full stack
 3. Add or reuse test layers under `src/test/layers/*`.
 4. For domain tests, seed in-memory repositories with domain objects.
-5. For SQL tests, create a temporary database and initialize schema.
+5. For SQL tests, create a temporary database and run the shared migration runner.
 6. Use transaction abstraction rather than leaking `SqlClient` into domain services.
 7. Run backend check, tests, and build.
 

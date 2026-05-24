@@ -83,15 +83,21 @@ Database schema and migrations belong in infrastructure, not repositories.
 Good:
 
 ```txt
-database/schema.ts
+database/migrations.ts
 database/migrations/*
+database/seed.ts
 ```
 
 Bad:
 
 ```txt
 modules/users/repository.sql.ts creates tables
+database/seed.ts mutates schema
 ```
+
+Use `effect/unstable/sql/Migrator` for schema migrations. Keep migrations numbered, registered in a single migration registry, and run by database layers before repository layers are used. Use `sql.onDialectOrElse` when SQLite and Postgres syntax differ.
+
+Keep demo seed data separate from schema migrations. For long-running or resumable data backfills, add an explicit data-migration service/table instead of hiding the rewrite in request handlers or repositories.
 
 ## Constraints and indexes
 

@@ -9,9 +9,9 @@ Owns:
 - database configuration
 - client creation
 - connection lifecycle
-- schema initialization
-- migrations
-- seed/bootstrap data
+- schema migration runner setup
+- numbered schema migrations
+- seed/bootstrap data separate from schema migrations
 
 May depend on:
 

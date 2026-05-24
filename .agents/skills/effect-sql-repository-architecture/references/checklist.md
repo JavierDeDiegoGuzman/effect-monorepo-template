@@ -22,6 +22,8 @@ SQL implementations:
 - [ ] Row types are local
 - [ ] Mappers are local
 - [ ] SQL errors do not leak accidentally into domain service APIs
+- [ ] Schema changes are numbered Effect SQL migrations registered in database infrastructure
+- [ ] Demo seed data is separate from schema migrations
 
 Domain services:
 
