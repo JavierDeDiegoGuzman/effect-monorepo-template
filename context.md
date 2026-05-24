@@ -29,4 +29,4 @@ This repository is an Effect-first full-stack SaaS template. The product example
 1. Extract shared SQL repository mechanics only where they pass the deletion test.
 2. Revisit the transactions seam as more multi-repository workflows appear.
 3. Add more architecture checks for handler/repository import rules, repository ID generation, and UUID-only public IDs.
-4. Add the planned runtime-neutral `packages/api-client` package.
+4. Revisit a runtime-neutral API client package only if additional runtimes create enough duplication to justify a real seam. For now, typed client construction stays runtime-local.

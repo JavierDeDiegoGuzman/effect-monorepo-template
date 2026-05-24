@@ -13,7 +13,7 @@ This template includes a small authenticated SaaS-style example, but the real go
 
 ## What This Template Includes
 
-- `effect@4.0.0-beta.43`
+- `effect` v4 beta
 - `pnpm` workspaces
 - shared `HttpApi` definition
 - server handlers implemented from the shared API
@@ -72,7 +72,7 @@ pnpm verify:architecture
 
 The included example covers:
 
-- registration, login, and bearer-token protected endpoints
+- registration, login, logout, and session-cookie protected endpoints
 - per-user sessions
 - user-owned global todos
 - SQLite persistence under `apps/server/.data` by default
@@ -166,5 +166,6 @@ To add a new feature or domain:
 - [`docs/database.md`](./docs/database.md)
 - [`docs/api.md`](./docs/api.md)
 - [`docs/observability.md`](./docs/observability.md)
+- [`docs/storybook.md`](./docs/storybook.md)
 - [`docs/testing.md`](./docs/testing.md)
 - [`docs/webapp-architecture.md`](./docs/webapp-architecture.md)

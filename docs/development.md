@@ -46,12 +46,15 @@ Build all workspaces:
 pnpm build
 ```
 
-Run linting and formatting checks:
+Run linting checks and intentional formatting rewrites:
 
 ```bash
 pnpm lint
+pnpm lint:fix
 pnpm format
 ```
+
+`pnpm lint` checks formatting and lint rules without writing. `pnpm lint:fix` applies Biome safe fixes and then reruns the type-assertion guard. `pnpm format` rewrites formatting with Biome and should be used intentionally, not mixed into unrelated changes.
 
 The lint configuration rejects explicit `any` and explicit `unknown` in project code. Prefer concrete unions, generics, or domain-specific types.
 
@@ -146,7 +149,9 @@ Canonical variables:
 - `AUTH_JWT_SECRET`: required signing secret for auth tokens
 - `AUTH_JWT_ISSUER`: required JWT issuer
 - `AUTH_JWT_AUDIENCE`: required JWT audience
-- `AUTH_ACCESS_TOKEN_TTL_SECONDS`: token lifetime in seconds. Defaults to `3600`
+- `AUTH_ACCESS_TOKEN_TTL_SECONDS`: token/session lifetime in seconds. Defaults to `3600`
+- `AUTH_SESSION_COOKIE_SAME_SITE`: optional session cookie SameSite policy: `lax`, `strict`, or `none`. Defaults to `lax`
+- `AUTH_SESSION_COOKIE_SECURE`: optional boolean for the session cookie `Secure` flag. Defaults to `false`; use `true` for HTTPS production deployments
 - `OTEL_EXPORTER_OTLP_ENDPOINT`: OTLP base URL. Omit in development or set to `off` to disable tracing
 - `OTEL_SERVICE_NAME`: required only when server tracing is enabled
 - `OTEL_SERVICE_VERSION`: required only when server tracing is enabled

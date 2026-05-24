@@ -61,14 +61,6 @@ The canonical e2e pattern is Effect-native and programmatic:
 5. Create a typed API client from the shared API contract.
 6. Inject a local `FetchHttpClient.Fetch` implementation that calls the web handler directly, using a placeholder base URL such as `http://app.test`.
 7. Create user/application context through public client calls and helpers, not global DB seeds.
-
-## Migration Tests
-
-Database migration tests target `apps/server/src/database/migrations.ts` directly with a temporary SQLite layer.
-
-Use `makeTestSqliteLayer({ migrate: false })` when the test needs to start from an empty database and call `runMigrations()` or `runMigrations({ toMigrationInclusive: n })` manually. Assert migration rows through `effect_sql_migrations` and inspect SQLite catalog tables such as `PRAGMA table_info(...)` or `PRAGMA index_list(...)` for schema behavior.
-
-Seed behavior is tested separately through `seedDemoData`; schema migrations must not depend on demo fixtures.
 8. Store session cookie state in test-local state, for example a `Ref<string | null>` used by the injected fetch implementation.
 
 E2E tests should exercise the public contract:
@@ -82,6 +74,14 @@ E2E tests should exercise the public contract:
 - assert invalid params/body decode as built-in 400-level input failures rather than generic not-found behavior.
 
 A real network listener with an ephemeral port is reserved for transport-specific behavior tests, not the default e2e path.
+
+## Migration Tests
+
+Database migration tests target `apps/server/src/database/migrations.ts` directly with a temporary SQLite layer.
+
+Use `makeTestSqliteLayer({ migrate: false })` when the test needs to start from an empty database and call `runMigrations()` or `runMigrations({ toMigrationInclusive: n })` manually. Assert migration rows through `effect_sql_migrations` and inspect SQLite catalog tables such as `PRAGMA table_info(...)` or `PRAGMA index_list(...)` for schema behavior.
+
+Seed behavior is tested separately through `seedDemoData`; schema migrations must not depend on demo fixtures.
 
 ## Typed Client Policy
 

@@ -10,7 +10,7 @@ The core goals are:
 - one shared API contract
 - typed clients instead of ad-hoc fetch calls
 - strict backend layering from HTTP to persistence
-- runtime-neutral shared contracts and client packages
+- runtime-neutral shared contracts and runtime-local typed clients
 - explicit persistence lifecycle and test setup
 - vertical product/domain modules that scale across shared, server, and webapp code
 
@@ -217,4 +217,4 @@ When adding a persisted product module:
 
 ## Migration Note
 
-The current codebase may still contain transitional numeric IDs or legacy fixtures while migrations continue. The canonical policy in this document wins for new work. Migration sessions should remove transitional code and update docs/tests as each layer is converted. See [`database.md`](./database.md) for the concrete migration workflow.
+The product/runtime template uses branded UUID strings for public and persisted entity IDs. New work should not introduce transitional numeric public IDs or legacy fixture paths. See [`database.md`](./database.md) for the concrete schema migration workflow.

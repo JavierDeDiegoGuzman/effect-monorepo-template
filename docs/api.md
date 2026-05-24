@@ -132,4 +132,4 @@ Handlers adapt transport only. They must not call repositories directly. Service
 
 Clients are generated from the same `HttpApi` definition that the server implements, giving typed params, payloads, responses, and contract mismatch detection across frontend, tests, and backend.
 
-The base typed client is runtime-neutral. Browser cookie transport, logout behavior, and UI reaction to 401s belong to the webapp adapter/atoms, not the base client package.
+The base typed client layer is runtime-neutral. Browser cookie transport, logout behavior, and UI reaction to 401s belong to the webapp adapter/atoms, not a shared client package.
