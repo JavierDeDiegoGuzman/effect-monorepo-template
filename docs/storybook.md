@@ -47,6 +47,9 @@ The initial catalog covers:
 - `Domain/Todos/TodoList`: populated and empty states
 - `Domain/Todos/TodoCreateForm`: default, filled, pending, and custom-label states
 - `Domain/Auth/LoginForm`: empty, filled, and pending states
+- `Domain/Auth/RegisterForm`: empty, filled, and pending states
+- `Domain/Auth/SessionSummary`: default and long-identity states
+- `Screen Parts/Dashboard/DashboardSummary`: populated, empty, and many-todo states
 
 Shared mock fixtures live in `apps/webapp/src/test/fixtures.ts` so stories and component tests can use the same stable data without touching remote APIs.
 
