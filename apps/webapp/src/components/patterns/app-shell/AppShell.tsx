@@ -11,10 +11,15 @@ type AppShellProps = {
   readonly onLogout?: () => void
 }
 
-const navItems = [
+type PrimaryNavItem = {
+  readonly label: string
+  readonly to: "/" | "/todos"
+}
+
+const navItems: ReadonlyArray<PrimaryNavItem> = [
   { label: "Dashboard", to: "/" },
   { label: "Todos", to: "/todos" },
-] as const
+]
 
 export function AppShell({
   session,

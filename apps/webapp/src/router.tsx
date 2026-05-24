@@ -12,11 +12,11 @@ import {
 } from "@tanstack/react-router"
 import { AppShell } from "@/components/patterns/app-shell/AppShell"
 import { Screen } from "@/components/patterns/Screen"
-import { Button } from "@/components/ui/button"
 import { DashboardScreen } from "@/components/screens/DashboardScreen"
 import { LoginScreen } from "@/components/screens/LoginScreen"
 import { RegisterScreen } from "@/components/screens/RegisterScreen"
 import { TodosScreen } from "@/components/screens/TodosScreen"
+import { Button } from "@/components/ui/button"
 import { logoutAction, SessionSummary } from "@/modules/auth"
 
 type RouterContext = {
