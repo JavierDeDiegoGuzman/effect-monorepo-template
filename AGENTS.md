@@ -278,4 +278,11 @@ Validation run:
 
 Not run:
 - <command or check>: <reason>
+
+```
+## References
+
+You should use the references repos as good example on arquitecture and how to use effect
+
+You have the opencode, effect-smol and t3-chat repos in .agentes/references/
 ```
