@@ -70,7 +70,7 @@ Reference these guidelines when:
 
 ## How to Use
 
-Read individual rule files for detailed explanations and code examples:
+Read individual rule files for detailed explanations and code examples. Read [code comment style](../_shared/comment-style.md) when adding or reviewing comments:
 
 ```
 rules/architecture-avoid-boolean-props.md
@@ -83,6 +83,8 @@ Each rule file contains:
 - Incorrect code example with explanation
 - Correct code example with explanation
 - Additional context and references
+
+When applying these patterns, prefer expressive component names and APIs over comments. Comment only non-obvious composition, accessibility, platform, or compatibility tradeoffs.
 
 ## Documentation Expectations
 

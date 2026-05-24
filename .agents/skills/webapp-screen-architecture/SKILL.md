@@ -7,7 +7,7 @@ description: Design and refactor webapp screens, app shell behavior, and page st
 
 Use this skill when working on route screens, page headers, dashboard structure, app shell layout, or deciding how to split UI responsibilities across pages.
 
-Read [references/screen-architecture.md](references/screen-architecture.md) before making changes.
+Read [references/screen-architecture.md](references/screen-architecture.md) before making changes. Read [code comment style](../_shared/comment-style.md) when adding or reviewing comments.
 
 ## Goals
 
@@ -32,7 +32,8 @@ Read [references/screen-architecture.md](references/screen-architecture.md) befo
 5. Keep forms, lists, and detail blocks in feature components when possible.
 6. For detail screens, consider related-resource sections implied by classified domain relationships.
 7. If the screen has more than one major job, consider splitting it across routes.
-8. Run the webapp checks after the refactor.
+8. Comment only hidden routing, accessibility, or relationship-driven UX rationale; do not narrate visible layout structure.
+9. Run the webapp checks after the refactor.
 
 ## Documentation expectations
 

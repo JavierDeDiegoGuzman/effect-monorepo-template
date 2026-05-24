@@ -7,7 +7,7 @@ description: Add and maintain observability for Effect backends and React client
 
 Use this skill when adding or changing observable operations, tracing setup, local observability workflow, or debugging docs.
 
-Read [references/observability-rules.md](references/observability-rules.md) before making changes.
+Read [references/observability-rules.md](references/observability-rules.md) before making changes. Read [code comment style](../_shared/comment-style.md) when adding or reviewing comments.
 
 ## Goals
 
@@ -34,6 +34,7 @@ Read [references/observability-rules.md](references/observability-rules.md) befo
 - Do not put PII, secrets, tokens, raw payloads, passwords, or sensitive business data in span attributes.
 - If an annotation is derived from user input, prefer length/count/boolean/category rather than the raw value.
 - If local observability setup changes, update development/observability docs in the same change.
+- Do not comment routine span names or annotations; comment redaction/cardinality choices when future edits could leak sensitive data.
 
 ## Span naming guidance
 

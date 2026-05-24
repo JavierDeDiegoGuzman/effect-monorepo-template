@@ -19,6 +19,7 @@ Read the references in order:
 4. [Transaction test rules](references/transaction-test-rules.md)
 5. [Test layer composition](references/test-layer-composition.md)
 6. [Checklist](references/checklist.md)
+7. [Code comment style](../_shared/comment-style.md) when adding or reviewing comments
 
 ## Goals
 
@@ -56,6 +57,7 @@ Read the references in order:
 - Do not add persistence behavior without repository tests against temporary SQL, unless explicitly justified.
 - Do not add domain behavior without domain service tests, unless explicitly justified.
 - Do not add scoped resource behavior without cross-scope tests, unless explicitly justified.
+- Do not narrate arrange/act/assert with comments; comment only unusual fixtures, intentionally non-production layers, or hidden test invariants.
 
 ## Preferred structure
 

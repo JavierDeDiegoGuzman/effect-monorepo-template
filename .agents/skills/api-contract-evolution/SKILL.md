@@ -7,7 +7,7 @@ description: Safely evolve shared API contracts across shared schemas, server ha
 
 Use this skill when changing shared API/domain contracts or behavior visible to clients.
 
-Read [references/api-contract-rules.md](references/api-contract-rules.md) before making changes.
+Read [references/api-contract-rules.md](references/api-contract-rules.md) before making changes. Read [code comment style](../_shared/comment-style.md) when adding or reviewing comments.
 
 ## Goals
 
@@ -53,6 +53,7 @@ Read [references/api-contract-rules.md](references/api-contract-rules.md) before
 - Any shared contract change must list all consumers reviewed, even when some are not affected.
 - Breaking changes require an explicit migration or coordination note.
 - Do not duplicate changed contract types in clients to avoid updating the shared contract.
+- Do not add comments that restate schema fields or routes; only comment compatibility windows, wire-format constraints, or semantics not expressible in the contract.
 
 ## Documentation expectations
 

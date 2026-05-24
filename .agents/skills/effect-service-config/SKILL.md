@@ -7,7 +7,7 @@ description: Apply Effect configuration conventions for backend services and lay
 
 Use this skill when working on configuration in Effect-based backend services.
 
-Read [references/config-rules.md](references/config-rules.md) before making changes.
+Read [references/config-rules.md](references/config-rules.md) before making changes. Read [code comment style](../_shared/comment-style.md) when adding or reviewing comments.
 
 ## Goals
 
@@ -36,7 +36,8 @@ Read [references/config-rules.md](references/config-rules.md) before making chan
    - `(process.env.FLAG ?? "true") !== "false"`
 7. If config is needed to construct a layer dynamically, use `Layer.unwrap(Effect.gen(...))`.
 8. If a service currently has fallback or mock behavior because config is absent, preserve it only if explicitly requested. Otherwise make initialization fail.
-9. After edits, run the project typecheck or equivalent verification command.
+9. Comment only surprising defaults, deployment compatibility constraints, or intentional startup failures; do not narrate direct env-to-config mappings.
+10. After edits, run the project typecheck or equivalent verification command.
 
 ## Documentation expectations
 

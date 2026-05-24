@@ -70,6 +70,14 @@ The frontend is organized in layers:
 - Make observability and tests part of the feature, not afterthoughts
 - Keep formatting and linting clean with Biome; avoid mixing broad formatting churn with behavior changes
 
+## Code comment policy
+
+Use T3 Chat-style comments: comments should be rare, intentional, and explain why the code exists or why it is shaped that way. Prefer clearer names, smaller helpers, stronger schemas/types, and tests over comments that explain what the code already says.
+
+Keep or add comments for hidden context: domain invariants, auth/scope boundaries, security/privacy decisions, SQL/transaction constraints, external compatibility, performance tradeoffs, unusual test setup, and observability redaction. Remove comments that narrate code, duplicate types, describe framework mechanics, or preserve commented-out code.
+
+Detailed guidance lives in `.agents/skills/_shared/comment-style.md`. Use `code-comment-pass` when doing a dedicated comment cleanup or final review.
+
 ## Canonical full-stack architecture rules
 
 Detailed policy lives in `docs/architecture.md`, `docs/api.md`, `docs/testing.md`, and `docs/development.md`. These rules are mandatory for new product/runtime work:
@@ -142,6 +150,7 @@ Skill selection router:
 - Reusable webapp components and component layer boundaries: use `webapp-component-architecture`; add `vercel-composition-patterns` when component API design is the focus.
 - Route-level screens, app shell, dashboards, collection/detail page structure, or navigation: use `webapp-screen-architecture`.
 - Frontend component tests, Storybook stories, or Storybook interactions: use `webapp-testing-architecture`.
+- Adding, removing, or reviewing code comments: use `code-comment-pass`.
 
 ### Product and API
 
@@ -163,6 +172,10 @@ Skill selection router:
 - `react-atom-architecture`: wire remote/shared state with `@effect/atom-react`, reactivity keys, and observable atom effects
 - `webapp-testing-architecture`: add frontend tests and Storybook stories/interactions for visual states and behavior
 - `vercel-composition-patterns`: apply scalable React composition patterns and avoid boolean prop proliferation
+
+### Code quality
+
+- `code-comment-pass`: review comments for T3 Chat-style usefulness: explain why, remove what-comments, stale TODOs, and commented-out code
 
 ## Required planning for non-trivial changes
 

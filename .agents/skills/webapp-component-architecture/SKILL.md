@@ -7,7 +7,7 @@ description: Design and refactor React webapp components using shadcn/ui as the 
 
 Use this skill when working on React components in the webapp.
 
-Read [references/component-architecture.md](references/component-architecture.md) before making changes.
+Read [references/component-architecture.md](references/component-architecture.md) before making changes. Read [code comment style](../_shared/comment-style.md) when adding or reviewing comments.
 
 ## Goals
 
@@ -39,7 +39,8 @@ Read [references/component-architecture.md](references/component-architecture.md
    - compound components when multiple pieces share a stable structure
 5. Keep business logic and data wiring out of `ui/*`.
 6. Keep screens thin by moving reusable UI into `patterns/*` or `modules/<module>/components/*`.
-7. After edits, run the webapp checks.
+7. Comment only non-obvious composition, accessibility, or platform tradeoffs; do not explain JSX structure or prop passthrough.
+8. After edits, run the webapp checks.
 
 ## Documentation expectations
 
