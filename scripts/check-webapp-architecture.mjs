@@ -9,6 +9,12 @@ const routeEntrypoints = [`${webappSrc}/router.tsx`, `${webappSrc}/routes`]
 const syncHooksDir = `${webappSrc}/hooks/sync`
 const sourceExtensions = new Set([".ts", ".tsx"])
 const intrinsicTagPattern = /<[a-z][A-Za-z0-9-]*(?=[\s>/])/g
+const moduleComponentsPattern = new RegExp(
+  `^${webappSrc}/modules/[^/]+/components/`,
+)
+const moduleFilePattern = new RegExp(`^${webappSrc}/modules/([^/]+)/`)
+const importPattern =
+  /(?:import|export)\s+(?:type\s+)?(?:[^"']*?from\s+)?["']([^"']+)["']/g
 const directEffectPatterns = [
   {
     name: "direct React effect import",
@@ -81,6 +87,19 @@ function relativePath(path) {
   return relative(repoRoot, path).split(sep).join("/")
 }
 
+function addViolation({ file, line, rule, message, source }) {
+  violations.push({ file, line, rule, message, source })
+}
+
+function importedWebappModule(specifier) {
+  if (!specifier.startsWith("@/modules/")) return null
+  return specifier.slice("@/modules/".length).split("/")[0] ?? null
+}
+
+function sourcePathForFile(file) {
+  return relativePath(file)
+}
+
 const violations = []
 
 const screenAndRouteFiles = [
@@ -95,7 +114,7 @@ for (const file of screenAndRouteFiles) {
     const line = lineNumberForIndex(text, match.index ?? 0)
     if (hasAllowCommentNearby(lines, line, "intrinsic-jsx")) continue
 
-    violations.push({
+    addViolation({
       file,
       line,
       rule: "intrinsic-jsx",
@@ -113,11 +132,98 @@ for (const file of walk(webappSrc)) {
   for (const { name, pattern } of directEffectPatterns) {
     for (const match of text.matchAll(pattern)) {
       const line = lineNumberForIndex(text, match.index ?? 0)
-      violations.push({
+      addViolation({
         file,
         line,
         rule: "direct-effect-usage",
         message: `${name} is restricted outside src/hooks/sync. Use a project synchronization hook instead.`,
+        source: lineAt(text, line).trim(),
+      })
+    }
+  }
+}
+
+for (const file of walk(webappSrc)) {
+  const text = readFileSync(file, "utf8")
+  const repoPath = sourcePathForFile(file)
+  const lines = text.split(/\r?\n/)
+
+  for (const match of text.matchAll(importPattern)) {
+    const specifier = match[1]
+    const line = lineNumberForIndex(text, match.index ?? 0)
+    if (hasAllowCommentNearby(lines, line, "webapp-import-layer")) continue
+
+    if (
+      repoPath.startsWith(`${webappSrc}/components/ui/`) &&
+      specifier.startsWith("@/") &&
+      specifier !== "@/lib/utils"
+    ) {
+      addViolation({
+        file,
+        line,
+        rule: "webapp-import-layer",
+        message:
+          "UI primitives may only import local primitives, vendor packages, React, and @/lib/utils.",
+        source: lineAt(text, line).trim(),
+      })
+    }
+
+    if (
+      repoPath.startsWith(`${webappSrc}/components/patterns/`) &&
+      (specifier.startsWith("@/api/") || specifier.startsWith("@/modules/"))
+    ) {
+      addViolation({
+        file,
+        line,
+        rule: "webapp-import-layer",
+        message:
+          "Pattern components must stay feature-agnostic; compose UI/lib/shared code, not modules or API clients.",
+        source: lineAt(text, line).trim(),
+      })
+    }
+
+    if (
+      repoPath.startsWith(`${webappSrc}/components/screens/`) &&
+      specifier.startsWith("@/api/")
+    ) {
+      addViolation({
+        file,
+        line,
+        rule: "webapp-import-layer",
+        message:
+          "Screens must not import API clients directly; route through feature atoms/components.",
+        source: lineAt(text, line).trim(),
+      })
+    }
+
+    if (
+      moduleComponentsPattern.test(repoPath) &&
+      specifier.startsWith("@/api/")
+    ) {
+      addViolation({
+        file,
+        line,
+        rule: "webapp-import-layer",
+        message:
+          "Feature components must not import API clients directly; remote calls belong in atoms.ts.",
+        source: lineAt(text, line).trim(),
+      })
+    }
+
+    const sourceModule = moduleFilePattern.exec(repoPath)?.[1]
+    const targetModule = importedWebappModule(specifier)
+    if (
+      sourceModule !== undefined &&
+      targetModule !== null &&
+      targetModule !== sourceModule &&
+      specifier.split("/").length > 3
+    ) {
+      addViolation({
+        file,
+        line,
+        rule: "webapp-import-layer",
+        message:
+          "Webapp modules must not import another module's internals; import the other module index instead.",
         source: lineAt(text, line).trim(),
       })
     }

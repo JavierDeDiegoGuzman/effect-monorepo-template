@@ -23,17 +23,15 @@ apps/
 
 packages/
   shared/
-  api-client/   # planned canonical runtime-neutral client package
 ```
 
-`packages/api-client` is the canonical target for generated/typed API client code. During migration, the webapp may still contain a local client wrapper; new client behavior should move toward the package-level client.
+`packages/shared` owns the shared HTTP API contract. Apps create typed clients directly from that contract at their runtime boundary; this template intentionally does not include a separate `packages/api-client` package.
 
 ## Dependency Rules
 
 - `packages/shared` must not depend on `apps/server` or `apps/webapp`.
-- `packages/api-client` depends on `packages/shared`, not on server or webapp runtime code.
 - `apps/server` depends on `packages/shared`.
-- `apps/webapp` depends on `packages/shared` and may depend on `packages/api-client`.
+- `apps/webapp` depends on `packages/shared`.
 - cross-module imports go through the target module's `index.ts`.
 - module `internal/` folders are private to that module.
 
@@ -44,7 +42,7 @@ pnpm boundaries
 pnpm verify:architecture
 ```
 
-`pnpm verify:architecture` runs dependency-cruiser plus filesystem/module-layout checks.
+`pnpm verify:architecture` runs dependency-cruiser plus filesystem/module-layout checks. These checks enforce module indexes, prevent legacy architecture paths, reject direct API imports from screens/components, keep UI primitives feature-agnostic, prevent handlers from importing repositories, prevent repositories from importing HTTP transport code, and catch production imports from test helpers.
 
 ## Canonical Backend Request Flow
 
@@ -99,7 +97,7 @@ Server modules are flat by default:
 - `service.live.ts`: live service implementation.
 - `repository.ts`: repository interface plus repository input/record schemas.
 - `repository.memory.ts`: in-memory implementation for domain/unit tests and ephemeral demos.
-- `repository.sqlite.ts`: SQLite implementation using Effect SQL and `SqlSchema`.
+- `repository.sql.ts`: SQLite implementation using Effect SQL and `SqlSchema`.
 - `repository.postgres.ts`: Postgres implementation using Effect SQL and `SqlSchema`.
 - `*.test.ts`: module-specific tests.
 - `index.ts`: public module API.
@@ -194,7 +192,7 @@ Canonical frontend flow:
 Screen/components -> feature atoms -> ApiClient
 ```
 
-Screens/components should not call the API client directly. Feature atoms own remote state, mutations, invalidation, and frontend use-case/state transitions. The base API client package must not own browser session lifecycle; the webapp adapter/atoms own cookie credentials behavior, logout invalidation, and UI reaction to auth failures.
+Screens/components should not call the API client directly. Feature atoms own remote state, mutations, invalidation, and frontend use-case/state transitions. The webapp API adapter/atoms own cookie credentials behavior, logout invalidation, and UI reaction to auth failures.
 
 ## Product Module Checklist
 

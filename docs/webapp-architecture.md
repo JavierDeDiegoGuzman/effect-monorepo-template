@@ -65,4 +65,4 @@ pnpm boundaries
 pnpm verify:architecture
 ```
 
-`pnpm verify:architecture` checks import boundaries, screen/route intrinsic JSX ownership, direct effect usage, and module filesystem layout.
+`pnpm verify:architecture` checks import boundaries, screen/route intrinsic JSX ownership, direct effect usage, module filesystem layout, UI primitive isolation, pattern feature-agnostic imports, and API-client access through feature atoms instead of screens/components.

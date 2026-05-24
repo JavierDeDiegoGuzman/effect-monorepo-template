@@ -100,6 +100,13 @@ function addViolation(file, message) {
   violations.push({ file, message })
 }
 
+function isTestOrStoryFile(repoPath) {
+  return (
+    /\.(test|spec|stories)\.tsx?$/.test(repoPath) ||
+    repoPath.includes("/src/test/")
+  )
+}
+
 for (const path of forbiddenPaths) {
   if (exists(path))
     addViolation(path, "Forbidden legacy architecture path exists.")
@@ -208,8 +215,53 @@ for (const file of allSourceFiles) {
     )
   }
 
+  if (
+    repoPath.startsWith("apps/server/src/modules/") &&
+    /repository\.(sql|postgres)\.ts$/.test(repoPath) &&
+    !text.includes("sqlRepositoryHelpers")
+  ) {
+    addViolation(
+      repoPath,
+      "SQL/Postgres repository adapters must use shared sqlRepositoryHelpers for error/readback mapping.",
+    )
+  }
+
   for (const match of text.matchAll(importPattern)) {
     const specifier = match[1]
+
+    if (
+      !isTestOrStoryFile(repoPath) &&
+      (specifier.includes("/test/") ||
+        /^\.\.?\/?(?:\.\.\/)*test\//.test(specifier))
+    ) {
+      addViolation(
+        repoPath,
+        `Production source must not import test helpers or fixtures: ${specifier}`,
+      )
+    }
+
+    if (
+      repoPath.startsWith("apps/server/src/modules/") &&
+      /handlers\.ts$/.test(repoPath) &&
+      /repository(?:\.|$)/.test(specifier)
+    ) {
+      addViolation(
+        repoPath,
+        `HTTP handlers must depend on services, not repositories: ${specifier}`,
+      )
+    }
+
+    if (
+      repoPath.startsWith("apps/server/src/modules/") &&
+      /repository(?:\.|$)/.test(repoPath) &&
+      (specifier.includes("/http/") ||
+        specifier.startsWith("effect/unstable/http"))
+    ) {
+      addViolation(
+        repoPath,
+        `Repository files must not import HTTP transport concerns: ${specifier}`,
+      )
+    }
 
     if (/modules\/[A-Za-z0-9_-]+\/internal\//.test(specifier)) {
       addViolation(
