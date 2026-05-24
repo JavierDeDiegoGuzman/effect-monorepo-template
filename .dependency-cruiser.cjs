@@ -36,6 +36,16 @@ module.exports = {
       to: { path: "^apps/webapp/src/api" },
     },
     {
+      name: "server-handlers-do-not-import-repositories",
+      severity: "error",
+      from: {
+        path: "^apps/server/src/modules/[^/]+/handlers\\.ts$",
+      },
+      to: {
+        path: "^apps/server/src/modules/[^/]+/.+repository(\\.|$)",
+      },
+    },
+    {
       name: "server-services-do-not-import-http",
       severity: "error",
       from: {
@@ -47,7 +57,7 @@ module.exports = {
       name: "server-repositories-do-not-import-http",
       severity: "error",
       from: {
-        path: "^apps/server/src/modules/[^/]+/repository(\\.sql|\\.memory)?\\.ts$",
+        path: "^apps/server/src/modules/[^/]+/.+repository(\\.|$)",
       },
       to: { path: "^apps/server/src/http" },
     },
