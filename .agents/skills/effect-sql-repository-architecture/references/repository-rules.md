@@ -48,14 +48,14 @@ Repository methods should expose domain concepts, not SQL row shapes.
 Good:
 
 ```ts
-readonly getById: (id: number) => Effect.Effect<User | null>
+readonly getById: (id: UserId) => Effect.Effect<User | null>
 readonly create: (input: CreateUserRecord) => Effect.Effect<User>
 ```
 
 Bad:
 
 ```ts
-readonly getById: (id: number) => Effect.Effect<UserRow[]>
+readonly getById: (id: UserId) => Effect.Effect<UserRow[]>
 readonly runQuery: (sql: string) => Effect.Effect<unknown>
 ```
 

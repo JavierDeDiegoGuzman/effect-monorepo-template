@@ -129,6 +129,20 @@ Examples:
 
 Use the most specific skill for the task. Combine skills when a change crosses boundaries.
 
+Skill selection router:
+
+- New or meaningfully extended product capability: start with `product-module-expansion`, then add layer-specific skills for API, persistence, auth, atoms, UI, tests, or observability as needed.
+- Shared API/domain schema, endpoint, typed error, or route semantic change: use `api-contract-evolution`.
+- SQL persistence, repositories, migrations, or module persistence relationships: use `effect-sql-repository-architecture`.
+- Authentication, session, tenant/account/workspace/organization scope, permissions, memberships, or cross-scope isolation: use `saas-auth-scope-architecture`.
+- Backend configuration or environment variables: use `effect-service-config`.
+- Backend tests, test layers, temporary SQL, or transaction tests: use `effect-layered-testing`.
+- Tracing, spans, safe annotations, local observability, or debugging workflow: use `effect-observability-patterns`.
+- Webapp remote/shared state, query/action atoms, reactivity keys, or atom invalidation: use `react-atom-architecture`.
+- Reusable webapp components and component layer boundaries: use `webapp-component-architecture`; add `vercel-composition-patterns` when component API design is the focus.
+- Route-level screens, app shell, dashboards, collection/detail page structure, or navigation: use `webapp-screen-architecture`.
+- Frontend component tests, Storybook stories, or Storybook interactions: use `webapp-testing-architecture`.
+
 ### Product and API
 
 - `product-module-expansion`: add or extend a product/domain module end-to-end through the canonical phased process
@@ -285,5 +299,5 @@ Not run:
 
 You should use the references repos as good example on arquitecture and how to use effect
 
-You have the opencode, effect-smol and t3-chat repos in .agentes/references/
+You have the opencode, effect-smol, and t3-style reference repos in `.agents/references/` when that directory is present.
 ```

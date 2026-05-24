@@ -104,9 +104,9 @@ Own:
 For scoped resources, repository contracts should make scope explicit. The exact name should match the product language:
 
 ```ts
-readonly getByIdInTenant: (tenantId: number, id: number) => Effect.Effect<Resource | null>
-readonly listByAccount: (accountId: number) => Effect.Effect<ReadonlyArray<Resource>>
-readonly createForOrganization: (organizationId: number, input: CreateRecord) => Effect.Effect<Resource>
+readonly getByIdInTenant: (tenantId: TenantId, id: ResourceId) => Effect.Effect<Resource | null>
+readonly listByAccount: (accountId: AccountId) => Effect.Effect<ReadonlyArray<Resource>>
+readonly createForOrganization: (organizationId: OrganizationId, input: CreateRecord) => Effect.Effect<Resource>
 ```
 
 ## Scope resolution patterns

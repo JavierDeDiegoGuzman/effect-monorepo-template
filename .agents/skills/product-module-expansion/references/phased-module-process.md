@@ -124,8 +124,11 @@ Separate responsibilities:
 Example shape:
 
 ```ts
+export const ProjectId = Schema.UUID.pipe(Schema.brand("ProjectId"))
+export type ProjectId = typeof ProjectId.Type
+
 export class Project extends Schema.Class<Project>("Project")({
-  id: Schema.Number,
+  id: ProjectId,
   name: Schema.String,
 }) {}
 
@@ -137,7 +140,7 @@ export class CreateProjectInput extends Schema.Class<CreateProjectInput>(
 
 export class ProjectNotFound extends Schema.TaggedErrorClass<ProjectNotFound>()(
   "ProjectNotFound",
-  { id: Schema.Number },
+  { id: ProjectId },
   { httpApiStatus: 404 },
 ) {}
 ```
@@ -153,9 +156,9 @@ For scoped resources, make the scope explicit in method signatures and names. Th
 Examples:
 
 ```ts
-readonly listByAccount: (accountId: number) => Effect.Effect<ReadonlyArray<Project>>
-readonly getByIdInTenant: (tenantId: number, id: number) => Effect.Effect<Project | null>
-readonly createForOrganization: (organizationId: number, input: CreateProjectRecord) => Effect.Effect<Project>
+readonly listByAccount: (accountId: AccountId) => Effect.Effect<ReadonlyArray<Project>>
+readonly getByIdInTenant: (tenantId: TenantId, id: ProjectId) => Effect.Effect<Project | null>
+readonly createForOrganization: (organizationId: OrganizationId, input: CreateProjectRecord) => Effect.Effect<Project>
 ```
 
 When persistence links modules, decide whether the link is:

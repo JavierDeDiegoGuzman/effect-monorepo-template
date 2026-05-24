@@ -126,7 +126,7 @@ export const notesQuery = apiRuntime
   )
   .pipe(Atom.keepAlive, Atom.withReactivity(["notes"]))
 
-export const notesByProjectQuery = (projectId: number) =>
+export const notesByProjectQuery = (projectId: ProjectId) =>
   apiRuntime
     .atom(
       ApiClient.use((client) =>
