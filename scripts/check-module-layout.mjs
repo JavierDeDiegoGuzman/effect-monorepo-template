@@ -39,8 +39,6 @@ const moduleRoots = [
       "service.mock.ts",
       "repository.ts",
       "repository.sql.ts",
-      "repository.json.ts",
-      "repository.drizzle.postgres.ts",
       "repository.postgres.ts",
       "repository.memory.ts",
       "index.ts",
@@ -139,7 +137,21 @@ for (const { root, allowed, allowTest } of moduleRoots) {
       const isAllowedSubService =
         root === "apps/server/src/modules" &&
         /^[a-z0-9-]+\.service(\.live|\.mock)?\.ts$/.test(entry.name)
-      if (!allowed.has(entry.name) && !isAllowedTest && !isAllowedSubService) {
+      const isAllowedSubRepository =
+        root === "apps/server/src/modules" &&
+        /^[a-z0-9-]+\.repository(\.memory|\.sql|\.postgres)?\.ts$/.test(
+          entry.name,
+        )
+      const isAllowedCookieAdapter =
+        root === "apps/server/src/modules" &&
+        /^[a-z0-9-]+-cookie\.ts$/.test(entry.name)
+      if (
+        !allowed.has(entry.name) &&
+        !isAllowedTest &&
+        !isAllowedSubService &&
+        !isAllowedSubRepository &&
+        !isAllowedCookieAdapter
+      ) {
         addViolation(entryPath, `Entry is not allowed in ${root} modules.`)
       }
     }
@@ -157,6 +169,44 @@ const allSourceFiles = [
 for (const file of allSourceFiles) {
   const repoPath = toRepoPath(file)
   const text = readFileSync(file, "utf8")
+
+  if (/repository\.(json|drizzle\.postgres)\.ts$/.test(repoPath)) {
+    addViolation(
+      repoPath,
+      "Legacy JSON/Drizzle repository adapters are not allowed.",
+    )
+  }
+
+  if (
+    repoPath.startsWith("packages/shared/src/modules/") &&
+    text.includes("NumberFromString")
+  ) {
+    addViolation(
+      repoPath,
+      "Shared module route params must use branded ID schemas, not NumberFromString.",
+    )
+  }
+
+  if (
+    repoPath.startsWith("packages/shared/src/modules/") &&
+    /\b(id|userId):\s*Schema\.Number\b/.test(text)
+  ) {
+    addViolation(
+      repoPath,
+      "Public module IDs must use branded UUID schemas, not Schema.Number.",
+    )
+  }
+
+  if (
+    repoPath.startsWith("apps/server/src/modules/") &&
+    /repository\.(sql|postgres|memory)\.ts$/.test(repoPath) &&
+    /lastInsertRowid|Random\.nextUUID/.test(text)
+  ) {
+    addViolation(
+      repoPath,
+      "Repositories must receive IDs from services and must not generate or read generated IDs.",
+    )
+  }
 
   for (const match of text.matchAll(importPattern)) {
     const specifier = match[1]
