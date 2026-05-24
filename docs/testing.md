@@ -71,8 +71,7 @@ The canonical API client lives in `packages/api-client` and is built from `packa
 Client options should include:
 
 - `apiUrl`;
-- optional injected `fetch`;
-- optional `getAuthToken: Effect.Effect<string | null>`.
+- optional injected `fetch`.
 
 The base client only prepends the base URL and uses the injected fetch implementation. It must not validate tokens, clear storage, refresh sessions, or own browser lifecycle behavior; browser/web tests provide cookie credentials behavior at the runtime adapter.
 

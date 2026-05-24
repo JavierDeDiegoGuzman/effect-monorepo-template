@@ -1,6 +1,7 @@
 import {
   Api,
   CreateTodoInput,
+  LoginInput,
   RegisterInput,
   UpdateTodoInput,
 } from "@app/shared"
@@ -72,12 +73,47 @@ const register = (client: HttpApiClient.ForApi<typeof Api>, email: string) =>
     }),
   })
 
-const assertTodoNotFound = (error: unknown, expectedId: number) => {
-  assert.strictEqual((error as { readonly _tag?: string })._tag, "TodoNotFound")
-  assert.strictEqual((error as { readonly id?: number }).id, expectedId)
+const assertPublicError = (
+  error: unknown,
+  expected: { readonly tag: string; readonly message: string },
+) => {
+  assert.strictEqual((error as { readonly _tag?: string })._tag, expected.tag)
   assert.strictEqual(
     (error as { readonly message?: string }).message,
-    "Todo not found",
+    expected.message,
+  )
+}
+
+const assertTodoNotFound = (error: unknown, expectedId: number) => {
+  assertPublicError(error, {
+    tag: "TodoNotFound",
+    message: "Todo not found",
+  })
+  assert.strictEqual((error as { readonly id?: number }).id, expectedId)
+}
+
+const assertUnauthorized = (error: unknown) => {
+  assertPublicError(error, {
+    tag: "Unauthorized",
+    message: "Authentication required",
+  })
+}
+
+const assertInvalidCredentials = (error: unknown) => {
+  assertPublicError(error, {
+    tag: "InvalidCredentials",
+    message: "Invalid email or password",
+  })
+}
+
+const assertUserAlreadyExists = (error: unknown, expectedEmail: string) => {
+  assertPublicError(error, {
+    tag: "UserAlreadyExists",
+    message: "User already exists",
+  })
+  assert.strictEqual(
+    (error as { readonly email?: string }).email,
+    expectedEmail,
   )
 }
 
@@ -188,6 +224,118 @@ describe("HTTP integration", () => {
         assertTodoNotFound(getError, aliceTodo.id)
         assertTodoNotFound(updateError, aliceTodo.id)
         assert.strictEqual(unchanged.completed, false)
+      }),
+    ),
+  )
+
+  it.effect(
+    "returns Unauthorized for protected endpoints without a session",
+    () =>
+      withTestApi(
+        Effect.gen(function* () {
+          const cookieRef = yield* Ref.make<string | null>(null)
+          const client = yield* HttpApiClient.make(Api)
+
+          const meError = yield* withCookieJar(
+            cookieRef,
+            client.session.me().pipe(Effect.flip),
+          )
+          const listError = yield* withCookieJar(
+            cookieRef,
+            client.todos.list().pipe(Effect.flip),
+          )
+
+          assertUnauthorized(meError)
+          assertUnauthorized(listError)
+        }),
+      ),
+  )
+
+  it.effect("returns Unauthorized for an invalid session cookie", () =>
+    withTestApi(
+      Effect.gen(function* () {
+        const cookieRef = yield* Ref.make<string | null>("app_session=invalid")
+        const client = yield* HttpApiClient.make(Api)
+
+        const error = yield* withCookieJar(
+          cookieRef,
+          client.session.me().pipe(Effect.flip),
+        )
+
+        assertUnauthorized(error)
+      }),
+    ),
+  )
+
+  it.effect("returns InvalidCredentials for a failed login", () =>
+    withTestApi(
+      Effect.gen(function* () {
+        const cookieRef = yield* Ref.make<string | null>(null)
+        const client = yield* HttpApiClient.make(Api)
+
+        yield* withCookieJar(
+          cookieRef,
+          register(client, "failed-login@example.com"),
+        )
+
+        const error = yield* withCookieJar(
+          cookieRef,
+          client.auth
+            .login({
+              payload: new LoginInput({
+                email: "failed-login@example.com",
+                password: "wrong password",
+              }),
+            })
+            .pipe(Effect.flip),
+        )
+
+        assertInvalidCredentials(error)
+      }),
+    ),
+  )
+
+  it.effect("returns UserAlreadyExists for duplicate registration", () =>
+    withTestApi(
+      Effect.gen(function* () {
+        const cookieRef = yield* Ref.make<string | null>(null)
+        const client = yield* HttpApiClient.make(Api)
+
+        yield* withCookieJar(
+          cookieRef,
+          register(client, "duplicate@example.com"),
+        )
+
+        const error = yield* withCookieJar(
+          cookieRef,
+          register(client, " DUPLICATE@example.com ").pipe(Effect.flip),
+        )
+
+        assertUserAlreadyExists(error, "duplicate@example.com")
+      }),
+    ),
+  )
+
+  it.effect("clears the session cookie on logout", () =>
+    withTestApi(
+      Effect.gen(function* () {
+        const cookieRef = yield* Ref.make<string | null>(null)
+        const client = yield* HttpApiClient.make(Api)
+
+        yield* withCookieJar(cookieRef, register(client, "logout@example.com"))
+        const beforeLogout = yield* withCookieJar(
+          cookieRef,
+          client.session.me(),
+        )
+        const logout = yield* withCookieJar(cookieRef, client.auth.logout())
+        const afterLogoutError = yield* withCookieJar(
+          cookieRef,
+          client.session.me().pipe(Effect.flip),
+        )
+
+        assert.strictEqual(beforeLogout.user.email, "logout@example.com")
+        assert.strictEqual(logout.success, true)
+        assertUnauthorized(afterLogoutError)
       }),
     ),
   )

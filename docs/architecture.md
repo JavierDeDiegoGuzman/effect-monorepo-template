@@ -154,6 +154,7 @@ Errors are split into expected public errors and internal errors:
 - Public domain error messages are fixed with schema constructor defaults; call sites pass semantic fields such as `id` or `email`, not user-facing copy.
 - Invalid route params/body payloads should fail contract decoding as 400-level input errors, not fall through to not-found behavior. Structural validation errors use Effect HttpApi/schema validation and do not guarantee fixed user-facing messages.
 - Repository adapters surface server-only `RepositoryError` for operational failures instead of dying. Services propagate `RepositoryError` alongside expected domain errors.
+- Transaction adapters must preserve expected domain errors from the wrapped effect; SQL transaction begin/commit/rollback failures map to server-only `RepositoryError` rather than defects.
 - Handlers use the HTTP error mapping seam to convert `RepositoryError` and unexpected defects to the shared safe `InternalServerError` contract.
 - Services may map repository results to expected domain errors when the product semantics are known, for example `TodoNotFound` for a scoped todo update that affects no row.
 
