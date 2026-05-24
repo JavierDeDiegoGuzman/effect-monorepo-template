@@ -23,5 +23,12 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    proxy: {
+      "/auth": "http://localhost:3001",
+      "/todos": "http://localhost:3001",
+      "/health": "http://localhost:3001",
+      "/openapi.json": "http://localhost:3001",
+      "/docs": "http://localhost:3001",
+    },
   },
 })

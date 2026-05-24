@@ -1,5 +1,7 @@
+import type { CurrentSession } from "@app/shared"
 import { useAtomValue } from "@effect/atom-react"
 import { RouterProvider } from "@tanstack/react-router"
+import { useEffect } from "react"
 import * as AsyncResult from "effect/unstable/reactivity/AsyncResult"
 import { AppShell } from "@/components/patterns/app-shell/AppShell"
 import { Screen } from "@/components/patterns/Screen"
@@ -11,16 +13,26 @@ export function AppRouter() {
 
   return AsyncResult.matchWithError(sessionState, {
     onInitial: () => <SessionLoadingShell />,
-    onError: () => (
-      <RouterProvider router={router} context={{ session: null }} />
-    ),
-    onDefect: () => (
-      <RouterProvider router={router} context={{ session: null }} />
-    ),
+    onError: () => <SessionRouterProvider session={null} />,
+    onDefect: () => <SessionRouterProvider session={null} />,
     onSuccess: ({ value: session }) => (
-      <RouterProvider router={router} context={{ session }} />
+      <SessionRouterProvider session={session} />
     ),
   })
+}
+
+function SessionRouterProvider({
+  session,
+}: {
+  readonly session: CurrentSession | null
+}) {
+  const sessionKey = session?.user.id ?? "anonymous"
+
+  useEffect(() => {
+    void router.invalidate()
+  }, [sessionKey])
+
+  return <RouterProvider router={router} context={{ session }} />
 }
 
 function SessionLoadingShell() {
