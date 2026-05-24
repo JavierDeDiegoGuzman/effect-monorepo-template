@@ -2,7 +2,7 @@ import { PgClient } from "@effect/sql-pg"
 import { Config, Context, Effect, Layer } from "effect"
 import { Reactivity } from "effect/unstable/reactivity"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
-import { initializePostgresSchema } from "./schema.postgres"
+import { runMigrations } from "./migrations"
 
 const make = Effect.gen(function* () {
   const url = yield* Config.redacted("DATABASE_URL")
@@ -12,7 +12,7 @@ const make = Effect.gen(function* () {
     applicationName: "effect-template-server",
   })
 
-  yield* initializePostgresSchema().pipe(
+  yield* runMigrations().pipe(
     Effect.provideService(SqlClient.SqlClient, client),
   )
 

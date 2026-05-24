@@ -2,6 +2,7 @@ import type { Todo, User } from "@app/shared"
 import { Layer } from "effect"
 import type { ConfigError } from "effect/Config"
 import type { PlatformError } from "effect/PlatformError"
+import type { MigrationError } from "effect/unstable/sql/Migrator"
 import type { SqlError } from "effect/unstable/sql/SqlError"
 import { PostgresLayer } from "../database/Postgres"
 import { SqliteLayer } from "../database/Sqlite"
@@ -47,7 +48,11 @@ type RepositoryServices =
   | AuthCredentialsRepository
   | Transactions
 
-type RepositoryLayerError = ConfigError | PlatformError | SqlError
+type RepositoryLayerError =
+  | ConfigError
+  | PlatformError
+  | SqlError
+  | MigrationError
 
 export const makeSqliteRepositoryLayer = (sqliteLayer = SqliteLayer) =>
   Layer.mergeAll(

@@ -4,26 +4,41 @@ import { SqliteClient } from "@effect/sql-sqlite-node"
 import { Config, Context, Effect, FileSystem, Layer } from "effect"
 import { Reactivity } from "effect/unstable/reactivity"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
-import { initializeSqliteSchema } from "./schema"
+import { runMigrations } from "./migrations"
+import { seedDemoData } from "./seed"
 
-const make = Effect.gen(function* () {
-  const filename = yield* Config.nonEmptyString("SQLITE_FILENAME")
-  const fs = yield* FileSystem.FileSystem
+type SqliteLayerOptions = {
+  readonly seed?: boolean
+}
 
-  yield* fs.makeDirectory(dirname(filename), { recursive: true })
+const make = (options: SqliteLayerOptions = {}) =>
+  Effect.gen(function* () {
+    const filename = yield* Config.nonEmptyString("SQLITE_FILENAME")
+    const fs = yield* FileSystem.FileSystem
+    const seed = options.seed ?? true
 
-  const client = yield* SqliteClient.make({ filename })
+    yield* fs.makeDirectory(dirname(filename), { recursive: true })
 
-  yield* initializeSqliteSchema().pipe(
-    Effect.provideService(SqlClient.SqlClient, client),
+    const client = yield* SqliteClient.make({ filename })
+
+    yield* Effect.gen(function* () {
+      const sql = yield* SqlClient.SqlClient
+      yield* sql`PRAGMA foreign_keys = ON`
+      yield* runMigrations()
+      if (seed) {
+        yield* seedDemoData
+      }
+    }).pipe(Effect.provideService(SqlClient.SqlClient, client))
+
+    return Context.make(SqliteClient.SqliteClient, client).pipe(
+      Context.add(SqlClient.SqlClient, client),
+    )
+  })
+
+export const makeSqliteLayer = (options?: SqliteLayerOptions) =>
+  Layer.effectContext(make(options)).pipe(
+    Layer.provide(Reactivity.layer),
+    Layer.provide(NodeFileSystem.layer),
   )
 
-  return Context.make(SqliteClient.SqliteClient, client).pipe(
-    Context.add(SqlClient.SqlClient, client),
-  )
-})
-
-export const SqliteLayer = Layer.effectContext(make).pipe(
-  Layer.provide(Reactivity.layer),
-  Layer.provide(NodeFileSystem.layer),
-)
+export const SqliteLayer = makeSqliteLayer()
