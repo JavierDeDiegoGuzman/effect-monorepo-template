@@ -5,16 +5,18 @@ import {
   createRootRouteWithContext,
   createRoute,
   createRouter,
+  Link,
   Navigate,
   Outlet,
   useRouterState,
 } from "@tanstack/react-router"
 import { AppShell } from "@/components/patterns/app-shell/AppShell"
+import { Screen } from "@/components/patterns/Screen"
+import { Button } from "@/components/ui/button"
 import { DashboardScreen } from "@/components/screens/DashboardScreen"
 import { LoginScreen } from "@/components/screens/LoginScreen"
 import { RegisterScreen } from "@/components/screens/RegisterScreen"
 import { TodosScreen } from "@/components/screens/TodosScreen"
-import { routeFromPath } from "@/lib/router"
 import { logoutAction, SessionSummary } from "@/modules/auth"
 
 type RouterContext = {
@@ -25,6 +27,7 @@ const isPublicPath = (path: string) => path === "/login" || path === "/register"
 
 const rootRoute = createRootRouteWithContext<RouterContext>()({
   component: RootRoute,
+  notFoundComponent: NotFoundScreen,
 })
 
 const indexRoute = createRoute({
@@ -69,7 +72,6 @@ function RootRoute() {
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   })
-  const route = routeFromPath(pathname)
   const [, logout] = useAtom(logoutAction, { mode: "promise" })
 
   if (session === null && !isPublicPath(pathname)) {
@@ -82,7 +84,6 @@ function RootRoute() {
 
   return (
     <AppShell
-      route={route}
       session={session}
       sessionSummary={
         session === null ? undefined : <SessionSummary session={session} />
@@ -93,6 +94,26 @@ function RootRoute() {
     >
       <Outlet />
     </AppShell>
+  )
+}
+
+function NotFoundScreen() {
+  return (
+    <Screen.Root>
+      <Screen.Header>
+        <Screen.Title>Page not found</Screen.Title>
+        <Screen.Description>
+          The route you opened does not exist in this app.
+        </Screen.Description>
+      </Screen.Header>
+      <Screen.Body>
+        <Screen.Actions>
+          <Button asChild>
+            <Link to="/">Back to dashboard</Link>
+          </Button>
+        </Screen.Actions>
+      </Screen.Body>
+    </Screen.Root>
   )
 }
 

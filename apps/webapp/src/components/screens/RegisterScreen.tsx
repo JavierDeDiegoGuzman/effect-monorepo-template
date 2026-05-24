@@ -6,7 +6,6 @@ import * as React from "react"
 import { Screen } from "@/components/patterns/Screen"
 import { Button } from "@/components/ui/button"
 import { toErrorMessage } from "@/lib/errors"
-import { pathForRoute } from "@/lib/router"
 import { RegisterForm, registerAction } from "@/modules/auth"
 
 export function RegisterScreen() {
@@ -77,7 +76,7 @@ export function RegisterScreen() {
             </Screen.SectionDescription>
           </Screen.SectionHeader>
           <Button asChild variant="outline">
-            <Link to={pathForRoute({ name: "login" })}>Back to sign in</Link>
+            <Link to="/login">Back to sign in</Link>
           </Button>
         </Screen.Section>
       </Screen.Body>

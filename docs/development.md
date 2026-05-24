@@ -133,7 +133,7 @@ See [`database.md`](./database.md) for the migration workflow and command detail
 
 ## Webapp Routing Notes
 
-The webapp uses TanStack Router in SPA mode with hash history. Route wiring lives in `apps/webapp/src/router.tsx`; routes should define paths/params and render screens. Keep remote data in atoms and keep route URL/search state in router APIs.
+The webapp uses TanStack Router in SPA mode with hash history. Route wiring lives in `apps/webapp/src/router.tsx`; routes define paths/params, auth redirects, not-found behavior, app-shell outlet wiring, and screen rendering. Keep remote data in atoms and keep links, active route state, and URL/search state in TanStack Router APIs instead of custom route helper models.
 
 ## Environment Variables
 

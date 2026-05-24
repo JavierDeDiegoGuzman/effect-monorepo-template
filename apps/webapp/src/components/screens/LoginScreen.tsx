@@ -6,7 +6,6 @@ import * as React from "react"
 import { Screen } from "@/components/patterns/Screen"
 import { Button } from "@/components/ui/button"
 import { toErrorMessage } from "@/lib/errors"
-import { pathForRoute } from "@/lib/router"
 import { LoginForm, loginAction } from "@/modules/auth"
 
 export function LoginScreen() {
@@ -62,7 +61,7 @@ export function LoginScreen() {
             </Screen.SectionDescription>
           </Screen.SectionHeader>
           <Button asChild variant="outline">
-            <Link to={pathForRoute({ name: "register" })}>Create account</Link>
+            <Link to="/register">Create account</Link>
           </Button>
         </Screen.Section>
       </Screen.Body>

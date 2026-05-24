@@ -10,7 +10,7 @@ The webapp uses predictable layers so humans and agents know where responsibilit
 - `src/modules/<module>/components/*`: props-first module UI such as forms, lists, summaries, and feature-specific cards.
 - `src/modules/<module>/atoms.ts`: remote/shared module state and mutations backed by the typed API client and Effect observability spans. Auth atoms invalidate session state; the API client adapter sends browser cookies with requests rather than storing bearer tokens.
 - `src/components/screens/*`: connected screen containers. Screens read atoms, branch on `AsyncResult`, wire actions, and compose patterns/screen-parts/module components.
-- `src/router.tsx`: TanStack Router SPA route tree, auth redirects, route params, and shell outlet wiring.
+- `src/router.tsx`: TanStack Router SPA route tree, hash-history setup, auth redirects, not-found handling, route params, and shell outlet wiring.
 
 Webapp modules may contain only `atoms.ts`, `components/`, `index.ts`, and optional private `internal/` helpers. Screens and routes stay outside modules because they compose multiple modules.
 
@@ -42,7 +42,7 @@ An escape hatch exists for exceptional cases:
 
 ## Routing
 
-The app uses TanStack Router with hash history for SPA routing. Route responsibilities are limited to path definitions, params/search conversion, auth redirects, app-shell outlet wiring, and rendering screens.
+The app uses TanStack Router with hash history for SPA routing. `src/router.tsx` is the source of truth for paths, route matching, auth redirects, not-found handling, app-shell outlet wiring, and rendering screens. Do not add parallel route helper models such as custom `AppRoute` unions, `pathForRoute`, or `routeFromPath`; links and URL/search state should use TanStack Router APIs directly.
 
 Normal flow:
 

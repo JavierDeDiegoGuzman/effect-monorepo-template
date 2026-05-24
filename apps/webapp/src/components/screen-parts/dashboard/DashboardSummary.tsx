@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { pathForRoute } from "@/lib/router"
 
 export function DashboardSummary(props: {
   readonly session: CurrentSession
@@ -50,7 +49,7 @@ export function DashboardSummary(props: {
           <CardContent className="space-y-4 text-sm text-muted-foreground">
             <div className="flex flex-wrap gap-2">
               <Button asChild variant="outline">
-                <Link to={pathForRoute({ name: "todos" })}>Open todos</Link>
+                <Link to="/todos">Open todos</Link>
               </Button>
             </div>
           </CardContent>
