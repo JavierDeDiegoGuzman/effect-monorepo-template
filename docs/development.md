@@ -61,6 +61,12 @@ Run server tests:
 pnpm --filter @app/server test
 ```
 
+Run no-network server smoke flows through the typed HTTP client:
+
+```bash
+pnpm smoke:server
+```
+
 Run webapp component tests:
 
 ```bash
@@ -73,6 +79,8 @@ Run architecture boundary checks:
 pnpm boundaries
 pnpm verify:architecture
 ```
+
+CI runs shared/server/webapp checks, tests, builds, `pnpm verify:architecture`, `pnpm smoke:server`, and `pnpm lint` on pull requests and pushes to `main`.
 
 Start Storybook for visual component development:
 
@@ -96,7 +104,7 @@ Canonical persistence adapters are:
 
 JSON persistence and Drizzle are removed from the product/runtime template. Do not add JSON or Drizzle adapters for new modules.
 
-SQLite is the default local SQL path. Postgres remains the production adapter and can be run locally through Docker for prod-like checks.
+SQLite is the default local SQL path. Postgres remains the production adapter and can be run locally through Docker for prod-like checks. Programmatic smoke tests create isolated temporary SQLite databases through the server test layers.
 
 Persistence lifecycle should be explicit:
 

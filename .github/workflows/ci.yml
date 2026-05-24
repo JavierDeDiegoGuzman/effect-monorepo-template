@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check shared package
+        run: pnpm --filter @app/shared check
+
+      - name: Check server
+        run: pnpm --filter @app/server check
+
+      - name: Test server
+        run: pnpm --filter @app/server test
+
+      - name: Build server
+        run: pnpm --filter @app/server build
+
+      - name: Check webapp
+        run: pnpm --filter @app/webapp check
+
+      - name: Test webapp
+        run: pnpm --filter @app/webapp test
+
+      - name: Build webapp
+        run: pnpm --filter @app/webapp build
+
+      - name: Verify architecture
+        run: pnpm verify:architecture
+
+      - name: Run server smoke flows
+        run: pnpm smoke:server
+
+      - name: Lint
+        run: pnpm lint
