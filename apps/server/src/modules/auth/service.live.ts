@@ -23,6 +23,11 @@ export const AuthLive = Layer.effect(
       readonly email: string
       readonly password: string
     }) {
+      yield* Effect.annotateCurrentSpan({
+        "auth.email.length": input.email.trim().length,
+        "auth.name.length": input.name.trim().length,
+      })
+
       const passwordHash = yield* passwords.hash(input.password)
 
       const user = yield* transactions.withTransaction(
@@ -47,6 +52,10 @@ export const AuthLive = Layer.effect(
       readonly email: string
       readonly password: string
     }) {
+      yield* Effect.annotateCurrentSpan({
+        "auth.email.length": input.email.trim().length,
+      })
+
       const user = yield* users.findByEmail(input.email)
       if (user === null) {
         return yield* invalidCredentials()
@@ -72,6 +81,7 @@ export const AuthLive = Layer.effect(
     const verifySession = Effect.fn("Auth.verifySession")(function* (
       token: string,
     ) {
+      yield* Effect.annotateCurrentSpan({ "auth.has_token": token.length > 0 })
       const verified = yield* authTokens
         .verify(token)
         .pipe(

@@ -148,6 +148,8 @@ function Loading(props: React.ComponentProps<typeof Empty>) {
 function ErrorState({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
+      role="alert"
+      aria-live="polite"
       className={cn(
         "rounded-lg border border-destructive/50 bg-destructive/10 p-6 text-sm text-destructive",
         className,

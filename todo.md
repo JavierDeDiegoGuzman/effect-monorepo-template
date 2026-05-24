@@ -8,9 +8,9 @@
 - [x] Deepen auth: move register/login/session verification rules behind `AuthService` so HTTP handlers stay thin adapters and password/JWT details stop leaking through user repository/module boundaries.
 - [x] Concentrate Effect layer assembly: remove duplicated module relationship knowledge from `ServerLayers.ts` and `DomainTestLayer.ts` by deepening the composition module used by production and tests.
 - [x] Simplify todo creation UI: keep `TodoCreateForm` focused on global todo creation without parent-scoped selector props or noop callbacks.
-- [ ] Extract shared SQL repository mechanics where they pass the deletion test: insert-result decoding, insert-then-read flow, row mapping conventions, and SQL failure policy currently repeat across SQL-compatible repository adapters.
-- [ ] Revisit the transactions seam: either use `Transactions.withTransaction` for real multi-step atomic behavior or remove/defer the seam until it earns its interface.
-- [ ] Align Storybook docs/story titles and add missing coverage for `RegisterForm` and `TodoCreateForm` behavior.
+- [x] Extract shared SQL repository mechanics where they pass the deletion test: insert-result decoding, insert-then-read flow, row mapping conventions, and SQL failure policy currently repeat across SQL-compatible repository adapters.
+- [x] Revisit the transactions seam: either use `Transactions.withTransaction` for real multi-step atomic behavior or remove/defer the seam until it earns its interface.
+- [x] Align Storybook docs/story titles and add missing coverage for `RegisterForm` and `TodoCreateForm` behavior.
 - [x] Remove no-op handler `catchTag(... Effect.fail(error))` blocks once the canonical error policy is implemented.
 - [x] Validate route params explicitly so invalid UUID params decode as request errors instead of falling into generic not-found behavior.
 - [x] Add baseline architecture checks for canonical server module entries and removed legacy JSON/Drizzle adapters.

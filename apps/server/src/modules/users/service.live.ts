@@ -21,12 +21,21 @@ export const UsersLive = Layer.effect(
     const findByEmail = Effect.fn("Users.findByEmail")(function* (
       email: string,
     ) {
+      yield* Effect.annotateCurrentSpan({
+        "user.email.length": email.trim().length,
+      })
+
       return yield* usersRepository.findByEmail(normalizeEmail(email))
     })
 
     const create = Effect.fn("Users.create")(function* (
       input: CreateUserServiceInput,
     ) {
+      yield* Effect.annotateCurrentSpan({
+        "user.email.length": input.email.trim().length,
+        "user.name.length": input.name.trim().length,
+      })
+
       const email = normalizeEmail(input.email)
       const existing = yield* usersRepository.findByEmail(email)
 

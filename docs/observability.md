@@ -74,7 +74,16 @@ Current atom queries/actions create client spans for:
 
 ### Server
 
-The server installs the Effect OTLP layer when tracing is enabled, so server-side spans emitted by the Effect HTTP/runtime stack are exported with the `todo-server` service resource. The current server services do not add custom domain-span names.
+The server installs the Effect OTLP layer when tracing is enabled, so server-side spans emitted by the Effect HTTP/runtime stack are exported with the `todo-server` service resource.
+
+Domain and repository operations add predictable Effect span names through `Effect.fn`, including:
+
+- `Auth.register`, `Auth.login`, `Auth.verifySession`
+- `Users.getById`, `Users.findByEmail`, `Users.create`
+- `Todos.listByUser`, `Todos.getByIdForUser`, `Todos.createForUser`, `Todos.updateForUser`
+- SQL repository operations such as `SqlUsersRepository.create` and `SqlTodosRepository.updateCompletedForUser`
+
+Safe annotations include stable internal/public IDs, boolean flags, and input lengths such as `todo.title.length`. Raw emails, passwords, tokens, and todo titles are not emitted as span attributes.
 
 ## What You Should See In Jaeger
 
@@ -87,7 +96,9 @@ If you only see `jaeger-all-in-one`, your application spans are not reaching Jae
 
 ## Expected trace shape
 
-When creating a todo, expect a `todos.create` client span. Depending on the enabled Effect HTTP instrumentation, it may be correlated with HTTP/server spans. Creating or updating a todo will usually also trigger a new list trace afterwards because the UI refreshes data through atom reactivity.
+When creating a todo, expect a `todos.create` client span, HTTP/server spans, `Todos.createForUser`, and a SQL repository span. Creating or updating a todo will usually also trigger a new list trace afterwards because the UI refreshes data through atom reactivity.
+
+When repository failures reach the HTTP seam, `withHttpErrorMapping` logs a safe message containing only the repository name and operation before returning the public `InternalServerError` contract.
 
 ## Troubleshooting
 

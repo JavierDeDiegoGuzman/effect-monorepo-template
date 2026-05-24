@@ -14,6 +14,8 @@ export const TodosLive = Layer.effect(
     const todosRepository = yield* TodosRepository
 
     const listByUser = Effect.fn("Todos.listByUser")(function* (userId) {
+      yield* Effect.annotateCurrentSpan({ "user.id": userId })
+
       return yield* todosRepository.listByUser(userId)
     })
 
@@ -37,6 +39,11 @@ export const TodosLive = Layer.effect(
       userId,
       input: CreateTodoInput,
     ) {
+      yield* Effect.annotateCurrentSpan({
+        "user.id": userId,
+        "todo.title.length": input.title.trim().length,
+      })
+
       const id = makeTodoId(yield* Random.nextUUIDv4)
 
       return yield* todosRepository.createForUser({
@@ -51,6 +58,12 @@ export const TodosLive = Layer.effect(
       id,
       input: UpdateTodoInput,
     ) {
+      yield* Effect.annotateCurrentSpan({
+        "user.id": userId,
+        "todo.id": id,
+        "todo.completed": input.completed,
+      })
+
       yield* getByIdForUser(userId, id)
 
       yield* todosRepository.updateCompletedForUser({
