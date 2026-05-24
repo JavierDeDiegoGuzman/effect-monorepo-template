@@ -1,3 +1,4 @@
+import type { Todo, User } from "@app/shared"
 import { Layer } from "effect"
 import type { ConfigError } from "effect/Config"
 import type { PlatformError } from "effect/PlatformError"
@@ -12,47 +13,33 @@ import {
   AuthLive,
   AuthSessionCookiesLive,
   AuthTokensLive,
-  InMemoryAuthCredentialsRepositoryLayer,
+  makeInMemoryAuthCredentialsRepositoryLayer,
   PasswordsLive,
   PostgresAuthCredentialsRepositoryLayer,
   SqlAuthCredentialsRepositoryLayer,
 } from "../modules/auth"
 import {
-  InMemoryTodosRepositoryLayer,
+  makeInMemoryTodosRepositoryLayer,
   PostgresTodosRepositoryLayer,
   SqlTodosRepositoryLayer,
   TodosLive,
   type TodosRepository,
 } from "../modules/todos"
 import {
-  InMemoryUsersRepositoryLayer,
+  makeInMemoryUsersRepositoryLayer,
   PostgresUsersRepositoryLayer,
   SqlUsersRepositoryLayer,
   UsersLive,
   type UsersRepository,
 } from "../modules/users"
 
-export const makeSqliteRepositoryLayer = (sqliteLayer = SqliteLayer) =>
-  Layer.mergeAll(
-    SqlUsersRepositoryLayer,
-    SqlTodosRepositoryLayer,
-    SqlAuthCredentialsRepositoryLayer,
-    SqlTransactionsLayer,
-  ).pipe(Layer.provide(sqliteLayer))
-
-export const MemoryRepositoriesLayer = Layer.mergeAll(
-  InMemoryUsersRepositoryLayer,
-  InMemoryTodosRepositoryLayer,
-  InMemoryAuthCredentialsRepositoryLayer,
-  InMemoryTransactionsLayer,
-)
-
-export const PostgresRepositoriesLayer = Layer.mergeAll(
-  PostgresUsersRepositoryLayer,
-  PostgresTodosRepositoryLayer,
-  PostgresAuthCredentialsRepositoryLayer,
-  SqlTransactionsLayer,
-).pipe(Layer.provide(PostgresLayer))
+export type InMemoryRepositorySeed = {
+  readonly users?: ReadonlyArray<{
+    readonly user: User
+    readonly passwordHash: string
+  }>
+  readonly todos?: ReadonlyArray<Todo>
+}
 
 type RepositoryServices =
   | UsersRepository
@@ -62,25 +49,74 @@ type RepositoryServices =
 
 type RepositoryLayerError = ConfigError | PlatformError | SqlError
 
+export const makeSqliteRepositoryLayer = (sqliteLayer = SqliteLayer) =>
+  Layer.mergeAll(
+    SqlUsersRepositoryLayer,
+    SqlTodosRepositoryLayer,
+    SqlAuthCredentialsRepositoryLayer,
+    SqlTransactionsLayer,
+  ).pipe(Layer.provide(sqliteLayer))
+
+export const makeInMemoryRepositoriesLayer = (
+  seed: InMemoryRepositorySeed = {},
+) =>
+  Layer.mergeAll(
+    makeInMemoryUsersRepositoryLayer(seed.users?.map((record) => record.user)),
+    makeInMemoryTodosRepositoryLayer(seed.todos),
+    makeInMemoryAuthCredentialsRepositoryLayer(
+      seed.users?.map((record) => ({
+        userId: record.user.id,
+        passwordHash: record.passwordHash,
+      })),
+    ),
+    InMemoryTransactionsLayer,
+  )
+
+export const MemoryRepositoriesLayer = makeInMemoryRepositoriesLayer()
+
+export const PostgresRepositoriesLayer = Layer.mergeAll(
+  PostgresUsersRepositoryLayer,
+  PostgresTodosRepositoryLayer,
+  PostgresAuthCredentialsRepositoryLayer,
+  SqlTransactionsLayer,
+).pipe(Layer.provide(PostgresLayer))
+
+export const makeProductDomainLayer = (
+  repositoryLayer: Layer.Layer<
+    RepositoryServices,
+    RepositoryLayerError
+  > = PostgresRepositoriesLayer,
+) => Layer.mergeAll(UsersLive, TodosLive).pipe(Layer.provide(repositoryLayer))
+
+export const makeAuthDomainLayer = (
+  repositoryLayer: Layer.Layer<
+    RepositoryServices,
+    RepositoryLayerError
+  > = PostgresRepositoriesLayer,
+  productDomainLayer = makeProductDomainLayer(repositoryLayer),
+) =>
+  AuthLive.pipe(
+    Layer.provide(
+      Layer.mergeAll(
+        repositoryLayer,
+        productDomainLayer,
+        PasswordsLive,
+        AuthTokensLive,
+      ),
+    ),
+  )
+
 export const makeDomainLayer = (
   repositoryLayer: Layer.Layer<
     RepositoryServices,
     RepositoryLayerError
   > = PostgresRepositoriesLayer,
 ) => {
-  const usersAndTodosLayer = Layer.mergeAll(UsersLive, TodosLive).pipe(
-    Layer.provide(repositoryLayer),
-  )
-  const authDependenciesLayer = Layer.mergeAll(
-    repositoryLayer,
-    usersAndTodosLayer,
-    PasswordsLive,
-    AuthTokensLive,
-  )
+  const productDomainLayer = makeProductDomainLayer(repositoryLayer)
 
   return Layer.mergeAll(
-    usersAndTodosLayer,
-    AuthLive.pipe(Layer.provide(authDependenciesLayer)),
+    productDomainLayer,
+    makeAuthDomainLayer(repositoryLayer, productDomainLayer),
   )
 }
 

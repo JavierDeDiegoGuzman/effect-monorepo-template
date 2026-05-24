@@ -11,6 +11,16 @@ Canonical test layers:
 - e2e API tests: typed client against a fetchable app with a temporary SQLite database;
 - frontend component tests: props-first component tests and Storybook visual states.
 
+Server test layers under `apps/server/src/test/layers/*` are thin test-facing adapters around the canonical composition helpers in `apps/server/src/layers/ServerLayers.ts`. Reuse those helpers instead of duplicating module/service lists in tests.
+
+## Test Layer Composition
+
+- Use `makeInMemoryRepositoriesLayer(seed)` for fast domain tests with seeded users, credentials, or todos.
+- Use `makeSqliteRepositoryLayer(makeTestSqliteLayer(...))` through `makeSqlRepositoriesTestLayer(...)` for SQL-backed repository and e2e tests.
+- Use `makeProductDomainLayer(...)` for product domain tests that only need product services such as Users and Todos.
+- Use full HTTP dependencies through `makeHttpServerDependenciesLayer(...)` for fetchable-app e2e tests that exercise auth/session middleware and handlers.
+- Do not assemble `UsersLive`, `TodosLive`, auth credentials, transactions, and repository adapters ad hoc in individual tests.
+
 ## Domain and Service Tests
 
 Use module services with in-memory repository implementations from `apps/server/src/modules/<module>/repository.memory.ts` for domain/use-case behavior.

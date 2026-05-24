@@ -109,8 +109,20 @@ Server runtime/platform code remains in:
 - `src/database` or `src/persistence`: persistence infrastructure, SQL clients, migrations/schema lifecycle, and transaction layers.
 - `src/http`: HTTP server assembly and middleware.
 - `src/observability`: tracing setup.
-- `src/layers`: production layer composition.
+- `src/layers`: application layer composition.
 - `src/test`: reusable test layers and integration/e2e test harnesses.
+
+## Layer Composition Policy
+
+Application composition lives in `apps/server/src/layers/ServerLayers.ts`. This file is the canonical seam for combining repository adapters, domain services, auth/session infrastructure, and HTTP dependencies.
+
+Rules:
+
+- Runtime entrypoints use `DevServerDependenciesLayer` or `ProdServerDependenciesLayer` rather than assembling modules inline.
+- Tests reuse the same composition helpers with test adapters, for example `makeSqliteRepositoryLayer(makeTestSqliteLayer(...))` and `makeProductDomainLayer(...)`.
+- Repository variants are composed once per adapter family: memory, SQLite, and Postgres.
+- Product domain composition (`UsersLive`, `TodosLive`) is separate from full application domain composition so fast domain tests can avoid auth token configuration unless they are testing auth behavior.
+- Adding a product module should update this composition seam and the thin test-layer reexports, not duplicate module relationship knowledge in each test.
 
 ## Repository Policy
 
