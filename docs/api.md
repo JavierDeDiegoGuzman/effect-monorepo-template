@@ -44,16 +44,12 @@ Root `@app/shared` exports the API root and module indexes.
 
 ### Clients
 
-Canonical client target:
+Runtime adapters create typed clients directly from the `packages/shared` API contract:
 
-- `packages/api-client`: runtime-neutral typed API client built from `packages/shared`.
+- `apps/webapp/src/api/*`: browser/webapp adapter, including cookie credentials behavior.
+- `apps/server/src/test/*`: integration and smoke harnesses using injected fetch implementations.
 
-Runtime adapters:
-
-- `apps/webapp/src/api/*`: browser/webapp adapter around the base client, including cookie credentials behavior.
-- `apps/server/src/test/*`: e2e test harness using injected fetch from the fetchable app.
-
-During migration, the webapp may still contain local typed client construction. New work should move toward `packages/api-client`.
+This template intentionally does not include a separate API client package. Keep client construction thin and runtime-local unless the project explicitly chooses to add one later.
 
 ## Current Endpoints
 

@@ -8,7 +8,7 @@ Canonical test layers:
 
 - domain/use-case tests: service layer with memory repositories;
 - repository adapter tests: adapter-specific behavior and schema/constraint mapping;
-- e2e API tests: typed client against a fetchable app with a temporary SQLite database;
+- e2e API tests: typed client against an in-process HTTP app with a temporary SQLite database;
 - frontend component tests: props-first component tests and Storybook visual states.
 
 Server test layers under `apps/server/src/test/layers/*` are thin test-facing adapters around the canonical composition helpers in `apps/server/src/layers/ServerLayers.ts`. Reuse those helpers instead of duplicating module/service lists in tests.
@@ -18,7 +18,7 @@ Server test layers under `apps/server/src/test/layers/*` are thin test-facing ad
 - Use `makeInMemoryRepositoriesLayer(seed)` for fast domain tests with seeded users, credentials, or todos.
 - Use `makeSqliteRepositoryLayer(makeTestSqliteLayer(...))` through `makeSqlRepositoriesTestLayer(...)` for SQL-backed repository and e2e tests.
 - Use `makeProductDomainLayer(...)` for product domain tests that only need product services such as Users and Todos.
-- Use full HTTP dependencies through `makeHttpServerDependenciesLayer(...)` for fetchable-app e2e tests that exercise auth/session middleware and handlers.
+- Use full HTTP dependencies through `makeHttpServerDependenciesLayer(...)` for in-process e2e/smoke tests that exercise auth/session middleware and handlers.
 - Do not assemble `UsersLive`, `TodosLive`, auth credentials, transactions, and repository adapters ad hoc in individual tests.
 
 ## Domain and Service Tests
@@ -43,7 +43,7 @@ Repository adapters are flat query adapters and should be tested for persistence
 Canonical adapters:
 
 - `repository.memory.ts` for memory semantics used by service tests;
-- `repository.sqlite.ts` for SQLite SQL behavior;
+- `repository.sql.ts` for SQLite SQL behavior;
 - `repository.postgres.ts` for Postgres SQL behavior.
 
 SQL repository tests should verify that operations go through `SqlSchema` and decode rows into repository record schemas defined in `repository.ts`. They should also cover persistence mapping, read-back behavior, and internal error mapping through shared SQL repository helpers where applicable. SQL failures and decode failures should surface as internal persistence errors, not public API errors. Transaction rollback behavior is verified against SQL adapters; the memory transaction adapter is a no-op intended for fast domain tests, not rollback simulation.
@@ -54,13 +54,14 @@ JSON and Drizzle adapters are not part of the product/runtime template and shoul
 
 The canonical e2e pattern is Effect-native and programmatic:
 
-1. Build the real HTTP app as a fetchable application without opening a network listener.
+1. Build the real HTTP route layer in-process without opening a network listener.
 2. Use a temporary SQLite database per suite/file.
 3. Reset or recreate schema before each test.
-4. Create a typed API client from the shared API contract.
-5. Pass the app's `fetch` implementation into the client with an `apiUrl` such as `http://test`.
-6. Create user/application context through public client calls and helpers, not global DB seeds.
-7. Store session cookie state in test-local state, for example a `Ref<string | null>` used by an injected fetch implementation.
+4. Convert the route layer to a web `Request -> Response` handler with `HttpRouter.toWebHandler(...)` when the test should avoid TCP entirely.
+5. Create a typed API client from the shared API contract.
+6. Inject a local `FetchHttpClient.Fetch` implementation that calls the web handler directly, using a placeholder base URL such as `http://app.test`.
+7. Create user/application context through public client calls and helpers, not global DB seeds.
+8. Store session cookie state in test-local state, for example a `Ref<string | null>` used by the injected fetch implementation.
 
 E2E tests should exercise the public contract:
 
@@ -76,18 +77,18 @@ A real network listener with an ephemeral port is reserved for transport-specifi
 
 ## Typed Client Policy
 
-The canonical API client lives in `packages/api-client` and is built from `packages/shared` API contracts.
+The typed client is created from `packages/shared` API contracts at the runtime boundary. This template intentionally does not include a separate API client package.
 
-Client options should include:
+Client setup should include:
 
-- `apiUrl`;
-- optional injected `fetch`.
+- a base URL or placeholder URL used for request construction;
+- optional injected `fetch`/`FetchHttpClient.Fetch`.
 
-The base client only prepends the base URL and uses the injected fetch implementation. It must not validate tokens, clear storage, refresh sessions, or own browser lifecycle behavior; browser/web tests provide cookie credentials behavior at the runtime adapter.
+The client layer must not validate tokens, clear storage, refresh sessions, or own browser lifecycle behavior; browser/web tests provide cookie credentials behavior at the runtime adapter.
 
-## HTTP Integration Tests
+## HTTP Integration and Smoke Tests
 
-HTTP integration tests should target the fetchable app + typed client + temporary SQLite pattern described above. A temporary legacy test should only remain when it is explicitly covering migration behavior and should be removed once the canonical e2e harness covers the same behavior.
+HTTP integration tests should target the in-process HTTP app + typed client + temporary SQLite pattern described above. `pnpm smoke:server` runs the no-network smoke suite under `apps/server/src/test/smoke`, driving auth and todo flows through the typed client and a local fetch implementation that calls `HttpRouter.toWebHandler(...)` directly.
 
 ## Frontend Component Test Pattern
 
