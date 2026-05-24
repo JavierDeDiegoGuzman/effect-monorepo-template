@@ -5,18 +5,33 @@ import * as HttpServerResponse from "effect/unstable/http/HttpServerResponse"
 
 export const authSessionCookieName = "app_session"
 
+type SameSite = "lax" | "strict" | "none"
+
+const sameSiteValues: ReadonlySet<string> = new Set(["lax", "strict", "none"])
+
+const isSameSite = (value: string): value is SameSite =>
+  sameSiteValues.has(value)
+
 const authSessionCookieConfig = Effect.gen(function* () {
+  const sameSite = yield* Config.nonEmptyString(
+    "AUTH_SESSION_COOKIE_SAME_SITE",
+  ).pipe(Config.withDefault("lax"))
+
+  if (!isSameSite(sameSite)) {
+    return yield* Effect.die(
+      new Error(`Invalid AUTH_SESSION_COOKIE_SAME_SITE value: ${sameSite}`),
+    )
+  }
+
   return {
     secure: yield* Config.boolean("AUTH_SESSION_COOKIE_SECURE").pipe(
       Config.withDefault(false),
     ),
-    sameSite: yield* Config.nonEmptyString(
-      "AUTH_SESSION_COOKIE_SAME_SITE",
-    ).pipe(Config.withDefault("lax")),
+    sameSite,
     maxAgeSeconds: yield* Config.int("AUTH_ACCESS_TOKEN_TTL_SECONDS").pipe(
       Config.withDefault(60 * 60),
     ),
-  } as const
+  }
 })
 
 export class AuthSessionCookies extends Context.Service<
@@ -33,12 +48,17 @@ export const AuthSessionCookiesLive = Layer.effect(
   AuthSessionCookies,
   Effect.gen(function* () {
     const config = yield* authSessionCookieConfig
-    const options = {
+    const options: Readonly<{
+      httpOnly: true
+      secure: boolean
+      sameSite: SameSite
+      path: "/"
+    }> = {
       httpOnly: true,
       secure: config.secure,
-      sameSite: config.sameSite as "lax" | "strict" | "none",
+      sameSite: config.sameSite,
       path: "/",
-    } as const
+    }
 
     return AuthSessionCookies.of({
       set: (token) =>

@@ -12,8 +12,8 @@
     "boundaries": "depcruise --config .dependency-cruiser.cjs apps packages",
     "verify:architecture": "pnpm boundaries && node scripts/check-webapp-architecture.mjs && node scripts/check-module-layout.mjs",
     "smoke:server": "pnpm --filter @app/server smoke:server",
-    "lint": "biome check .",
-    "lint:fix": "biome check --write .",
+    "lint": "biome check . && node scripts/check-no-type-assertions.mjs",
+    "lint:fix": "biome check --write . && node scripts/check-no-type-assertions.mjs",
     "format": "biome format --write ."
   },
   "devDependencies": {

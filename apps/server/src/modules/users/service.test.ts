@@ -1,3 +1,4 @@
+import { UserAlreadyExists } from "@app/shared"
 import { assert, describe, it } from "@effect/vitest"
 import { Effect, Layer } from "effect"
 import { makeInMemoryRepositoriesLayer } from "../../test/layers/InMemoryRepositoriesLayer"
@@ -42,15 +43,10 @@ describe("Users domain service", () => {
           })
           .pipe(Effect.flip)
 
+        assert.ok(error instanceof UserAlreadyExists)
         assert.strictEqual(error._tag, "UserAlreadyExists")
-        assert.strictEqual(
-          (error as { readonly email?: string }).email,
-          "alice@example.com",
-        )
-        assert.strictEqual(
-          (error as { readonly message?: string }).message,
-          "User already exists",
-        )
+        assert.strictEqual(error.email, "alice@example.com")
+        assert.strictEqual(error.message, "User already exists")
       }).pipe(Effect.provide(makeUsersDomainTestLayer())),
   )
 })

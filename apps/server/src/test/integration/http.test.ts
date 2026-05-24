@@ -22,8 +22,10 @@ const testConfigProvider = ConfigProvider.fromUnknown({
   AUTH_SESSION_COOKIE_SECURE: false,
 })
 
-const makeCookieJarFetch = (cookieRef: Ref.Ref<string | null>): typeof fetch =>
-  (async (input, init) => {
+const makeCookieJarFetch = (
+  cookieRef: Ref.Ref<string | null>,
+): typeof fetch => {
+  const cookieJarFetch: typeof fetch = async (input, init) => {
     const headers = new Headers(init?.headers)
     headers.delete("content-length")
 
@@ -40,7 +42,10 @@ const makeCookieJarFetch = (cookieRef: Ref.Ref<string | null>): typeof fetch =>
       )
     }
     return response
-  }) as typeof fetch
+  }
+
+  return cookieJarFetch
+}
 
 const TestApiLive = HttpRouter.serve(
   makeApiRoutesLayer(
@@ -78,11 +83,11 @@ const assertPublicError = (
   error: unknown,
   expected: { readonly tag: string; readonly message: string },
 ) => {
-  assert.strictEqual((error as { readonly _tag?: string })._tag, expected.tag)
-  assert.strictEqual(
-    (error as { readonly message?: string }).message,
-    expected.message,
-  )
+  assert.ok(typeof error === "object" && error !== null)
+  assert.ok("_tag" in error)
+  assert.ok("message" in error)
+  assert.strictEqual(error._tag, expected.tag)
+  assert.strictEqual(error.message, expected.message)
 }
 
 const missingTodoId = makeTodoId("00000000-0000-4000-8000-000000000999")
@@ -92,7 +97,9 @@ const assertTodoNotFound = (error: unknown, expectedId: unknown) => {
     tag: "TodoNotFound",
     message: "Todo not found",
   })
-  assert.strictEqual((error as { readonly id?: number }).id, expectedId)
+  assert.ok(typeof error === "object" && error !== null)
+  assert.ok("id" in error)
+  assert.strictEqual(error.id, expectedId)
 }
 
 const assertUnauthorized = (error: unknown) => {
@@ -114,10 +121,9 @@ const assertUserAlreadyExists = (error: unknown, expectedEmail: string) => {
     tag: "UserAlreadyExists",
     message: "User already exists",
   })
-  assert.strictEqual(
-    (error as { readonly email?: string }).email,
-    expectedEmail,
-  )
+  assert.ok(typeof error === "object" && error !== null)
+  assert.ok("email" in error)
+  assert.strictEqual(error.email, expectedEmail)
 }
 
 describe("HTTP integration", () => {

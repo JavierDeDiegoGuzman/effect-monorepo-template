@@ -33,15 +33,25 @@ const enabledEndpoint =
     ? undefined
     : getRequiredEnv("VITE_OTEL_EXPORTER_OTLP_ENDPOINT"))
 
-export const observabilityConfig =
+type ObservabilityConfig =
+  | Readonly<{ enabled: false }>
+  | Readonly<{
+      enabled: true
+      endpoint: string
+      serviceName: string
+      serviceVersion: string
+      environment: string
+    }>
+
+export const observabilityConfig: ObservabilityConfig =
   enabledEndpoint === undefined || enabledEndpoint === "off"
-    ? ({
+    ? {
         enabled: false,
-      } as const)
-    : ({
+      }
+    : {
         enabled: true,
         endpoint: enabledEndpoint,
         serviceName: getRequiredEnv("VITE_OTEL_SERVICE_NAME"),
         serviceVersion: getRequiredEnv("VITE_OTEL_SERVICE_VERSION"),
         environment,
-      } as const)
+      }

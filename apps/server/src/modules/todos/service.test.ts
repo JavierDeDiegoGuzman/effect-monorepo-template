@@ -1,4 +1,4 @@
-import { makeTodoId, makeUserId } from "@app/shared"
+import { makeTodoId, makeUserId, TodoNotFound } from "@app/shared"
 import { assert, describe, it } from "@effect/vitest"
 import { Effect } from "effect"
 import { InMemoryDomainTestLayer } from "../../test/layers/DomainTestLayer"
@@ -8,16 +8,10 @@ const userOneId = makeUserId("00000000-0000-4000-8000-000000000001")
 const userTwoId = makeUserId("00000000-0000-4000-8000-000000000002")
 const missingTodoId = makeTodoId("00000000-0000-4000-8000-000000000999")
 
-const assertTodoNotFound = (
-  error: { readonly _tag: string; readonly id?: unknown },
-  id: unknown,
-) => {
+const assertTodoNotFound = (error: TodoNotFound, id: TodoNotFound["id"]) => {
   assert.strictEqual(error._tag, "TodoNotFound")
   assert.strictEqual(error.id, id)
-  assert.strictEqual(
-    (error as { readonly message?: string }).message,
-    "Todo not found",
-  )
+  assert.strictEqual(error.message, "Todo not found")
 }
 
 describe("Todos domain service", () => {
@@ -64,6 +58,7 @@ describe("Todos domain service", () => {
         .getByIdForUser(userOneId, otherUserTodo.id)
         .pipe(Effect.flip)
 
+      assert.ok(error instanceof TodoNotFound)
       assertTodoNotFound(error, otherUserTodo.id)
     }).pipe(Effect.provide(InMemoryDomainTestLayer)),
   )
@@ -81,6 +76,7 @@ describe("Todos domain service", () => {
         .pipe(Effect.flip)
       const unchanged = yield* todos.getByIdForUser(userTwoId, otherUserTodo.id)
 
+      assert.ok(error instanceof TodoNotFound)
       assertTodoNotFound(error, otherUserTodo.id)
       assert.strictEqual(unchanged.completed, false)
     }).pipe(Effect.provide(InMemoryDomainTestLayer)),
@@ -94,6 +90,7 @@ describe("Todos domain service", () => {
         .getByIdForUser(userOneId, missingTodoId)
         .pipe(Effect.flip)
 
+      assert.ok(error instanceof TodoNotFound)
       assertTodoNotFound(error, missingTodoId)
     }).pipe(Effect.provide(InMemoryDomainTestLayer)),
   )

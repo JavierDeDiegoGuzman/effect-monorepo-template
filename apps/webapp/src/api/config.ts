@@ -8,6 +8,8 @@ function getEnvWithDefault(name: "VITE_API_URL", fallback: string) {
   return value
 }
 
-export const apiClientConfig = {
+export const apiClientConfig: Readonly<{
+  apiUrl: string
+}> = {
   apiUrl: getEnvWithDefault("VITE_API_URL", "http://localhost:3001"),
-} as const
+}

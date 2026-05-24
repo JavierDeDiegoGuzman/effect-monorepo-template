@@ -7,7 +7,7 @@ import {
 } from "@app/shared"
 import { assert, describe, it } from "@effect/vitest"
 import { ConfigProvider, Effect, Layer, Ref } from "effect"
-import { FetchHttpClient, HttpRouter } from "effect/unstable/http"
+import { FetchHttpClient, HttpRouter, HttpServer } from "effect/unstable/http"
 import { HttpApiClient } from "effect/unstable/httpapi"
 import { makeApiRoutesLayer } from "../../http/server"
 import { makeHttpServerDependenciesLayer } from "../../layers/ServerLayers"
@@ -32,8 +32,8 @@ type WebHandler = (request: Request, context?: never) => Promise<Response>
 const makeCookieJarFetch = (
   handler: WebHandler,
   cookieRef: Ref.Ref<string | null>,
-): typeof fetch =>
-  (async (input, init) => {
+): typeof fetch => {
+  const cookieJarFetch: typeof fetch = async (input, init) => {
     const request = new Request(input, init)
     const headers = new Headers(request.headers)
     headers.delete("content-length")
@@ -50,13 +50,17 @@ const makeCookieJarFetch = (
     }
 
     return response
-  }) as typeof fetch
+  }
+
+  return cookieJarFetch
+}
 
 const withSmokeApi = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
   Effect.gen(function* () {
     const cookieRef = yield* Ref.make<string | null>(null)
-    const routesLayer =
-      makeSmokeApiLayer() as Layer.Layer<HttpRouter.HttpRouter>
+    const routesLayer = makeSmokeApiLayer().pipe(
+      Layer.provide(HttpServer.layerServices),
+    )
     const { dispose, handler } = HttpRouter.toWebHandler(routesLayer, {
       disableLogger: true,
     })
@@ -84,11 +88,11 @@ const assertPublicError = (
   error: unknown,
   expected: { readonly tag: string; readonly message: string },
 ) => {
-  assert.strictEqual((error as { readonly _tag?: string })._tag, expected.tag)
-  assert.strictEqual(
-    (error as { readonly message?: string }).message,
-    expected.message,
-  )
+  assert.ok(typeof error === "object" && error !== null)
+  assert.ok("_tag" in error)
+  assert.ok("message" in error)
+  assert.strictEqual(error._tag, expected.tag)
+  assert.strictEqual(error.message, expected.message)
 }
 
 const assertUnauthorized = (error: unknown) => {
@@ -103,10 +107,9 @@ const assertUserAlreadyExists = (error: unknown, expectedEmail: string) => {
     tag: "UserAlreadyExists",
     message: "User already exists",
   })
-  assert.strictEqual(
-    (error as { readonly email?: string }).email,
-    expectedEmail,
-  )
+  assert.ok(typeof error === "object" && error !== null)
+  assert.ok("email" in error)
+  assert.strictEqual(error.email, expectedEmail)
 }
 
 const assertTodoNotFound = (error: unknown, expectedId: unknown) => {
@@ -114,7 +117,9 @@ const assertTodoNotFound = (error: unknown, expectedId: unknown) => {
     tag: "TodoNotFound",
     message: "Todo not found",
   })
-  assert.strictEqual((error as { readonly id?: unknown }).id, expectedId)
+  assert.ok(typeof error === "object" && error !== null)
+  assert.ok("id" in error)
+  assert.strictEqual(error.id, expectedId)
 }
 
 describe("HTTP smoke flows", () => {

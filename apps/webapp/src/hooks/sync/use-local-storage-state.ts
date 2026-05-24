@@ -5,21 +5,26 @@ type Options<T> = {
   readonly deserialize?: (value: string) => T
 }
 
+type Initializer<T> = () => T
+
+const defaultDeserialize = <T>(value: string): T => JSON.parse(value)
+
+const isInitializer = <T>(value: T | Initializer<T>): value is Initializer<T> =>
+  typeof value === "function"
+
+const resolveInitialValue = <T>(initialValue: T | Initializer<T>): T =>
+  isInitializer(initialValue) ? initialValue() : initialValue
+
 export function useLocalStorageState<T>(
   key: string,
-  initialValue: T | (() => T),
+  initialValue: T | Initializer<T>,
   options: Options<T> = {},
-) {
-  const {
-    serialize = JSON.stringify,
-    deserialize = JSON.parse as (value: string) => T,
-  } = options
+): readonly [T, React.Dispatch<React.SetStateAction<T>>] {
+  const { serialize = JSON.stringify, deserialize = defaultDeserialize<T> } =
+    options
 
   const [value, setValue] = React.useState<T>(() => {
-    const fallback =
-      typeof initialValue === "function"
-        ? (initialValue as () => T)()
-        : initialValue
+    const fallback = resolveInitialValue(initialValue)
 
     const stored = window.localStorage.getItem(key)
     if (stored === null) {
@@ -37,5 +42,5 @@ export function useLocalStorageState<T>(
     window.localStorage.setItem(key, serialize(value))
   }, [key, serialize, value])
 
-  return [value, setValue] as const
+  return [value, setValue]
 }

@@ -11,7 +11,7 @@ const authTokenConfig = Effect.gen(function* () {
     ttlSeconds: yield* Config.int("AUTH_ACCESS_TOKEN_TTL_SECONDS").pipe(
       Config.withDefault(60 * 60),
     ),
-  } as const
+  }
 })
 
 const makeSecret = (secret: string) => new TextEncoder().encode(secret)

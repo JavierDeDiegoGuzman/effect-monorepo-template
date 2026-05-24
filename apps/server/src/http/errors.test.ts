@@ -4,15 +4,9 @@ import { Effect } from "effect"
 import { RepositoryError } from "../errors/repository"
 import { withHttpErrorMapping } from "./errors"
 
-const assertInternalServerError = (error: unknown) => {
-  assert.strictEqual(
-    (error as { readonly _tag?: string })._tag,
-    "InternalServerError",
-  )
-  assert.strictEqual(
-    (error as { readonly message?: string }).message,
-    "Something went wrong",
-  )
+const assertInternalServerError = (error: InternalServerError) => {
+  assert.strictEqual(error._tag, "InternalServerError")
+  assert.strictEqual(error.message, "Something went wrong")
 }
 
 describe("HTTP error mapping", () => {
@@ -27,8 +21,8 @@ describe("HTTP error mapping", () => {
         ),
       ).pipe(Effect.flip)
 
-      assertInternalServerError(error)
       assert.ok(error instanceof InternalServerError)
+      assertInternalServerError(error)
     }),
   )
 
@@ -38,8 +32,8 @@ describe("HTTP error mapping", () => {
         Effect.die("unexpected defect"),
       ).pipe(Effect.flip)
 
-      assertInternalServerError(error)
       assert.ok(error instanceof InternalServerError)
+      assertInternalServerError(error)
     }),
   )
 })

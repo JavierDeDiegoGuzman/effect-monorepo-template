@@ -11,10 +11,10 @@ export function useEventListener<K extends keyof WindowEventMap>(
 
   React.useEffect(() => {
     const handler = (event: WindowEventMap[K]) => listenerRef.current(event)
-    target.addEventListener(type, handler as EventListener, options)
+    target.addEventListener(type, handler, options)
 
     return () => {
-      target.removeEventListener(type, handler as EventListener, options)
+      target.removeEventListener(type, handler, options)
     }
   }, [target, type, options])
 }

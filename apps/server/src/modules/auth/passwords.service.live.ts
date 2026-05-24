@@ -1,9 +1,22 @@
 import { scrypt as nodeScrypt, randomBytes, timingSafeEqual } from "node:crypto"
-import { promisify } from "node:util"
 import { Effect, Layer } from "effect"
 import { Passwords } from "./passwords.service"
 
-const scrypt = promisify(nodeScrypt)
+const scrypt = (
+  password: string,
+  salt: Uint8Array,
+  keylen: number,
+): Promise<Buffer> =>
+  new Promise((resolve, reject) => {
+    nodeScrypt(password, salt, keylen, (error, derivedKey) => {
+      if (error !== null) {
+        reject(error)
+        return
+      }
+
+      resolve(Buffer.from(derivedKey))
+    })
+  })
 
 const toHex = (buffer: Uint8Array) => Buffer.from(buffer).toString("hex")
 const fromHex = (value: string) => Buffer.from(value, "hex")
@@ -15,7 +28,7 @@ export const PasswordsLive = Layer.succeed(
       Effect.tryPromise({
         try: async () => {
           const salt = randomBytes(16)
-          const derived = (await scrypt(password, salt, 64)) as Buffer
+          const derived = await scrypt(password, salt, 64)
           return `${toHex(salt)}:${toHex(derived)}`
         },
         catch: (error) =>
@@ -35,11 +48,7 @@ export const PasswordsLive = Layer.succeed(
 
           const salt = fromHex(saltHex)
           const expected = fromHex(derivedHex)
-          const actual = (await scrypt(
-            password,
-            salt,
-            expected.length,
-          )) as Buffer
+          const actual = await scrypt(password, salt, expected.length)
           return timingSafeEqual(expected, actual)
         },
         catch: (error) =>

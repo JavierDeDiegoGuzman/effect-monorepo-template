@@ -1,12 +1,17 @@
 import { Effect } from "effect"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
 
-const seedIds = {
+const seedIds: Readonly<{
+  alice: string
+  bob: string
+  aliceTodo: string
+  bobTodo: string
+}> = {
   alice: "00000000-0000-4000-8000-000000000001",
   bob: "00000000-0000-4000-8000-000000000002",
   aliceTodo: "00000000-0000-4000-8000-000000000101",
   bobTodo: "00000000-0000-4000-8000-000000000102",
-} as const
+}
 
 export const initializeSqliteSchema = (options?: { readonly seed?: boolean }) =>
   Effect.gen(function* () {
