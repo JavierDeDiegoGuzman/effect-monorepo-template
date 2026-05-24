@@ -55,6 +55,17 @@ pnpm format
 
 The lint configuration rejects explicit `any` and explicit `unknown` in project code. Prefer concrete unions, generics, or domain-specific types.
 
+Run local SQLite database commands:
+
+```bash
+pnpm db:migrate
+pnpm db:reset
+pnpm db:seed
+pnpm dev:demo
+```
+
+`pnpm dev:demo` resets the local SQLite file, seeds demo rows, and starts the server and webapp. Postgres migration and seed helpers are available as `pnpm db:migrate:postgres` and `pnpm db:seed:postgres`; there is intentionally no scripted Postgres reset.
+
 Run server tests:
 
 ```bash
@@ -115,7 +126,7 @@ Persistence lifecycle is migration-based:
 - normal request handling does not silently create or mutate tables;
 - tests create temporary SQLite databases and run the same migration runner.
 
-See [`database.md`](./database.md) for the migration workflow.
+See [`database.md`](./database.md) for the migration workflow and command details.
 
 ## Webapp Routing Notes
 
@@ -131,7 +142,7 @@ Canonical variables:
 
 - `PORT`: required HTTP server port
 - `DATABASE_URL`: Postgres connection URL for production/prod-like runs
-- `SQLITE_FILENAME`: SQLite database file for local SQL development or explicit SQLite layers
+- `SQLITE_FILENAME`: SQLite database file for local SQL development or explicit SQLite layers. Defaults to `./.data/app.db` from the server working directory.
 - `AUTH_JWT_SECRET`: required signing secret for auth tokens
 - `AUTH_JWT_ISSUER`: required JWT issuer
 - `AUTH_JWT_AUDIENCE`: required JWT audience

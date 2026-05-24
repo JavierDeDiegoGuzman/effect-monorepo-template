@@ -16,12 +16,38 @@ SQL runtime setup lives in `apps/server/src/database`:
 apps/server/src/database/
   Sqlite.ts              # SQLite client layer, migrations, optional demo seed
   Postgres.ts            # Postgres client layer and migrations
+  cli.ts                 # explicit db:migrate/db:reset/db:seed command entrypoint
   migrations.ts          # migration registry and runner
   migrations/*.ts        # numbered schema migrations
   seed.ts                # demo seed data, separate from migrations
 ```
 
 Repositories do not create or mutate schema. They assume the database layer has run migrations before repository layers are built.
+
+## Commands
+
+Root commands load `.env` before delegating to the server package. If `SQLITE_FILENAME` is omitted, SQLite commands use `./.data/app.db` from the server working directory.
+
+```bash
+pnpm db:migrate          # run pending local SQLite migrations
+pnpm db:reset            # remove the local SQLite db, -wal, and -shm files, then migrate
+pnpm db:seed             # run migrations and insert demo rows when the DB is empty
+pnpm dev:demo            # reset, seed, then start server + webapp
+pnpm db:migrate:postgres # run pending Postgres migrations using DATABASE_URL
+pnpm db:seed:postgres    # run Postgres migrations and seed when empty
+```
+
+There is intentionally no scripted Postgres reset. Destructive production or prod-like database resets should be explicit operational work, not a template convenience command.
+
+The server package also exposes the same commands for direct package use:
+
+```bash
+pnpm --filter @app/server db:migrate
+pnpm --filter @app/server db:reset
+pnpm --filter @app/server db:seed
+```
+
+When running server package commands directly, provide the required environment variables yourself or run through the root commands.
 
 ## Schema migrations
 

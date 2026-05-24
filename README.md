@@ -133,6 +133,10 @@ See [`docs/testing.md`](./docs/testing.md) and [`docs/storybook.md`](./docs/stor
 
 ```bash
 pnpm dev
+pnpm dev:demo
+pnpm db:migrate
+pnpm db:reset
+pnpm db:seed
 pnpm build
 pnpm check
 pnpm verify:architecture

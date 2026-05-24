@@ -5,6 +5,12 @@
   "packageManager": "pnpm@10.17.1",
   "scripts": {
     "dev": "dotenv -e .env -- concurrently --kill-others --kill-timeout 5000 --names server,webapp --prefix-colors blue,green \"cd apps/server && ./node_modules/.bin/tsx watch src/main.dev.ts\" \"cd apps/webapp && ./node_modules/.bin/vite\"",
+    "dev:demo": "pnpm db:reset && pnpm db:seed && pnpm dev",
+    "db:migrate": "dotenv -e .env -- pnpm --filter @app/server db:migrate",
+    "db:seed": "dotenv -e .env -- pnpm --filter @app/server db:seed",
+    "db:reset": "dotenv -e .env -- pnpm --filter @app/server db:reset",
+    "db:migrate:postgres": "dotenv -e .env -- pnpm --filter @app/server db:migrate:postgres",
+    "db:seed:postgres": "dotenv -e .env -- pnpm --filter @app/server db:seed:postgres",
     "observability:up": "docker compose up -d jaeger otel-collector",
     "observability:down": "docker compose down",
     "build": "pnpm -r build",

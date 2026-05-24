@@ -8,7 +8,12 @@
     "build": "tsc -p tsconfig.json",
     "check": "tsc -p tsconfig.json",
     "test": "vitest run",
-    "smoke:server": "vitest run src/test/smoke"
+    "smoke:server": "vitest run src/test/smoke",
+    "db:migrate": "tsx src/database/cli.ts migrate --adapter sqlite",
+    "db:seed": "tsx src/database/cli.ts seed --adapter sqlite",
+    "db:reset": "tsx src/database/cli.ts reset --adapter sqlite",
+    "db:migrate:postgres": "tsx src/database/cli.ts migrate --adapter postgres",
+    "db:seed:postgres": "tsx src/database/cli.ts seed --adapter postgres"
   },
   "dependencies": {
     "@app/shared": "workspace:*",

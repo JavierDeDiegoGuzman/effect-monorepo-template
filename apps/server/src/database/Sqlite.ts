@@ -8,13 +8,17 @@ import { runMigrations } from "./migrations"
 import { seedDemoData } from "./seed"
 
 type SqliteLayerOptions = {
+  readonly migrate?: boolean
   readonly seed?: boolean
 }
 
 const make = (options: SqliteLayerOptions = {}) =>
   Effect.gen(function* () {
-    const filename = yield* Config.nonEmptyString("SQLITE_FILENAME")
+    const filename = yield* Config.nonEmptyString("SQLITE_FILENAME").pipe(
+      Config.withDefault("./.data/app.db"),
+    )
     const fs = yield* FileSystem.FileSystem
+    const migrate = options.migrate ?? true
     const seed = options.seed ?? true
 
     yield* fs.makeDirectory(dirname(filename), { recursive: true })
@@ -24,7 +28,9 @@ const make = (options: SqliteLayerOptions = {}) =>
     yield* Effect.gen(function* () {
       const sql = yield* SqlClient.SqlClient
       yield* sql`PRAGMA foreign_keys = ON`
-      yield* runMigrations()
+      if (migrate) {
+        yield* runMigrations()
+      }
       if (seed) {
         yield* seedDemoData
       }

@@ -40,11 +40,19 @@ export const seedDemoData = Effect.gen(function* () {
         (${seedIds.bob}, ${"seed:bob"})
     `
 
-    yield* sql`
-      INSERT INTO todos (id, user_id, title, completed)
-      VALUES
-        (${seedIds.aliceTodo}, ${seedIds.alice}, ${"Learn Effect HttpApi"}, 1),
-        (${seedIds.bobTodo}, ${seedIds.bob}, ${"Build the webapp"}, 0)
-    `
+    yield* sql.onDialectOrElse({
+      pg: () => sql`
+        INSERT INTO todos (id, user_id, title, completed)
+        VALUES
+          (${seedIds.aliceTodo}, ${seedIds.alice}, ${"Learn Effect HttpApi"}, ${true}),
+          (${seedIds.bobTodo}, ${seedIds.bob}, ${"Build the webapp"}, ${false})
+      `,
+      orElse: () => sql`
+        INSERT INTO todos (id, user_id, title, completed)
+        VALUES
+          (${seedIds.aliceTodo}, ${seedIds.alice}, ${"Learn Effect HttpApi"}, 1),
+          (${seedIds.bobTodo}, ${seedIds.bob}, ${"Build the webapp"}, 0)
+      `,
+    })
   }).pipe(sql.withTransaction)
 })
