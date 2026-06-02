@@ -1,6 +1,6 @@
 import { fileURLToPath, URL } from "node:url"
+import { foldkit } from "@foldkit/vite-plugin"
 import tailwindcss from "@tailwindcss/vite"
-import react from "@vitejs/plugin-react"
 import { defineConfig } from "vitest/config"
 
 export default defineConfig({
@@ -8,14 +8,7 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],
   },
-  plugins: [
-    react({
-      babel: {
-        plugins: [["babel-plugin-react-compiler"]],
-      },
-    }),
-    tailwindcss(),
-  ],
+  plugins: [foldkit(), tailwindcss()],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

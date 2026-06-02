@@ -9,5 +9,5 @@
     "rootDir": "src",
     "types": ["vite/client", "@testing-library/jest-dom"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"]
+  "include": ["src/**/*.ts"]
 }

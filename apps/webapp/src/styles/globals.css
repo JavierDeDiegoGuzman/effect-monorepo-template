@@ -98,15 +98,6 @@
     @apply bg-background text-foreground antialiased;
     font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   }
-
-  body[data-scroll-locked] {
-    margin-right: 0 !important;
-    padding-right: 0 !important;
-  }
-
-  .with-scroll-bars-hidden {
-    padding-right: 0 !important;
-  }
 }
 
 .dark {
