@@ -58,6 +58,10 @@ pnpm format
 
 The lint configuration rejects explicit `any` and explicit `unknown` in project code. Prefer concrete unions, generics, or domain-specific types.
 
+## Editor Tooling
+
+The repository configures the Effect language service in `tsconfig.base.json` so all TypeScript workspaces inherit Effect diagnostics, quick info, completions, and refactors in compatible editors. VS Code is configured to use the workspace TypeScript SDK via `.vscode/settings.json`; if prompted, choose the workspace TypeScript version.
+
 Run local SQLite database commands:
 
 ```bash

@@ -1,5 +1,15 @@
 {
+  "$schema": "./node_modules/@effect/language-service/schema.json",
   "compilerOptions": {
+    "plugins": [
+      {
+        "name": "@effect/language-service",
+        "diagnostics": true,
+        "refactors": true,
+        "quickinfo": true,
+        "completions": true
+      }
+    ],
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "Bundler",

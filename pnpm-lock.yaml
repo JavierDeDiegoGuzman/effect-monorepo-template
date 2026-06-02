@@ -11,6 +11,9 @@ importers:
       '@biomejs/biome':
         specifier: ^2.4.13
         version: 2.4.13
+      '@effect/language-service':
+        specifier: ^0.86.2
+        version: 0.86.2
       '@types/node':
         specifier: ^25.2.0
         version: 25.5.2
@@ -475,6 +478,10 @@ packages:
       effect: ^4.0.0-beta.58
       react: ^19.2.4
       scheduler: '*'
+
+  '@effect/language-service@0.86.2':
+    resolution: {integrity: sha512-SaPln+8srOqDJDUwNTDmP5e+IYpEDr9+1epGznnsLqu8xvo6VnxyWARdeLpqvZJlb0Pgy9ca7ppqvvdWbHPXAg==}
+    hasBin: true
 
   '@effect/opentelemetry@4.0.0-beta.58':
     resolution: {integrity: sha512-QLk86c2BAPErzYflY3bP/JjAiHOOJy/wuhess5jfoanB3SkqtTKEKloo+2YjAEL7051KCNU66wxLk377T/sl9g==}
@@ -3787,6 +3794,8 @@ snapshots:
       effect: 4.0.0-beta.58
       react: 19.2.4
       scheduler: 0.27.0
+
+  '@effect/language-service@0.86.2': {}
 
   '@effect/opentelemetry@4.0.0-beta.58(@opentelemetry/api@1.9.1)(@opentelemetry/resources@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-logs@0.211.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-metrics@2.5.0(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-node@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-web@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/semantic-conventions@1.40.0)(effect@4.0.0-beta.58)':
     dependencies:
