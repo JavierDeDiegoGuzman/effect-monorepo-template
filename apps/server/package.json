@@ -9,26 +9,24 @@
     "check": "tsc -p tsconfig.json",
     "test": "vitest run",
     "smoke:server": "vitest run src/test/smoke",
-    "db:migrate": "tsx src/database/cli.ts migrate --adapter sqlite",
-    "db:seed": "tsx src/database/cli.ts seed --adapter sqlite",
-    "db:reset": "tsx src/database/cli.ts reset --adapter sqlite",
-    "db:migrate:postgres": "tsx src/database/cli.ts migrate --adapter postgres",
-    "db:seed:postgres": "tsx src/database/cli.ts seed --adapter postgres"
+    "db:migrate": "pnpm --filter @app/backend-infra db:migrate",
+    "db:seed": "pnpm --filter @app/backend-infra db:seed",
+    "db:reset": "pnpm --filter @app/backend-infra db:reset",
+    "db:migrate:postgres": "pnpm --filter @app/backend-infra db:migrate:postgres",
+    "db:seed:postgres": "pnpm --filter @app/backend-infra db:seed:postgres"
   },
   "dependencies": {
     "@app/backend-domain": "workspace:*",
+    "@app/backend-infra": "workspace:*",
     "@app/shared": "workspace:*",
     "@effect/opentelemetry": "4.0.0-beta.58",
     "@effect/platform-node": "4.0.0-beta.58",
-    "@effect/sql-pg": "4.0.0-beta.58",
-    "@effect/sql-sqlite-node": "4.0.0-beta.58",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/context-async-hooks": "^2.5.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.211.0",
     "@opentelemetry/sdk-trace-base": "^2.5.0",
     "@opentelemetry/sdk-trace-node": "^2.5.0",
-    "effect": "4.0.0-beta.58",
-    "jose": "^6.2.2"
+    "effect": "4.0.0-beta.58"
   },
   "devDependencies": {
     "@effect/vitest": "4.0.0-beta.58",

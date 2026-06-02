@@ -6,7 +6,7 @@ import {
 import {
   makeSqlRepositoriesTestLayer,
   SqlRepositoriesTestLayer,
-} from "./SqlRepositoriesTestLayer"
+} from "@app/backend-infra/test/layers"
 
 export const InMemoryDomainTestLayer = makeProductDomainLayer(
   InMemoryRepositoriesLayer,

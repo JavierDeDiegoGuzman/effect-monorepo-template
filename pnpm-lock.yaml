@@ -32,6 +32,9 @@ importers:
       '@app/backend-domain':
         specifier: workspace:*
         version: link:../../packages/backend-domain
+      '@app/backend-infra':
+        specifier: workspace:*
+        version: link:../../packages/backend-infra
       '@app/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -41,12 +44,6 @@ importers:
       '@effect/platform-node':
         specifier: 4.0.0-beta.58
         version: 4.0.0-beta.58(effect@4.0.0-beta.58)(ioredis@5.10.1)
-      '@effect/sql-pg':
-        specifier: 4.0.0-beta.58
-        version: 4.0.0-beta.58(effect@4.0.0-beta.58)
-      '@effect/sql-sqlite-node':
-        specifier: 4.0.0-beta.58
-        version: 4.0.0-beta.58(effect@4.0.0-beta.58)
       '@opentelemetry/api':
         specifier: ^1.9.0
         version: 1.9.1
@@ -65,9 +62,6 @@ importers:
       effect:
         specifier: 4.0.0-beta.58
         version: 4.0.0-beta.58
-      jose:
-        specifier: ^6.2.2
-        version: 6.2.2
     devDependencies:
       '@effect/vitest':
         specifier: 4.0.0-beta.58
@@ -228,7 +222,39 @@ importers:
         specifier: ^4.1.5
         version: 4.1.5(@opentelemetry/api@1.9.1)(@types/node@25.5.2)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.1)(vite@7.3.2(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))
 
-  packages/backend-infra: {}
+  packages/backend-infra:
+    dependencies:
+      '@app/backend-domain':
+        specifier: workspace:*
+        version: link:../backend-domain
+      '@app/shared':
+        specifier: workspace:*
+        version: link:../shared
+      '@effect/platform-node':
+        specifier: 4.0.0-beta.58
+        version: 4.0.0-beta.58(effect@4.0.0-beta.58)(ioredis@5.10.1)
+      '@effect/sql-pg':
+        specifier: 4.0.0-beta.58
+        version: 4.0.0-beta.58(effect@4.0.0-beta.58)
+      '@effect/sql-sqlite-node':
+        specifier: 4.0.0-beta.58
+        version: 4.0.0-beta.58(effect@4.0.0-beta.58)
+      effect:
+        specifier: 4.0.0-beta.58
+        version: 4.0.0-beta.58
+      jose:
+        specifier: ^6.2.2
+        version: 6.2.2
+    devDependencies:
+      '@effect/vitest':
+        specifier: 4.0.0-beta.58
+        version: 4.0.0-beta.58(effect@4.0.0-beta.58)(vitest@4.1.5)
+      tsx:
+        specifier: ^4.20.5
+        version: 4.21.0
+      vitest:
+        specifier: ^4.1.5
+        version: 4.1.5(@opentelemetry/api@1.9.1)(@types/node@25.5.2)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.1)(vite@7.3.2(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))
 
   packages/shared:
     dependencies:

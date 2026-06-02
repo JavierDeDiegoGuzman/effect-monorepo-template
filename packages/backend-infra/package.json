@@ -4,10 +4,40 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./*": "./src/*"
+    "./database": "./src/database/index.ts",
+    "./database/*": "./src/database/*.ts",
+    "./modules/auth": "./src/modules/auth/index.ts",
+    "./modules/auth/*": "./src/modules/auth/*.ts",
+    "./modules/todos": "./src/modules/todos/index.ts",
+    "./modules/todos/*": "./src/modules/todos/*.ts",
+    "./modules/users": "./src/modules/users/index.ts",
+    "./modules/users/*": "./src/modules/users/*.ts",
+    "./test/layers": "./src/test/layers/index.ts",
+    "./test/layers/*": "./src/test/layers/*.ts",
+    "./*": "./src/*.ts"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "check": "tsc -p tsconfig.json"
+    "check": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "db:migrate": "tsx src/database/cli.ts migrate --adapter sqlite",
+    "db:seed": "tsx src/database/cli.ts seed --adapter sqlite",
+    "db:reset": "tsx src/database/cli.ts reset --adapter sqlite",
+    "db:migrate:postgres": "tsx src/database/cli.ts migrate --adapter postgres",
+    "db:seed:postgres": "tsx src/database/cli.ts seed --adapter postgres"
+  },
+  "dependencies": {
+    "@app/backend-domain": "workspace:*",
+    "@app/shared": "workspace:*",
+    "@effect/platform-node": "4.0.0-beta.58",
+    "@effect/sql-pg": "4.0.0-beta.58",
+    "@effect/sql-sqlite-node": "4.0.0-beta.58",
+    "effect": "4.0.0-beta.58",
+    "jose": "^6.2.2"
+  },
+  "devDependencies": {
+    "@effect/vitest": "4.0.0-beta.58",
+    "tsx": "^4.20.5",
+    "vitest": "^4.1.5"
   }
 }

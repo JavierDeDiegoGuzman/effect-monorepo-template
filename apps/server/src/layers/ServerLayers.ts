@@ -1,40 +1,23 @@
 import {
-  type AuthCredentialsRepository,
   AuthLive,
-  TodosLive,
-  type TodosRepository,
-  type Transactions,
   InMemoryTransactionsLayer,
+  TodosLive,
   UsersLive,
-  type UsersRepository,
   makeInMemoryAuthCredentialsRepositoryLayer,
   makeInMemoryTodosRepositoryLayer,
   makeInMemoryUsersRepositoryLayer,
 } from "@app/backend-domain"
-import type { Todo, User } from "@app/shared"
-import { Layer } from "effect"
-import type { ConfigError } from "effect/Config"
-import type { PlatformError } from "effect/PlatformError"
-import type { MigrationError } from "effect/unstable/sql/Migrator"
-import type { SqlError } from "effect/unstable/sql/SqlError"
-import { PostgresLayer } from "../database/Postgres"
-import { SqliteLayer } from "../database/Sqlite"
-import { SqlTransactionsLayer } from "../database/transactions.sql"
 import {
-  AuthSessionCookiesLive,
   AuthTokensLive,
   PasswordsLive,
-  PostgresAuthCredentialsRepositoryLayer,
-  SqlAuthCredentialsRepositoryLayer,
-} from "../modules/auth"
-import {
-  PostgresTodosRepositoryLayer,
-  SqlTodosRepositoryLayer,
-} from "../modules/todos"
-import {
-  PostgresUsersRepositoryLayer,
-  SqlUsersRepositoryLayer,
-} from "../modules/users"
+  PostgresRepositoriesLayer,
+  type SqlRepositoryLayerError,
+  type SqlRepositoryServices,
+  makeSqliteRepositoryLayer,
+} from "@app/backend-infra"
+import type { Todo, User } from "@app/shared"
+import { Layer } from "effect"
+import { AuthSessionCookiesLive } from "../modules/auth"
 
 export type InMemoryRepositorySeed = {
   readonly users?: ReadonlyArray<{
@@ -44,25 +27,9 @@ export type InMemoryRepositorySeed = {
   readonly todos?: ReadonlyArray<Todo>
 }
 
-type RepositoryServices =
-  | UsersRepository
-  | TodosRepository
-  | AuthCredentialsRepository
-  | Transactions
+type RepositoryServices = SqlRepositoryServices
 
-type RepositoryLayerError =
-  | ConfigError
-  | PlatformError
-  | SqlError
-  | MigrationError
-
-export const makeSqliteRepositoryLayer = (sqliteLayer = SqliteLayer) =>
-  Layer.mergeAll(
-    SqlUsersRepositoryLayer,
-    SqlTodosRepositoryLayer,
-    SqlAuthCredentialsRepositoryLayer,
-    SqlTransactionsLayer,
-  ).pipe(Layer.provide(sqliteLayer))
+type RepositoryLayerError = SqlRepositoryLayerError
 
 export const makeInMemoryRepositoriesLayer = (
   seed: InMemoryRepositorySeed = {},
@@ -80,13 +47,6 @@ export const makeInMemoryRepositoriesLayer = (
   )
 
 export const MemoryRepositoriesLayer = makeInMemoryRepositoriesLayer()
-
-export const PostgresRepositoriesLayer = Layer.mergeAll(
-  PostgresUsersRepositoryLayer,
-  PostgresTodosRepositoryLayer,
-  PostgresAuthCredentialsRepositoryLayer,
-  SqlTransactionsLayer,
-).pipe(Layer.provide(PostgresLayer))
 
 export const makeProductDomainLayer = (
   repositoryLayer: Layer.Layer<

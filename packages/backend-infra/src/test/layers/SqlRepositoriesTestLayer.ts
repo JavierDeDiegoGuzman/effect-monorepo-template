@@ -1,4 +1,4 @@
-import { makeSqliteRepositoryLayer } from "../../layers/ServerLayers"
+import { makeSqliteRepositoryLayer } from "../../repositories"
 import { makeTestSqliteLayer, TestSqliteLayer } from "./TestSqliteLayer"
 
 export const makeSqlRepositoriesTestLayer = (options?: {
