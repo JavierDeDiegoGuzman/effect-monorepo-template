@@ -81,7 +81,7 @@ Detailed policy lives in `docs/architecture.md`, `docs/api.md`, `docs/testing.md
 - Repositories must not generate IDs or contain product logic.
 - Public/persisted entity IDs should be branded UUID strings; creation services generate UUIDs inline with `Random.nextUUIDv4`.
 - SQL adapters must use Effect SQL `SqlSchema` for every persistent operation.
-- Database schema changes must be implemented as numbered Effect SQL migrations under `apps/server/src/database/migrations/*`, registered in `migrations.ts`; keep demo seed data and long-running data migrations separate from schema migrations.
+- Database schema changes must be implemented as numbered Effect SQL migrations under `packages/backend-infra/src/database/migrations/*`, registered in `packages/backend-infra/src/database/migrations.ts`; keep demo seed data and long-running data migrations separate from schema migrations.
 - Canonical persistence adapters are `memory`, `sqlite`, and `postgres`. JSON and Drizzle are legacy/transitional and must not be extended.
 - Expected client-visible errors live in shared contracts with explicit HTTP status/body definitions. Persistence/internal errors map to a safe shared `InternalServerError`.
 - Canonical e2e tests use a typed client against a fetchable app with a temporary SQLite database and schema reset before each test.
