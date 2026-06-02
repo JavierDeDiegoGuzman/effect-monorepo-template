@@ -17,7 +17,7 @@ import {
 } from "@app/backend-infra"
 import type { Todo, User } from "@app/shared"
 import { Layer } from "effect"
-import { AuthSessionCookiesLive } from "../modules/auth"
+import { AuthSessionCookiesLive } from "../modules/auth/session-cookie"
 
 export type InMemoryRepositorySeed = {
   readonly users?: ReadonlyArray<{

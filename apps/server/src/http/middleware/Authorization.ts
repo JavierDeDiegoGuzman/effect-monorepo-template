@@ -1,6 +1,6 @@
+import { AuthService } from "@app/backend-domain"
 import { Authorization, CurrentUser, Unauthorized } from "@app/shared"
 import { Effect, Layer, Redacted } from "effect"
-import { AuthService } from "../../modules/auth"
 import { withHttpErrorMapping } from "../errors"
 
 export const AuthorizationLayer = Layer.effect(

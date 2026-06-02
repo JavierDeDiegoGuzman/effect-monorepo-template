@@ -5,9 +5,9 @@ import { Config, Effect, Layer } from "effect"
 import { HttpRouter } from "effect/unstable/http"
 import { HttpApiBuilder, HttpApiScalar } from "effect/unstable/httpapi"
 import { HttpServerDependenciesLayer } from "../layers/ServerLayers"
-import { AuthApiHandlers, SessionApiHandlers } from "../modules/auth"
-import { SystemApiHandlers } from "../modules/system"
-import { TodosApiHandlers } from "../modules/todos"
+import { AuthApiHandlers, SessionApiHandlers } from "../modules/auth/handlers"
+import { SystemApiHandlers } from "../modules/system/handlers"
+import { TodosApiHandlers } from "../modules/todos/handlers"
 import { AuthorizationLayer } from "./middleware/Authorization"
 
 export const makeApiRoutesLayer = (
