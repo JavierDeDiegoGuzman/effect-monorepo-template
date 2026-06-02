@@ -12,7 +12,7 @@ The core goals are:
 - strict backend layering from HTTP to persistence
 - runtime-neutral shared contracts and runtime-local typed clients
 - explicit persistence lifecycle and test setup
-- vertical product/domain modules that scale across shared, server, and webapp code
+- vertical product/domain modules that scale across shared contracts, backend-domain, backend-infra, server transport, and webapp code
 
 ## Workspace Structure
 
@@ -23,15 +23,25 @@ apps/
 
 packages/
   shared/
+  backend-domain/
+  backend-infra/
 ```
 
-`packages/shared` owns the shared HTTP API contract. Apps create typed clients directly from that contract at their runtime boundary; this template intentionally does not include a separate `packages/api-client` package.
+`packages/shared` owns the public typed HTTP API contract. Apps create typed clients directly from that contract at their runtime boundary; this template intentionally does not include a separate `packages/api-client` package.
+
+`packages/backend-domain` owns backend domain/application services, repository ports, storage-agnostic errors, the transaction contract, and in-memory domain test support.
+
+`packages/backend-infra` owns backend infrastructure: database configuration and SQL clients, Effect SQL migrations, seed/CLI commands, SQLite/Postgres repository adapters, password/token live services, SQL transaction support, and SQL test layers.
+
+`apps/server` owns HTTP transport handlers, auth cookie/session transport adaptation, server layer composition, observability/runtime setup, and server integration/smoke tests.
 
 ## Dependency Rules
 
-- `packages/shared` must not depend on `apps/server` or `apps/webapp`.
-- `apps/server` depends on `packages/shared`.
-- `apps/webapp` depends on `packages/shared`.
+- `packages/shared` must not depend on `packages/backend-domain`, `packages/backend-infra`, `apps/server`, or `apps/webapp`.
+- `packages/backend-domain` may depend on `packages/shared`; it must not depend on `packages/backend-infra` or apps.
+- `packages/backend-infra` may depend on `packages/backend-domain` and `packages/shared`; it must not depend on apps.
+- `apps/server` depends on `packages/shared`, `packages/backend-domain`, and `packages/backend-infra`.
+- `apps/webapp` depends on `packages/shared` only for product/runtime contracts.
 - cross-module imports go through the target module's `index.ts`.
 - module `internal/` folders are private to that module.
 
@@ -66,12 +76,14 @@ Handlers must not call repositories directly. Repositories must not call HTTP co
 Product/domain/capability code uses `modules` consistently:
 
 ```text
-packages/shared/src/modules/<module>/
-apps/server/src/modules/<module>/
-apps/webapp/src/modules/<module>/
+packages/shared/src/modules/<module>/          # public schemas/API/errors
+packages/backend-domain/src/modules/<module>/ # services, repository ports, memory adapters
+packages/backend-infra/src/modules/<module>/  # SQL/Postgres adapters and live infra services
+apps/server/src/modules/<module>/             # HTTP handlers/transport adapters
+apps/webapp/src/modules/<module>/             # atoms and feature UI
 ```
 
-Runtime/platform code stays outside `modules` under concrete top-level names such as `database`, `persistence`, `http`, `observability`, `layers`, and `test`.
+Runtime/platform code stays outside `modules` under concrete top-level names such as `database`, `http`, `observability`, `layers`, and `test`. Database infrastructure lives in `packages/backend-infra/src/database`; HTTP and runtime composition live in `apps/server/src`.
 
 ## Shared Contract Layout
 
@@ -88,31 +100,52 @@ The API root lives at `packages/shared/src/api.ts`.
 
 Public/persisted entity IDs should be branded UUID strings, for example `UserId` and `TodoId`. Services generate new UUIDs inline with `Random.nextUUIDv4` and decode/brand them through shared schemas before persistence or response mapping.
 
-## Server Module Layout
+## Backend Package Layout
 
-Server modules are flat by default:
+Backend code is split by responsibility:
 
-- `handlers.ts`: transport adaptation only; calls services, not repositories.
+### `packages/backend-domain`
+
+Domain modules are flat by default:
+
 - `service.ts`: service/use-case tag and interface.
 - `service.live.ts`: live service implementation.
 - `repository.ts`: repository interface plus repository input/record schemas.
 - `repository.memory.ts`: in-memory implementation for domain/unit tests and ephemeral demos.
-- `repository.sql.ts`: SQLite implementation using Effect SQL and `SqlSchema`.
-- `repository.postgres.ts`: Postgres implementation using Effect SQL and `SqlSchema`.
-- `*.test.ts`: module-specific tests.
+- `*.test.ts`: fast domain/service tests with in-memory repositories.
 - `index.ts`: public module API.
 
-Server runtime/platform code remains in:
+Cross-cutting domain files include:
 
-- `src/database` or `src/persistence`: persistence infrastructure, SQL clients, Effect SQL migrations, seed data, and transaction layers.
-- `src/http`: HTTP server assembly and middleware.
-- `src/observability`: tracing setup.
-- `src/layers`: application layer composition.
-- `src/test`: reusable test layers and integration/e2e test harnesses.
+- `src/errors/*`: storage-agnostic internal/domain errors such as repository errors.
+- `src/transactions.ts`: storage-agnostic transaction contract used by domain services.
+- `src/transactions.memory.ts`: no-op transaction adapter for in-memory domain tests.
+- `src/test/layers/*`: in-memory repository and domain test layers.
+
+### `packages/backend-infra`
+
+Infrastructure modules and database code own live adapters:
+
+- `src/modules/<module>/repository.sql.ts`: SQLite implementation using Effect SQL and `SqlSchema`.
+- `src/modules/<module>/repository.postgres.ts`: Postgres implementation using Effect SQL and `SqlSchema`.
+- `src/modules/auth/passwords.service.live.ts` and `tokens.service.live.ts`: live password/token services.
+- `src/database/*`: database config, SQL clients, migrations, seed data, CLI, SQL transaction adapter, and SQL repository helpers.
+- `src/test/layers/*`: temporary SQLite and SQL repository test layers.
+
+### `apps/server`
+
+The server app owns transport and runtime assembly:
+
+- `src/modules/<module>/handlers.ts`: HTTP transport adaptation only; calls services, not repositories.
+- `src/modules/auth/session-cookie.ts`: auth cookie/session transport adapter.
+- `src/http/*`: HTTP server assembly, middleware, and HTTP error mapping.
+- `src/layers/ServerLayers.ts`: server application layer composition.
+- `src/observability/*`: tracing/runtime observability setup.
+- `src/test/*`: in-process HTTP integration and smoke tests.
 
 ## Layer Composition Policy
 
-Application composition lives in `apps/server/src/layers/ServerLayers.ts`. This file is the canonical seam for combining repository adapters, domain services, auth/session infrastructure, and HTTP dependencies.
+Application composition lives in `apps/server/src/layers/ServerLayers.ts`. This file is the canonical seam for combining backend-infra repository adapters, backend-domain services, auth/session infrastructure, and HTTP dependencies.
 
 Rules:
 
@@ -151,9 +184,9 @@ JSON persistence and Drizzle are not part of the product/runtime template. Do no
 Persistence lifecycle is explicit infrastructure:
 
 - runtime startup validates required configuration and runs pending Effect SQL schema migrations before repositories are used;
-- migrations live in `apps/server/src/database/migrations/*` and are registered in `apps/server/src/database/migrations.ts`;
+- migrations live in `packages/backend-infra/src/database/migrations/*` and are registered in `packages/backend-infra/src/database/migrations.ts`;
 - the migrator records completed migrations in `effect_sql_migrations`;
-- demo seed data lives outside migrations in `apps/server/src/database/seed.ts`;
+- demo seed data lives outside migrations in `packages/backend-infra/src/database/seed.ts`;
 - normal request handling must not silently create or mutate application schema;
 - e2e tests create temporary SQLite databases and run the same migration runner before each test layer.
 
@@ -201,13 +234,13 @@ Screens/components should not call the API client directly. Feature atoms own re
 When adding a persisted product module:
 
 1. Define shared schemas, branded IDs, contracts, and expected errors.
-2. Define repository inputs/records and the repository interface in `repository.ts`.
-3. Implement the memory adapter for unit/domain tests.
-4. Implement the SQLite adapter with `SqlSchema` for every operation.
-5. Implement the Postgres adapter with `SqlSchema` for every operation.
-6. Add/extend numbered Effect SQL migrations for SQLite and Postgres syntax, and keep seed/backfill logic separate from schema migrations.
-7. Add the service/use-case Module.
-8. Add HTTP handlers that call the service only.
+2. Define repository inputs/records and the repository interface in `packages/backend-domain/src/modules/<module>/repository.ts`.
+3. Implement the memory adapter in `packages/backend-domain` for unit/domain tests.
+4. Implement the SQLite adapter in `packages/backend-infra` with `SqlSchema` for every operation.
+5. Implement the Postgres adapter in `packages/backend-infra` with `SqlSchema` for every operation.
+6. Add/extend numbered Effect SQL migrations in `packages/backend-infra` for SQLite and Postgres syntax, and keep seed/backfill logic separate from schema migrations.
+7. Add the service/use-case module in `packages/backend-domain`.
+8. Add HTTP handlers in `apps/server` that call the service only.
 9. Add backend tests: domain/unit tests with memory and e2e tests through the typed client.
 10. Add webapp atoms using the API client.
 11. Add feature UI components.

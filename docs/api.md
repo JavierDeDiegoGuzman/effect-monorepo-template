@@ -4,7 +4,7 @@
 
 This template uses `effect/unstable/httpapi` as the shared contract between server and clients.
 
-The API is defined once in `packages/shared`, implemented in `apps/server`, consumed by clients through a typed API client, and exercised by server e2e tests through that same contract.
+The API is defined once in `packages/shared`, implemented by HTTP handlers in `apps/server`, consumed by clients through a typed API client, and exercised by server e2e tests through that same contract. The backend package split is an internal refactor: the public API contract, endpoint paths, payloads, responses, and typed errors did not change.
 
 Most product endpoints are protected by the web session cookie. Register or log in first; the server sets an HttpOnly `app_session` cookie, and browser clients send it with subsequent requests.
 
@@ -34,12 +34,15 @@ Current modules include:
 
 Root `@app/shared` exports the API root and module indexes.
 
-### Server modules
+### Backend implementation
 
-- product handlers/services/repositories: `apps/server/src/modules/<module>/*`
+- public API contracts: `packages/shared/src/modules/<module>/*`
+- domain/application services, repository ports, storage-agnostic errors, transaction contract, and in-memory domain test support: `packages/backend-domain/src/*`
+- database config/connections, Effect SQL migrations, seed/CLI commands, SQL/Postgres repository adapters, live password/token services, and SQL test layers: `packages/backend-infra/src/*`
+- HTTP handlers and transport adapters: `apps/server/src/modules/<module>/*`
+- auth cookies/session transport adapter: `apps/server/src/modules/auth/session-cookie.ts`
 - HTTP server setup and middleware: `apps/server/src/http/*`
 - runtime layer composition: `apps/server/src/layers/*`
-- SQL clients, Effect SQL migrations, and demo seed lifecycle: `apps/server/src/database/*` or `apps/server/src/persistence/*`
 - observability setup/config: `apps/server/src/observability/*`
 
 ### Clients
@@ -119,12 +122,12 @@ Handlers adapt transport only. They must not call repositories directly. Service
 
 1. Add or update shared schemas, branded IDs, contracts, errors, and API definitions under `packages/shared/src/modules/<module>`.
 2. Export the public contract from the module `index.ts` and root `packages/shared/src/index.ts` if needed.
-3. Define repository inputs/records and the repository interface in `apps/server/src/modules/<module>/repository.ts` if persistence is needed.
-4. Implement memory, SQLite, and Postgres repository adapters as needed.
-5. Add numbered Effect SQL migrations under `apps/server/src/database/migrations/*` for schema changes, keeping demo seed data separate.
-6. Implement or extend the service/use-case module.
-7. Implement handlers that call the service only.
-8. Wire production and test layers through module indexes.
+3. Define repository inputs/records and the repository interface in `packages/backend-domain/src/modules/<module>/repository.ts` if persistence is needed.
+4. Implement memory adapters in `packages/backend-domain` and SQLite/Postgres adapters in `packages/backend-infra` as needed.
+5. Add numbered Effect SQL migrations under `packages/backend-infra/src/database/migrations/*` for schema changes, keeping demo seed data separate.
+6. Implement or extend the service/use-case module in `packages/backend-domain`.
+7. Implement handlers in `apps/server` that call the service only.
+8. Wire production and test layers through package/module indexes and `apps/server/src/layers/ServerLayers.ts`.
 9. Consume the contract from webapp atoms or e2e tests through the typed API client.
 10. Update docs and architecture checks when module boundaries change.
 

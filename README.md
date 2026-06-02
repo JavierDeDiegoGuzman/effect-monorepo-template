@@ -4,9 +4,10 @@ An opinionated `pnpm` monorepo template for building full-stack TypeScript appli
 
 This template includes a small authenticated SaaS-style example, but the real goal is the architecture:
 
-- shared API and domain schemas in `packages/shared`
-- Effect HTTP server in `apps/server`
-- SQLite-backed repositories and domain services
+- public typed API contracts in `packages/shared`
+- backend domain/application services and repository ports in `packages/backend-domain`
+- database infrastructure and SQL-backed repository adapters in `packages/backend-infra`
+- Effect HTTP transport server in `apps/server`
 - React webapp in `apps/webapp`
 - typed HTTP integration tests using the shared API contract
 - optional local OTLP tracing with Jaeger
@@ -33,7 +34,9 @@ apps/
   webapp/    React application using atoms
 
 packages/
-  shared/    Domain schemas, errors, and shared HttpApi definition
+  shared/          Public schemas, errors, and shared HttpApi definition
+  backend-domain/  Domain/application services, repository ports, memory test support
+  backend-infra/   Database config, migrations, SQL adapters, infra live services
 
 docs/
   api.md
@@ -50,16 +53,20 @@ docs/
 
 The core rule is simple:
 
-- `packages/shared` defines the domain and API contract
-- `apps/server` implements that API with transport handlers, domain services, and SQLite repositories
+- `packages/shared` defines the public typed API contract
+- `packages/backend-domain` implements domain/application services, repository ports, storage-agnostic errors, transactions, and memory test support
+- `packages/backend-infra` implements database config/connections, migrations/seed/CLI, SQL/Postgres repository adapters, password/token live services, and SQL test layers
+- `apps/server` implements the API with HTTP transport handlers, auth cookie/session adaptation, layer composition, observability, and runtime entrypoints
 - `apps/webapp` and server integration tests consume the same API through typed clients
 
 ```text
 React UI / integration tests
   -> typed HttpApiClient
   -> Effect HTTP server
-  -> domain services
-  -> SQLite repositories
+  -> apps/server HTTP handlers
+  -> backend-domain services
+  -> backend-domain repository ports
+  -> backend-infra SQLite/Postgres adapters
 ```
 
 Executable checks keep those boundaries healthy:
@@ -75,7 +82,7 @@ The included example covers:
 - registration, login, logout, and session-cookie protected endpoints
 - per-user sessions
 - user-owned global todos
-- SQLite persistence under `apps/server/.data` by default
+- SQLite persistence under `packages/backend-infra/.data` by default
 - typed HTTP integration coverage
 
 ## Quickstart
@@ -153,11 +160,13 @@ pnpm observability:down
 To add a new feature or domain:
 
 1. Add shared schemas, errors, and endpoint groups in `packages/shared/src/modules/<module>` and export them through `packages/shared/src/api.ts` as needed
-2. Add or extend server repositories, domain services, and HTTP handlers inside `apps/server/src/modules/<module>`
-3. Wire repository/domain layers through `apps/server/src/layers/ServerLayers.ts` and test layers when the backend adds services
-4. Add webapp atoms and feature components in `apps/webapp/src/modules/<module>` when the UI consumes the API
-5. Compose route-level screens from the module UI in `apps/webapp/src/components/screens` and update navigation/router wiring as needed
-6. Update docs, tests, and executable architecture checks when boundaries change
+2. Add or extend repository ports, domain services, storage-agnostic errors, and memory test support in `packages/backend-domain/src/modules/<module>`
+3. Add or extend SQL/Postgres adapters, migrations, seed support, and SQL test layers in `packages/backend-infra` when persistence changes
+4. Add or extend HTTP handlers and transport/session adaptation in `apps/server/src/modules/<module>`
+5. Wire repository/domain/runtime layers through `apps/server/src/layers/ServerLayers.ts` and package test layers when the backend adds services
+6. Add webapp atoms and feature components in `apps/webapp/src/modules/<module>` when the UI consumes the API
+7. Compose route-level screens from the module UI in `apps/webapp/src/components/screens` and update navigation/router wiring as needed
+8. Update docs, tests, and executable architecture checks when boundaries change
 
 ## Documentation
 

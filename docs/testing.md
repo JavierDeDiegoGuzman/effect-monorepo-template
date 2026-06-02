@@ -11,7 +11,7 @@ Canonical test layers:
 - e2e API tests: typed client against an in-process HTTP app with a temporary SQLite database;
 - frontend component tests: props-first component tests and Storybook visual states.
 
-Server test layers under `apps/server/src/test/layers/*` are thin test-facing adapters around the canonical composition helpers in `apps/server/src/layers/ServerLayers.ts`. Reuse those helpers instead of duplicating module/service lists in tests.
+Backend test support is split by layer. `packages/backend-domain/src/test/layers/*` owns in-memory repository/domain test layers. `packages/backend-infra/src/test/layers/*` owns temporary SQLite and SQL repository test layers. `apps/server/src/test/*` owns in-process HTTP integration and smoke tests around the server transport. Reuse the canonical composition helpers in `apps/server/src/layers/ServerLayers.ts` for HTTP tests instead of duplicating module/service lists.
 
 ## Test Layer Composition
 
@@ -23,7 +23,7 @@ Server test layers under `apps/server/src/test/layers/*` are thin test-facing ad
 
 ## Domain and Service Tests
 
-Use module services with in-memory repository implementations from `apps/server/src/modules/<module>/repository.memory.ts` for domain/use-case behavior.
+Use module services with in-memory repository implementations from `packages/backend-domain/src/modules/<module>/repository.memory.ts` for domain/use-case behavior.
 
 Domain tests may seed local memory repository state directly because the test target is the service behavior, not the HTTP contract. They should still call the service/use-case API, not repository methods, for the behavior under test.
 
@@ -42,9 +42,9 @@ Repository adapters are flat query adapters and should be tested for persistence
 
 Canonical adapters:
 
-- `repository.memory.ts` for memory semantics used by service tests;
-- `repository.sql.ts` for SQLite SQL behavior;
-- `repository.postgres.ts` for Postgres SQL behavior.
+- `packages/backend-domain/src/modules/<module>/repository.memory.ts` for memory semantics used by service tests;
+- `packages/backend-infra/src/modules/<module>/repository.sql.ts` for SQLite SQL behavior;
+- `packages/backend-infra/src/modules/<module>/repository.postgres.ts` for Postgres SQL behavior.
 
 SQL repository tests should verify that operations go through `SqlSchema` and decode rows into repository record schemas defined in `repository.ts`. They should also cover persistence mapping, read-back behavior, and internal error mapping through shared SQL repository helpers where applicable. SQL failures and decode failures should surface as internal persistence errors, not public API errors. Transaction rollback behavior is verified against SQL adapters; the memory transaction adapter is a no-op intended for fast domain tests, not rollback simulation.
 
@@ -77,7 +77,7 @@ A real network listener with an ephemeral port is reserved for transport-specifi
 
 ## Migration Tests
 
-Database migration tests target `apps/server/src/database/migrations.ts` directly with a temporary SQLite layer.
+Database migration tests target `packages/backend-infra/src/database/migrations.ts` directly with a temporary SQLite layer.
 
 Use `makeTestSqliteLayer({ migrate: false })` when the test needs to start from an empty database and call `runMigrations()` or `runMigrations({ toMigrationInclusive: n })` manually. Assert migration rows through `effect_sql_migrations` and inspect SQLite catalog tables such as `PRAGMA table_info(...)` or `PRAGMA index_list(...)` for schema behavior.
 
@@ -96,7 +96,7 @@ The client layer must not validate tokens, clear storage, refresh sessions, or o
 
 ## HTTP Integration and Smoke Tests
 
-HTTP integration tests should target the in-process HTTP app + typed client + temporary SQLite pattern described above. `pnpm smoke:server` runs the no-network smoke suite under `apps/server/src/test/smoke`, driving auth and todo flows through the typed client and a local fetch implementation that calls `HttpRouter.toWebHandler(...)` directly.
+HTTP integration tests should target the in-process HTTP app + typed client + temporary SQLite pattern described above. `pnpm smoke:server` runs the no-network smoke suite under `apps/server/src/test/smoke`, driving auth and todo flows through the typed client and a local fetch implementation that calls `HttpRouter.toWebHandler(...)` directly. Domain and SQL package tests can also be run directly with `pnpm --filter @app/backend-domain test` and `pnpm --filter @app/backend-infra test`.
 
 ## Frontend Component Test Pattern
 

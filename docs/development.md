@@ -13,7 +13,7 @@ pnpm install
 cp .env.example .env
 ```
 
-The root `pnpm dev` command loads the root `.env` file for both apps.
+The root `pnpm dev` command loads the root `.env` file for both apps. Backend database commands also load the root `.env` before delegating to `@app/backend-infra`.
 
 ## Run Locally
 
@@ -67,7 +67,17 @@ pnpm db:seed
 pnpm dev:demo
 ```
 
-`pnpm dev:demo` resets the local SQLite file, seeds demo rows, and starts the server and webapp. Postgres migration and seed helpers are available as `pnpm db:migrate:postgres` and `pnpm db:seed:postgres`; there is intentionally no scripted Postgres reset.
+`pnpm dev:demo` resets the local SQLite file, seeds demo rows, and starts the server and webapp. Root DB commands target the `@app/backend-infra` package, which owns database config, migrations, seed data, and CLI entrypoints. Postgres migration and seed helpers are available as `pnpm db:migrate:postgres` and `pnpm db:seed:postgres`; there is intentionally no scripted Postgres reset.
+
+Direct package commands use the backend-infra workspace:
+
+```bash
+pnpm --filter @app/backend-infra db:migrate
+pnpm --filter @app/backend-infra db:reset
+pnpm --filter @app/backend-infra db:seed
+pnpm --filter @app/backend-infra db:migrate:postgres
+pnpm --filter @app/backend-infra db:seed:postgres
+```
 
 Run server tests:
 
@@ -94,7 +104,7 @@ pnpm boundaries
 pnpm verify:architecture
 ```
 
-CI runs shared/server/webapp checks, tests, builds, `pnpm verify:architecture`, `pnpm smoke:server`, and `pnpm lint` on pull requests and pushes to `main`.
+CI runs workspace checks, tests, builds, `pnpm verify:architecture`, `pnpm smoke:server`, and `pnpm lint` on pull requests and pushes to `main`.
 
 Start Storybook for visual component development:
 
@@ -118,14 +128,14 @@ Canonical persistence adapters are:
 
 JSON persistence and Drizzle are removed from the product/runtime template. Do not add JSON or Drizzle adapters for new modules.
 
-SQLite is the default local SQL path. Postgres remains the production adapter and can be run locally through Docker for prod-like checks. Programmatic smoke tests create isolated temporary SQLite databases through the server test layers.
+SQLite is the default local SQL path. Postgres remains the production adapter and can be run locally through Docker for prod-like checks. Programmatic smoke tests create isolated temporary SQLite databases through the backend-infra test layers and compose them into the server HTTP test layer.
 
 Persistence lifecycle is migration-based:
 
 - startup validates required config and runs pending Effect SQL migrations before repositories are used;
-- schema migrations live under `apps/server/src/database/migrations/*` and are registered in `apps/server/src/database/migrations.ts`;
+- schema migrations live under `packages/backend-infra/src/database/migrations/*` and are registered in `packages/backend-infra/src/database/migrations.ts`;
 - completed migrations are tracked in `effect_sql_migrations`;
-- demo seed data lives in `apps/server/src/database/seed.ts`, separate from schema migrations;
+- demo seed data lives in `packages/backend-infra/src/database/seed.ts`, separate from schema migrations;
 - normal request handling does not silently create or mutate tables;
 - tests create temporary SQLite databases and run the same migration runner.
 
