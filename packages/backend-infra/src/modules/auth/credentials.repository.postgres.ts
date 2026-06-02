@@ -1,10 +1,10 @@
+import { AuthCredentialsRepository } from "@app/backend-domain"
 import { Effect, Layer } from "effect"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
 import {
   firstColumnOrNull,
   mapRepositoryError,
 } from "../../database/sqlRepositoryHelpers"
-import { AuthCredentialsRepository } from "@app/backend-domain"
 
 export const PostgresAuthCredentialsRepositoryLayer = Layer.effect(
   AuthCredentialsRepository,

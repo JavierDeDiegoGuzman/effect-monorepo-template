@@ -29,26 +29,54 @@ const moduleRoots = [
       "index.ts",
       "internal",
     ]),
+    requireIndex: true,
+    enforceIndexImports: true,
   },
   {
-    root: "apps/server/src/modules",
+    root: "packages/backend-domain/src/modules",
     allowed: new Set([
-      "handlers.ts",
       "service.ts",
       "service.live.ts",
       "service.mock.ts",
       "repository.ts",
-      "repository.sql.ts",
-      "repository.postgres.ts",
       "repository.memory.ts",
       "index.ts",
       "internal",
     ]),
     allowTest: true,
+    requireIndex: true,
+    enforceIndexImports: true,
+    allowEntry: (entryName) =>
+      /^[a-z0-9-]+\.service(\.live|\.mock)?\.ts$/.test(entryName) ||
+      /^[a-z0-9-]+\.repository(\.memory)?\.ts$/.test(entryName),
+  },
+  {
+    root: "packages/backend-infra/src/modules",
+    allowed: new Set(["index.ts", "internal"]),
+    allowTest: true,
+    requireIndex: true,
+    enforceIndexImports: true,
+    allowEntry: (entryName) =>
+      /^([a-z0-9-]+\.)?repository\.(sql|postgres)\.ts$/.test(entryName) ||
+      /^[a-z0-9-]+\.service\.live\.ts$/.test(entryName),
+  },
+  {
+    root: "apps/server/src/modules",
+    allowed: new Set([
+      "handlers.ts",
+      "session-cookie.ts",
+      "index.ts",
+      "internal",
+    ]),
+    allowTest: true,
+    requireIndex: false,
+    enforceIndexImports: false,
   },
   {
     root: "apps/webapp/src/modules",
     allowed: new Set(["atoms.ts", "components", "index.ts", "internal"]),
+    requireIndex: true,
+    enforceIndexImports: true,
   },
 ]
 
@@ -71,13 +99,15 @@ function normalizedAbsolute(path) {
 function moduleContextFor(file) {
   const absoluteFile = normalizedAbsolute(file)
 
-  for (const { root } of moduleRoots) {
-    const absoluteRoot = normalizedAbsolute(root)
+  for (const rootConfig of moduleRoots) {
+    if (rootConfig.enforceIndexImports !== true) continue
+
+    const absoluteRoot = normalizedAbsolute(rootConfig.root)
     if (!absoluteFile.startsWith(`${absoluteRoot}/`)) continue
 
     const rest = absoluteFile.slice(absoluteRoot.length + 1).split("/")
     return {
-      root,
+      root: rootConfig.root,
       absoluteRoot,
       moduleName: rest[0],
     }
@@ -107,12 +137,35 @@ function isTestOrStoryFile(repoPath) {
   )
 }
 
+function isRepositoryFile(repoPath) {
+  return /(^|\/)modules\/[^/]+\/.+repository(\.|$)/.test(repoPath)
+}
+
+function isSqlRepositoryFile(repoPath) {
+  return /(^|\/)modules\/[^/]+\/.+repository\.(sql|postgres)\.ts$/.test(
+    repoPath,
+  )
+}
+
+function isDomainServiceFile(repoPath) {
+  return (
+    repoPath.startsWith("packages/backend-domain/src/modules/") &&
+    /(^|\/)modules\/[^/]+\/.+service(\.live|\.mock)?\.ts$/.test(repoPath)
+  )
+}
+
 for (const path of forbiddenPaths) {
   if (exists(path))
     addViolation(path, "Forbidden legacy architecture path exists.")
 }
 
-for (const { root, allowed, allowTest } of moduleRoots) {
+for (const {
+  root,
+  allowed,
+  allowTest,
+  requireIndex,
+  allowEntry,
+} of moduleRoots) {
   if (!isDirectory(root)) continue
 
   for (const moduleEntry of readdirSync(root, { withFileTypes: true })) {
@@ -126,7 +179,7 @@ for (const { root, allowed, allowTest } of moduleRoots) {
 
     const moduleDir = `${root}/${moduleEntry.name}`
     const indexPath = `${moduleDir}/index.ts`
-    if (!exists(indexPath))
+    if (requireIndex === true && !exists(indexPath))
       addViolation(moduleDir, "Module is missing index.ts public API.")
 
     for (const entry of readdirSync(moduleDir, { withFileTypes: true })) {
@@ -140,24 +193,11 @@ for (const { root, allowed, allowTest } of moduleRoots) {
       }
 
       const isAllowedTest =
-        allowTest === true && /^.+\.test\.ts$/.test(entry.name)
-      const isAllowedSubService =
-        root === "apps/server/src/modules" &&
-        /^[a-z0-9-]+\.service(\.live|\.mock)?\.ts$/.test(entry.name)
-      const isAllowedSubRepository =
-        root === "apps/server/src/modules" &&
-        /^[a-z0-9-]+\.repository(\.memory|\.sql|\.postgres)?\.ts$/.test(
-          entry.name,
-        )
-      const isAllowedCookieAdapter =
-        root === "apps/server/src/modules" &&
-        /^[a-z0-9-]+-cookie\.ts$/.test(entry.name)
+        allowTest === true && /^.+\.(test|spec)\.tsx?$/.test(entry.name)
       if (
         !allowed.has(entry.name) &&
         !isAllowedTest &&
-        !isAllowedSubService &&
-        !isAllowedSubRepository &&
-        !isAllowedCookieAdapter
+        !(allowEntry?.(entry.name) ?? false)
       ) {
         addViolation(entryPath, `Entry is not allowed in ${root} modules.`)
       }
@@ -169,6 +209,8 @@ const importPattern =
   /(?:import|export)\s+(?:type\s+)?(?:[^"']*?from\s+)?["']([^"']+)["']/g
 const allSourceFiles = [
   ...walk("packages/shared/src"),
+  ...walk("packages/backend-domain/src"),
+  ...walk("packages/backend-infra/src"),
   ...walk("apps/server/src"),
   ...walk("apps/webapp/src"),
 ]
@@ -181,6 +223,16 @@ for (const file of allSourceFiles) {
     addViolation(
       repoPath,
       "Legacy JSON/Drizzle repository adapters are not allowed.",
+    )
+  }
+
+  if (
+    isSqlRepositoryFile(repoPath) &&
+    !repoPath.startsWith("packages/backend-infra/src/modules/")
+  ) {
+    addViolation(
+      repoPath,
+      "SQL repository implementations must live in packages/backend-infra.",
     )
   }
 
@@ -205,8 +257,7 @@ for (const file of allSourceFiles) {
   }
 
   if (
-    repoPath.startsWith("apps/server/src/modules/") &&
-    /repository\.(sql|postgres|memory)\.ts$/.test(repoPath) &&
+    isRepositoryFile(repoPath) &&
     /lastInsertRowid|Random\.nextUUID/.test(text)
   ) {
     addViolation(
@@ -216,8 +267,8 @@ for (const file of allSourceFiles) {
   }
 
   if (
-    repoPath.startsWith("apps/server/src/modules/") &&
-    /repository\.(sql|postgres)\.ts$/.test(repoPath) &&
+    isSqlRepositoryFile(repoPath) &&
+    repoPath.startsWith("packages/backend-infra/src/modules/") &&
     !text.includes("sqlRepositoryHelpers")
   ) {
     addViolation(
@@ -241,19 +292,82 @@ for (const file of allSourceFiles) {
     }
 
     if (
-      repoPath.startsWith("apps/server/src/modules/") &&
-      /handlers\.ts$/.test(repoPath) &&
-      /repository(?:\.|$)/.test(specifier)
+      repoPath.startsWith("packages/shared/src/") &&
+      (/^@app\/(backend-domain|backend-infra)\b/.test(specifier) ||
+        specifier.startsWith("@app/server") ||
+        specifier.includes("apps/server") ||
+        specifier.includes("apps/webapp"))
     ) {
       addViolation(
         repoPath,
-        `HTTP handlers must depend on services, not repositories: ${specifier}`,
+        `Shared code must not import backend packages or apps: ${specifier}`,
+      )
+    }
+
+    if (repoPath.startsWith("packages/backend-domain/src/")) {
+      if (
+        /^@app\/backend-infra\b/.test(specifier) ||
+        specifier.startsWith("@app/server") ||
+        specifier.includes("apps/server")
+      ) {
+        addViolation(
+          repoPath,
+          `Backend domain must not import infra or server code: ${specifier}`,
+        )
+      }
+
+      if (
+        /^(@effect\/sql|@effect\/platform-node|@effect\/platform\/.+Http|effect\/unstable\/(sql|http)|jose$|node:|(?:assert|buffer|child_process|crypto|events|fs|http|https|net|os|path|stream|timers|tls|url|util|worker_threads)$)/.test(
+          specifier,
+        )
+      ) {
+        addViolation(
+          repoPath,
+          `Backend domain must not import SQL, platform HTTP, jose, or Node runtime modules: ${specifier}`,
+        )
+      }
+    }
+
+    if (
+      repoPath.startsWith("packages/backend-infra/src/") &&
+      (specifier.startsWith("@app/server") || specifier.includes("apps/server"))
+    ) {
+      addViolation(
+        repoPath,
+        `Backend infra must not import server code: ${specifier}`,
       )
     }
 
     if (
-      repoPath.startsWith("apps/server/src/modules/") &&
-      /repository(?:\.|$)/.test(repoPath) &&
+      (repoPath.startsWith("apps/server/src/modules/") &&
+        /handlers\.ts$/.test(repoPath)) ||
+      repoPath.startsWith("apps/server/src/http/middleware/")
+    ) {
+      if (
+        /repository(?:\.|$)/.test(specifier) ||
+        /^@app\/backend-(domain|infra)\/modules\/[^/]+\/.*repository/.test(
+          specifier,
+        )
+      ) {
+        addViolation(
+          repoPath,
+          `Server transport must depend on backend-domain services, not repositories: ${specifier}`,
+        )
+      }
+    }
+
+    if (
+      isDomainServiceFile(repoPath) &&
+      /^(@effect\/sql|effect\/unstable\/(sql|http))/.test(specifier)
+    ) {
+      addViolation(
+        repoPath,
+        `Domain services must not import SQL or HTTP concerns: ${specifier}`,
+      )
+    }
+
+    if (
+      isRepositoryFile(repoPath) &&
       (specifier.includes("/http/") ||
         specifier.startsWith("effect/unstable/http"))
     ) {
@@ -286,7 +400,13 @@ for (const file of allSourceFiles) {
       "../../../modules/",
     ]) {
       if (!specifier.startsWith(prefix)) continue
-      const rest = specifier.slice(prefix.length).split("/")
+      const context = moduleContextFor(file)
+      if (context === null) continue
+
+      const target = resolve(dirname(file), specifier).split(sep).join("/")
+      if (!target.startsWith(`${context.absoluteRoot}/`)) continue
+
+      const rest = target.slice(context.absoluteRoot.length + 1).split("/")
       if (rest.length > 1) {
         addViolation(
           repoPath,

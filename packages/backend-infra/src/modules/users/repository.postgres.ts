@@ -1,3 +1,4 @@
+import { UsersRepository } from "@app/backend-domain"
 import { makeUserId, User } from "@app/shared"
 import { Effect, Layer } from "effect"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
@@ -7,7 +8,6 @@ import {
   oneOrNull,
   requireReadBack,
 } from "../../database/sqlRepositoryHelpers"
-import { UsersRepository } from "@app/backend-domain"
 
 type UserRow = {
   readonly id: string

@@ -1,3 +1,4 @@
+import { AuthService } from "@app/backend-domain"
 import {
   Api,
   AuthSession,
@@ -8,7 +9,6 @@ import {
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
 import { withHttpErrorMapping } from "../../http/errors"
-import { AuthService } from "@app/backend-domain"
 import { AuthSessionCookies } from "./session-cookie"
 
 export const AuthApiHandlers = HttpApiBuilder.group(

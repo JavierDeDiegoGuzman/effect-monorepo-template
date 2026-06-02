@@ -1,7 +1,6 @@
+import { RepositoryError, Transactions } from "@app/backend-domain"
 import { Effect, Layer } from "effect"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
-import { RepositoryError } from "@app/backend-domain"
-import { Transactions } from "@app/backend-domain"
 
 export const SqlTransactionsLayer = Layer.effect(
   Transactions,

@@ -1,3 +1,4 @@
+import { TodosRepository } from "@app/backend-domain"
 import { makeTodoId, makeUserId, Todo } from "@app/shared"
 import { Effect, Layer } from "effect"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
@@ -7,7 +8,6 @@ import {
   oneOrNull,
   requireReadBack,
 } from "../../database/sqlRepositoryHelpers"
-import { TodosRepository } from "@app/backend-domain"
 
 type TodoRow = {
   readonly id: string

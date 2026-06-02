@@ -1,9 +1,9 @@
+import { Transactions } from "@app/backend-domain"
 import { makeUserId } from "@app/shared"
 import { assert, describe, it } from "@effect/vitest"
 import { Data, Effect, Layer } from "effect"
 import * as SqlClient from "effect/unstable/sql/SqlClient"
 import { makeTestSqliteLayer } from "../test/layers/TestSqliteLayer"
-import { Transactions } from "@app/backend-domain"
 import { SqlTransactionsLayer } from "./transactions.sql"
 
 class ExpectedRollback extends Data.TaggedError("ExpectedRollback")<{

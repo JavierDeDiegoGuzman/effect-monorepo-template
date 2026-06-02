@@ -1,8 +1,8 @@
-import {
-  type AuthCredentialsRepository,
-  type TodosRepository,
-  type Transactions,
-  type UsersRepository,
+import type {
+  AuthCredentialsRepository,
+  TodosRepository,
+  Transactions,
+  UsersRepository,
 } from "@app/backend-domain"
 import { Layer } from "effect"
 import type { ConfigError } from "effect/Config"

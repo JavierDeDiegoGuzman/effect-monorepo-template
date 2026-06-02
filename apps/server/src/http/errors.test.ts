@@ -1,7 +1,7 @@
+import { RepositoryError } from "@app/backend-domain"
 import { InternalServerError } from "@app/shared"
 import { assert, describe, it } from "@effect/vitest"
 import { Effect } from "effect"
-import { RepositoryError } from "@app/backend-domain"
 import { withHttpErrorMapping } from "./errors"
 
 const assertInternalServerError = (error: InternalServerError) => {

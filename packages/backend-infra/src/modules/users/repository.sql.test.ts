@@ -1,8 +1,8 @@
+import { UsersRepository } from "@app/backend-domain"
 import { makeUserId } from "@app/shared"
 import { assert, describe, it } from "@effect/vitest"
 import { Effect } from "effect"
 import { makeSqlRepositoriesTestLayer } from "../../test/layers/SqlRepositoriesTestLayer"
-import { UsersRepository } from "@app/backend-domain"
 
 describe("SqlUsersRepository", () => {
   it.effect("creates and reads users by id and email", () =>

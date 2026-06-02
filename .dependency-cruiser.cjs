@@ -2,10 +2,30 @@
 module.exports = {
   forbidden: [
     {
-      name: "shared-does-not-import-apps",
+      name: "shared-does-not-import-backend-or-apps",
       severity: "error",
       from: { path: "^packages/shared" },
-      to: { path: "^apps/(server|webapp)" },
+      to: { path: "^(packages/(backend-domain|backend-infra)|apps/)" },
+    },
+    {
+      name: "backend-domain-does-not-import-infra-or-server",
+      severity: "error",
+      from: { path: "^packages/backend-domain" },
+      to: { path: "^(packages/backend-infra|apps/server)" },
+    },
+    {
+      name: "backend-domain-does-not-import-runtime-sql-or-http",
+      severity: "error",
+      from: { path: "^packages/backend-domain" },
+      to: {
+        path: "^(@effect/sql|@effect/platform-node|@effect/platform/.+Http|effect/unstable/(sql|http)|jose$|node:|(?:assert|buffer|child_process|crypto|events|fs|http|https|net|os|path|stream|timers|tls|url|util|worker_threads)$|apps/server/src/http|apps/server/src/modules/[^/]+/handlers\\.ts$)",
+      },
+    },
+    {
+      name: "backend-infra-does-not-import-server",
+      severity: "error",
+      from: { path: "^packages/backend-infra" },
+      to: { path: "^apps/server" },
     },
     {
       name: "webapp-ui-is-primitive-only",
@@ -36,30 +56,32 @@ module.exports = {
       to: { path: "^apps/webapp/src/api" },
     },
     {
-      name: "server-handlers-do-not-import-repositories",
+      name: "server-transport-does-not-import-repositories",
       severity: "error",
       from: {
-        path: "^apps/server/src/modules/[^/]+/handlers\\.ts$",
+        path: "^apps/server/src/(modules/[^/]+/handlers\\.ts|http/middleware/[^/]+\\.ts)$",
       },
       to: {
-        path: "^apps/server/src/modules/[^/]+/.+repository(\\.|$)",
+        path: "^(packages/(backend-domain|backend-infra)/src/modules/[^/]+/.+repository(\\.|$)|apps/server/src/modules/[^/]+/.+repository(\\.|$))",
       },
     },
     {
-      name: "server-services-do-not-import-http",
+      name: "server-domain-services-do-not-import-sql-or-http",
       severity: "error",
       from: {
-        path: "^apps/server/src/modules/[^/]+/service(\\.live|\\.mock)?\\.ts$",
+        path: "^(packages/backend-domain/src/modules/[^/]+/.+service(\\.live|\\.mock)?\\.ts|apps/server/src/modules/[^/]+/.+service(\\.live|\\.mock)?\\.ts)$",
       },
-      to: { path: "^apps/server/src/http" },
+      to: {
+        path: "^(effect/unstable/(sql|http)|@effect/sql|apps/server/src/http)",
+      },
     },
     {
-      name: "server-repositories-do-not-import-http",
+      name: "repositories-do-not-import-http",
       severity: "error",
       from: {
-        path: "^apps/server/src/modules/[^/]+/.+repository(\\.|$)",
+        path: "^(packages/(backend-domain|backend-infra)/src/modules/[^/]+/.+repository(\\.|$)|apps/server/src/modules/[^/]+/.+repository(\\.|$))",
       },
-      to: { path: "^apps/server/src/http" },
+      to: { path: "^(effect/unstable/http|apps/server/src/http)" },
     },
   ],
   options: {

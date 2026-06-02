@@ -1,3 +1,4 @@
+import { makeSqlRepositoriesTestLayer } from "@app/backend-infra/test/layers"
 import {
   Api,
   CreateTodoInput,
@@ -11,7 +12,6 @@ import { FetchHttpClient, HttpRouter, HttpServer } from "effect/unstable/http"
 import { HttpApiClient } from "effect/unstable/httpapi"
 import { makeApiRoutesLayer } from "../../http/server"
 import { makeHttpServerDependenciesLayer } from "../../layers/ServerLayers"
-import { makeSqlRepositoriesTestLayer } from "@app/backend-infra/test/layers"
 
 const smokeConfigProvider = ConfigProvider.fromUnknown({
   AUTH_JWT_SECRET: "smoke-test-secret-at-least-32-chars",
