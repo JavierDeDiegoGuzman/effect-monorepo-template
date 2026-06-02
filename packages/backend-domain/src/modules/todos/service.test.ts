@@ -1,12 +1,16 @@
 import { makeTodoId, makeUserId, TodoNotFound } from "@app/shared"
 import { assert, describe, it } from "@effect/vitest"
-import { Effect } from "effect"
-import { InMemoryDomainTestLayer } from "../../test/layers/DomainTestLayer"
+import { Effect, Layer } from "effect"
+import { makeInMemoryTodosRepositoryLayer } from "./repository.memory"
 import { Todos } from "./service"
+import { TodosLive } from "./service.live"
 
 const userOneId = makeUserId("00000000-0000-4000-8000-000000000001")
 const userTwoId = makeUserId("00000000-0000-4000-8000-000000000002")
 const missingTodoId = makeTodoId("00000000-0000-4000-8000-000000000999")
+const InMemoryTodosDomainTestLayer = TodosLive.pipe(
+  Layer.provide(makeInMemoryTodosRepositoryLayer()),
+)
 
 const assertTodoNotFound = (error: TodoNotFound, id: TodoNotFound["id"]) => {
   assert.strictEqual(error._tag, "TodoNotFound")
@@ -26,7 +30,7 @@ describe("Todos domain service", () => {
       assert.strictEqual(todo.userId, userOneId)
       assert.strictEqual(todo.title, "Write tests")
       assert.strictEqual(todo.completed, false)
-    }).pipe(Effect.provide(InMemoryDomainTestLayer)),
+    }).pipe(Effect.provide(InMemoryTodosDomainTestLayer)),
   )
 
   it.effect("lists only todos owned by the requested user", () =>
@@ -43,7 +47,7 @@ describe("Todos domain service", () => {
       const listed = yield* todos.listByUser(userOneId)
 
       assert.deepStrictEqual(listed, [userTodo])
-    }).pipe(Effect.provide(InMemoryDomainTestLayer)),
+    }).pipe(Effect.provide(InMemoryTodosDomainTestLayer)),
   )
 
   it.effect("does not return another user's todo by id", () =>
@@ -60,7 +64,7 @@ describe("Todos domain service", () => {
 
       assert.ok(error instanceof TodoNotFound)
       assertTodoNotFound(error, otherUserTodo.id)
-    }).pipe(Effect.provide(InMemoryDomainTestLayer)),
+    }).pipe(Effect.provide(InMemoryTodosDomainTestLayer)),
   )
 
   it.effect("does not update another user's todo", () =>
@@ -79,7 +83,7 @@ describe("Todos domain service", () => {
       assert.ok(error instanceof TodoNotFound)
       assertTodoNotFound(error, otherUserTodo.id)
       assert.strictEqual(unchanged.completed, false)
-    }).pipe(Effect.provide(InMemoryDomainTestLayer)),
+    }).pipe(Effect.provide(InMemoryTodosDomainTestLayer)),
   )
 
   it.effect("returns TodoNotFound for missing todos", () =>
@@ -92,6 +96,6 @@ describe("Todos domain service", () => {
 
       assert.ok(error instanceof TodoNotFound)
       assertTodoNotFound(error, missingTodoId)
-    }).pipe(Effect.provide(InMemoryDomainTestLayer)),
+    }).pipe(Effect.provide(InMemoryTodosDomainTestLayer)),
   )
 })

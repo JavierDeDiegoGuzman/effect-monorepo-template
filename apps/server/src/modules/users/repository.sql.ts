@@ -7,7 +7,7 @@ import {
   oneOrNull,
   requireReadBack,
 } from "../../database/sqlRepositoryHelpers"
-import { UsersRepository } from "./repository"
+import { UsersRepository } from "@app/backend-domain"
 
 type UserRow = {
   readonly id: string

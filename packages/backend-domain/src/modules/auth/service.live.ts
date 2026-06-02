@@ -1,6 +1,6 @@
 import { AuthSession, InvalidCredentials, Unauthorized } from "@app/shared"
 import { Effect, Layer } from "effect"
-import { Transactions } from "../../database/transactions"
+import { Transactions } from "../../transactions"
 import { Users } from "../users"
 import { AuthCredentialsRepository } from "./credentials.repository"
 import { Passwords } from "./passwords.service"

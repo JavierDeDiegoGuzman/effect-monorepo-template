@@ -1,5 +1,5 @@
 import { Effect } from "effect"
-import { RepositoryError } from "../errors/repository"
+import { RepositoryError } from "@app/backend-domain"
 
 export const makeRepositoryError =
   (repository: string) => (operation: string) =>

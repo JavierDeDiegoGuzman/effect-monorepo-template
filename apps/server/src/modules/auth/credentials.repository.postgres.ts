@@ -4,7 +4,7 @@ import {
   firstColumnOrNull,
   mapRepositoryError,
 } from "../../database/sqlRepositoryHelpers"
-import { AuthCredentialsRepository } from "./credentials.repository"
+import { AuthCredentialsRepository } from "@app/backend-domain"
 
 export const PostgresAuthCredentialsRepositoryLayer = Layer.effect(
   AuthCredentialsRepository,

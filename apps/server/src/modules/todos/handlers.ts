@@ -2,7 +2,7 @@ import { Api, CurrentUser } from "@app/shared"
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
 import { withHttpErrorMapping } from "../../http/errors"
-import { Todos } from "./service"
+import { Todos } from "@app/backend-domain"
 
 export const TodosApiHandlers = HttpApiBuilder.group(
   Api,

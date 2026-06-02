@@ -1,3 +1,16 @@
+import {
+  type AuthCredentialsRepository,
+  AuthLive,
+  TodosLive,
+  type TodosRepository,
+  type Transactions,
+  InMemoryTransactionsLayer,
+  UsersLive,
+  type UsersRepository,
+  makeInMemoryAuthCredentialsRepositoryLayer,
+  makeInMemoryTodosRepositoryLayer,
+  makeInMemoryUsersRepositoryLayer,
+} from "@app/backend-domain"
 import type { Todo, User } from "@app/shared"
 import { Layer } from "effect"
 import type { ConfigError } from "effect/Config"
@@ -6,32 +19,21 @@ import type { MigrationError } from "effect/unstable/sql/Migrator"
 import type { SqlError } from "effect/unstable/sql/SqlError"
 import { PostgresLayer } from "../database/Postgres"
 import { SqliteLayer } from "../database/Sqlite"
-import type { Transactions } from "../database/transactions"
-import { InMemoryTransactionsLayer } from "../database/transactions.memory"
 import { SqlTransactionsLayer } from "../database/transactions.sql"
 import {
-  type AuthCredentialsRepository,
-  AuthLive,
   AuthSessionCookiesLive,
   AuthTokensLive,
-  makeInMemoryAuthCredentialsRepositoryLayer,
   PasswordsLive,
   PostgresAuthCredentialsRepositoryLayer,
   SqlAuthCredentialsRepositoryLayer,
 } from "../modules/auth"
 import {
-  makeInMemoryTodosRepositoryLayer,
   PostgresTodosRepositoryLayer,
   SqlTodosRepositoryLayer,
-  TodosLive,
-  type TodosRepository,
 } from "../modules/todos"
 import {
-  makeInMemoryUsersRepositoryLayer,
   PostgresUsersRepositoryLayer,
   SqlUsersRepositoryLayer,
-  UsersLive,
-  type UsersRepository,
 } from "../modules/users"
 
 export type InMemoryRepositorySeed = {

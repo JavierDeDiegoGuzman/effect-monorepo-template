@@ -1,6 +1,6 @@
 import { scrypt as nodeScrypt, randomBytes, timingSafeEqual } from "node:crypto"
 import { Effect, Layer } from "effect"
-import { Passwords } from "./passwords.service"
+import { Passwords } from "@app/backend-domain"
 
 const scrypt = (
   password: string,

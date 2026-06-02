@@ -1,7 +1,7 @@
 import { makeUserId, type UserId } from "@app/shared"
 import { Config, Effect, Layer } from "effect"
 import { jwtVerify, SignJWT } from "jose"
-import { AuthTokens, InvalidAuthToken } from "./tokens.service"
+import { AuthTokens, InvalidAuthToken } from "@app/backend-domain"
 
 const authTokenConfig = Effect.gen(function* () {
   return {

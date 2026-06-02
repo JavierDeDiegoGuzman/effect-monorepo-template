@@ -1,5 +1,5 @@
 import { Context, type Effect } from "effect"
-import type { RepositoryError } from "../errors/repository"
+import type { RepositoryError } from "./errors/repository"
 
 export class Transactions extends Context.Service<
   Transactions,

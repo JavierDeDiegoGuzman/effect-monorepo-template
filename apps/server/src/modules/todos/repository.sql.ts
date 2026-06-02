@@ -7,7 +7,7 @@ import {
   oneOrNull,
   requireReadBack,
 } from "../../database/sqlRepositoryHelpers"
-import { TodosRepository } from "./repository"
+import { TodosRepository } from "@app/backend-domain"
 
 type TodoRow = {
   readonly id: string

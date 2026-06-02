@@ -1,12 +1,12 @@
 import { UserAlreadyExists } from "@app/shared"
 import { assert, describe, it } from "@effect/vitest"
 import { Effect, Layer } from "effect"
-import { makeInMemoryRepositoriesLayer } from "../../test/layers/InMemoryRepositoriesLayer"
+import { makeInMemoryUsersRepositoryLayer } from "./repository.memory"
 import { Users } from "./service"
 import { UsersLive } from "./service.live"
 
 const makeUsersDomainTestLayer = () =>
-  UsersLive.pipe(Layer.provide(makeInMemoryRepositoriesLayer()))
+  UsersLive.pipe(Layer.provide(makeInMemoryUsersRepositoryLayer()))
 
 describe("Users domain service", () => {
   it.effect(

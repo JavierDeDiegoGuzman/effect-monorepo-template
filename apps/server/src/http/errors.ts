@@ -1,6 +1,6 @@
 import { InternalServerError } from "@app/shared"
 import { Effect } from "effect"
-import { RepositoryError } from "../errors/repository"
+import { RepositoryError } from "@app/backend-domain"
 
 export const withHttpErrorMapping = <A, E, R>(
   effect: Effect.Effect<A, E | RepositoryError, R>,

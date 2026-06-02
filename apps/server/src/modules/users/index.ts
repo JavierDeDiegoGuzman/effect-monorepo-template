@@ -1,6 +1,3 @@
-export * from "./repository"
-export * from "./repository.memory"
+export * from "@app/backend-domain"
 export * from "./repository.postgres"
 export * from "./repository.sql"
-export * from "./service"
-export * from "./service.live"
