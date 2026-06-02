@@ -1,12 +1,4 @@
-import {
-  AuthLive,
-  InMemoryTransactionsLayer,
-  makeInMemoryAuthCredentialsRepositoryLayer,
-  makeInMemoryTodosRepositoryLayer,
-  makeInMemoryUsersRepositoryLayer,
-  TodosLive,
-  UsersLive,
-} from "@app/backend-domain"
+import { AuthLive, TodosLive, UsersLive } from "@app/backend-domain"
 import {
   AuthTokensLive,
   makeSqliteRepositoryLayer,
@@ -15,38 +7,12 @@ import {
   type SqlRepositoryLayerError,
   type SqlRepositoryServices,
 } from "@app/backend-infra"
-import type { Todo, User } from "@app/shared"
 import { Layer } from "effect"
 import { AuthSessionCookiesLive } from "../modules/auth/session-cookie"
-
-export type InMemoryRepositorySeed = {
-  readonly users?: ReadonlyArray<{
-    readonly user: User
-    readonly passwordHash: string
-  }>
-  readonly todos?: ReadonlyArray<Todo>
-}
 
 type RepositoryServices = SqlRepositoryServices
 
 type RepositoryLayerError = SqlRepositoryLayerError
-
-export const makeInMemoryRepositoriesLayer = (
-  seed: InMemoryRepositorySeed = {},
-) =>
-  Layer.mergeAll(
-    makeInMemoryUsersRepositoryLayer(seed.users?.map((record) => record.user)),
-    makeInMemoryTodosRepositoryLayer(seed.todos),
-    makeInMemoryAuthCredentialsRepositoryLayer(
-      seed.users?.map((record) => ({
-        userId: record.user.id,
-        passwordHash: record.passwordHash,
-      })),
-    ),
-    InMemoryTransactionsLayer,
-  )
-
-export const MemoryRepositoriesLayer = makeInMemoryRepositoriesLayer()
 
 export const makeProductDomainLayer = (
   repositoryLayer: Layer.Layer<
