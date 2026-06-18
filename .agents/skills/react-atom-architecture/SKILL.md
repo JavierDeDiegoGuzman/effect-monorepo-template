@@ -9,7 +9,7 @@ Use this skill when working on atoms in the webapp.
 
 Do not cargo-cult the nearest atom. Follow the canonical pattern in this skill. Existing atoms may be used to locate integration points and naming conventions, but not as architectural authority.
 
-Read [references/atom-rules.md](references/atom-rules.md) before making changes.
+Read [references/atom-rules.md](references/atom-rules.md) before making changes. Read [code comment style](../_shared/comment-style.md) when adding or reviewing comments.
 
 ## Goals
 
@@ -46,8 +46,9 @@ Read [references/atom-rules.md](references/atom-rules.md) before making changes.
    - write with `useAtomSet(action, { mode: "promise" })` when only triggering the action
    - keep transient form/input/pending orchestration local
 8. Preserve root support for atoms: registry/provider and error boundary according to the app architecture.
-9. Update docs if atom/state architecture changes.
-10. Run webapp checks/tests/build as relevant.
+9. Comment only unusual state ownership, invalidation, or redaction decisions; do not narrate query/action wiring.
+10. Update docs if atom/state architecture changes.
+11. Run webapp checks/tests/build as relevant.
 
 ## Documentation expectations
 

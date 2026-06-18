@@ -7,7 +7,7 @@ description: Design and implement frontend tests and Storybook coverage for Reac
 
 Use this skill when adding frontend tests, Storybook stories, component interaction tests, or frontend testing infrastructure.
 
-Read [references/webapp-testing-rules.md](references/webapp-testing-rules.md) before making changes.
+Read [references/webapp-testing-rules.md](references/webapp-testing-rules.md) before making changes. Read [code comment style](../_shared/comment-style.md) when adding or reviewing comments.
 
 ## Goals
 
@@ -45,6 +45,7 @@ Read [references/webapp-testing-rules.md](references/webapp-testing-rules.md) be
 - Do not bury all feature UI inside screens; extract storybookable feature components where useful.
 - Feature UI with remote data or mutations should cover important visual states in stories/tests, or explicitly justify why not.
 - Stories must not call real production/development APIs.
+- Do not narrate test phases with comments; comment only unusual fixtures, accessibility assertions, or non-obvious mock/layer choices.
 
 ## Documentation expectations
 

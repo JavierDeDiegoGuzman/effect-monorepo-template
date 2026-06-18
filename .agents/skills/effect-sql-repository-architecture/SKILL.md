@@ -18,6 +18,7 @@ Read the references in order:
 5. [Domain service rules](references/domain-service-rules.md)
 6. [Layer composition](references/layer-composition.md)
 7. [Checklist](references/checklist.md)
+8. [Code comment style](../_shared/comment-style.md) when adding or reviewing comments
 
 ## Goal
 
@@ -57,6 +58,7 @@ Before relating modules in persistence, classify the relationship and choose the
 - Database layers should fail early on invalid required configuration.
 - Do not let SQL joins define domain boundaries.
 - Do not add cross-module coupling before classifying the relationship.
+- Do not comment obvious repository methods or SQL operations; comment only hidden invariants, transaction ordering, portability constraints, or safety boundaries.
 
 ## Preferred structure
 

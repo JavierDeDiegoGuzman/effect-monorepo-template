@@ -13,6 +13,7 @@ Read the references in order:
 
 1. [Phased module process](references/phased-module-process.md)
 2. [Review checklist](references/review-checklist.md)
+3. [Code comment style](../_shared/comment-style.md) when adding or reviewing comments
 
 ## Goals
 
@@ -52,6 +53,7 @@ Read the references in order:
 - Do not hide remote query state branching behind generic renderers in route screens.
 - Do not skip tests and docs for architecture-affecting changes.
 - Do not mix unrelated concerns into one broad change or commit.
+- Do not add comments that narrate implementation; comments should preserve hidden product, safety, persistence, or compatibility rationale.
 - Do not omit docs, tests, validation status, or atomic commit plan for non-trivial module work without explicit justification.
 - If multiple domain models are reasonable and the choice affects future modules, stop and ask for confirmation.
 
